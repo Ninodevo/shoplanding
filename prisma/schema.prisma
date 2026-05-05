@@ -1,0 +1,140 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+/// A canonical block in the optimized landing-page system.
+/// Sourced from the Conversion.design landing-page CRO checklist plus the handoff template.
+model Block {
+  id            String   @id @default(cuid())
+  slug          String   @unique
+  name          String
+  category      String
+  /// Sort order inside its category (announcement, hero, cta, social-proof, aov, description, footer, etc.)
+  sortOrder     Int      @map("sort_order")
+  purpose       String
+  /// What the block must contain to be effective. Bullet list rendered on /playbook.
+  mustInclude   Json     @map("must_include")
+  /// Common pitfalls to avoid.
+  pitfalls      Json
+  /// Row indices from the original 🛬 Landing page sheet for traceability.
+  checklistRefs Json     @map("checklist_refs")
+  presetBlocks  PresetBlock[]
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@index([category, sortOrder])
+  @@map("blocks")
+}
+
+/// A concrete component in the rendered landing page (e.g. Hero, Gallery, FAQ).
+/// The 7 playbook `Block`s are coarse CRO sections; `RenderedBlock`s are the actual
+/// React components we ship. `satisfies` maps each component back to the playbook
+/// blocks whose rules it helps fulfill, so `/playbook` can show coverage.
+model RenderedBlock {
+  id            String   @id @default(cuid())
+  slug          String   @unique
+  name          String
+  /// React component name in the renderer (e.g. "Gallery", "StickyAtcBar").
+  componentName String   @map("component_name")
+  /// Visual order in the canonical Landing Template.
+  position      Int
+  /// One of: persistent-top, persistent-bottom, in-flow, sticky-on-scroll.
+  placement     String
+  description   String
+  /// JSON array of playbook Block slugs this component helps satisfy.
+  satisfies     Json
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@index([position])
+  @@map("rendered_blocks")
+}
+
+/// An ordered arrangement of blocks tuned for a specific niche.
+/// Same blocks; different sequence, palette, type, and seed content.
+model LayoutPreset {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  niche       String
+  /// Visual tokens: { primary, primaryDeep, bg, text, fontHeading, fontBody, ... }
+  tokens      Json
+  /// Seed brand + product content used to render the public /showcase demo.
+  demoSeed    Json     @map("demo_seed")
+  blocks      PresetBlock[]
+  themes      Theme[]
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("layout_presets")
+}
+
+/// Join table: which blocks appear in which preset, in what order, with optional overrides.
+model PresetBlock {
+  id        String       @id @default(cuid())
+  presetId  String       @map("preset_id")
+  blockId   String       @map("block_id")
+  position  Int
+  /// Per-preset content overrides (copy variants, hidden sub-features).
+  overrides Json?
+  preset    LayoutPreset @relation(fields: [presetId], references: [id], onDelete: Cascade)
+  block     Block        @relation(fields: [blockId], references: [id], onDelete: Restrict)
+
+  @@unique([presetId, position])
+  @@index([presetId])
+  @@map("preset_blocks")
+}
+
+/// A sellable SKU. Wraps a LayoutPreset with versioned Shopify + Woo zip artifacts.
+model Theme {
+  id              String       @id @default(cuid())
+  slug            String       @unique
+  presetId        String       @map("preset_id")
+  preset          LayoutPreset @relation(fields: [presetId], references: [id], onDelete: Restrict)
+  name            String
+  tagline         String
+  version         String
+  changelog       String?
+  shopifyZipUrl   String?      @map("shopify_zip_url")
+  wooZipUrl       String?      @map("woo_zip_url")
+  /// JSON blob exported as the portable "system spec" tier.
+  systemSpecUrl   String?      @map("system_spec_url")
+  priceSingleCents     Int     @map("price_single_cents")
+  priceUnlimitedCents  Int     @map("price_unlimited_cents")
+  setupAddOnCents      Int     @map("setup_add_on_cents")
+  screenshots     Json
+  published       Boolean      @default(false)
+  orders          Order[]
+  createdAt       DateTime     @default(now()) @map("created_at")
+  updatedAt       DateTime     @updatedAt @map("updated_at")
+
+  @@map("themes")
+}
+
+/// A purchase. License key + signed download tokens are derived per-order.
+model Order {
+  id             String   @id @default(cuid())
+  userId         String   @map("user_id")
+  themeId        String   @map("theme_id")
+  theme          Theme    @relation(fields: [themeId], references: [id], onDelete: Restrict)
+  tier           String
+  amountCents    Int      @map("amount_cents")
+  currency       String   @default("USD")
+  stripeSessionId String? @unique @map("stripe_session_id")
+  stripePaymentIntentId String? @map("stripe_payment_intent_id")
+  status         String   @default("pending")
+  licenseKey     String?  @unique @map("license_key")
+  /// Buyer-supplied tweaks: brand, palette, hero copy, fonts, image URLs.
+  tweaks         Json?
+  /// Public preview slug at /preview/[slug].
+  previewSlug    String?  @unique @map("preview_slug")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([themeId])
+  @@map("orders")
+}

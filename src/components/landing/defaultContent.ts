@@ -1,0 +1,207 @@
+import type { LandingContent, LandingTokens } from "./types";
+
+/**
+ * Default content fixture — verbatim port of `handoff/project/template/components.jsx`
+ * top-of-file constants. Used by `/dev/render-test` and as the fallback shape any
+ * `LayoutPreset.demoSeed` should match.
+ */
+export const DEFAULT_CONTENT: LandingContent = {
+  product: {
+    collection: "Daily Essentials",
+    title: "Product Name Goes Here",
+    subtitle:
+      "The unique, effortless [category] that solves [pain point] in seconds — exclusively from Brand Co.",
+    rating: 4.8,
+    reviewCount: 487,
+    price: 39,
+    was: 49,
+    currency: "$",
+    inStock: true,
+    stockLeft: 23,
+    viewing: 47,
+    soldThisWeek: 312,
+    keyBenefits: [
+      "Solves [main customer problem] without the hassle",
+      "Made with [hero ingredient] — clinically tested for [benefit]",
+      "Plant-based, cruelty-free, and ridiculously easy to use",
+      "Backed by our 30-day money-back guarantee",
+    ],
+    variants: {
+      color: [
+        { id: "natural", name: "Natural", swatch: "#d4cdbe" },
+        { id: "rose", name: "Rose", swatch: "#e8b8b0" },
+        { id: "sage", name: "Sage", swatch: "#a8c4a0" },
+        { id: "midnight", name: "Midnight", swatch: "#2a2a3a" },
+      ],
+      size: [
+        { id: "sm", name: "S" },
+        { id: "md", name: "M" },
+        { id: "lg", name: "L" },
+        { id: "xl", name: "XL" },
+      ],
+    },
+    offers: [
+      { id: 1, qty: 1, label: "1× Single", price: 39, was: 49, perUnit: 39, badge: null, badgeText: "" },
+      { id: 2, qty: 2, label: "2× Pack", price: 70, was: 98, perUnit: 35, badge: "rec", badgeText: "Recommended" },
+      { id: 3, qty: 3, label: "3× Bundle", price: 99, was: 147, perUnit: 33, badge: "best", badgeText: "Best Value" },
+    ],
+  },
+  benefits: [
+    { ico: "✦", t: "Made with care", d: "Small-batch produced in California with traceable, ethically-sourced ingredients." },
+    { ico: "◐", t: "Visible results", d: "Clinically tested. 9 out of 10 customers see a difference within 14 days." },
+    { ico: "◇", t: "Refillable & recyclable", d: "Designed for the long haul. Refill packs cut packaging by 80%." },
+    { ico: "✓", t: "Risk-free guarantee", d: "Try it for 30 days. Don't love it? Full refund, keep the product." },
+  ],
+  steps: [
+    { n: "01", t: "Open & prep", d: "Twist the cap and apply a small amount to clean, dry skin." },
+    { n: "02", t: "Apply with care", d: "Use light, circular motions. A little goes a long way." },
+    { n: "03", t: "Enjoy results", d: "See visible improvement within 14 days of consistent use." },
+  ],
+  ingredients: [
+    { color: "#e8d8b8", name: "Hero Ingredient A", use: "40% — primary active", pct: "40%" },
+    { color: "#c8d8b8", name: "Hero Ingredient B", use: "Calming + soothing", pct: "20%" },
+    { color: "#d8c8e8", name: "Hero Ingredient C", use: "Long-lasting hydration", pct: "15%" },
+    { color: "#e8c8b8", name: "Hero Ingredient D", use: "Antioxidant boost", pct: "10%" },
+    { color: "#b8d8e8", name: "Hero Ingredient E", use: "Skin barrier support", pct: "8%" },
+    { color: "#f0e8d0", name: "Hero Ingredient F", use: "Vitamin complex", pct: "5%" },
+    { color: "#d8d0c0", name: "Carrier base", use: "Plant-derived", pct: "2%" },
+  ],
+  reviews: [
+    {
+      rating: 5,
+      title: "Exceeded every expectation",
+      body: "I was skeptical but bought it on the recommendation. Two weeks in and I'm a convert. The texture, the results, the packaging — everything is thoughtful.",
+      name: "Sarah Mitchell",
+      age: 34,
+      occ: "Marketing Director",
+      verified: true,
+      photos: 2,
+    },
+    {
+      rating: 5,
+      title: "Worth every penny",
+      body: "I've tried every product in this category. This is the only one I've repurchased. The 3-pack is the move — you'll go through it faster than you think.",
+      name: "James Chen",
+      age: 41,
+      occ: "Software Engineer",
+      verified: true,
+      photos: 1,
+    },
+    {
+      rating: 4,
+      title: "Great product, slow shipping",
+      body: "Product itself is fantastic, exactly as described. Shipping took a bit longer than expected (8 days). Would still recommend.",
+      name: "Priya Patel",
+      age: 29,
+      occ: "Designer",
+      verified: true,
+      photos: 0,
+    },
+    {
+      rating: 5,
+      title: "My husband stole mine",
+      body: "I had to order a second one because my husband kept using mine. Now we both have one. The scent is subtle but addictive.",
+      name: "Maria Rodriguez",
+      age: 38,
+      occ: "Teacher",
+      verified: true,
+      photos: 3,
+    },
+  ],
+  socialReviews: [
+    {
+      platform: "𝕏",
+      author: "Alex Park",
+      handle: "@alexpark",
+      text: "Okay I finally bought the [product] everyone's been tweeting about. It's real. It's good. I owe you all an apology for the eye rolling.",
+    },
+    {
+      platform: "◉",
+      author: "Jordan K.",
+      handle: "@jordan.kay",
+      text: "3 weeks of use and the difference is genuinely insane. Posting before/afters in my stories. This isn't a #ad I just love it.",
+    },
+    {
+      platform: "◉",
+      author: "Taylor S.",
+      handle: "@_taylors",
+      text: 'Update: still obsessed. Repurchased the 3-pack. Sent one to my mom. She texted me "WOW" in all caps.',
+    },
+  ],
+  press: [
+    { text: "VOGUE", cls: "mono" },
+    { text: "goop", cls: "serif" },
+    { text: "Refinery29", cls: "script" },
+    { text: "BAZAAR", cls: "mono" },
+    { text: "Forbes", cls: "serif" },
+    { text: "WELL+GOOD", cls: "mono" },
+  ],
+  faq: [
+    { q: "How long does one [product] last?", a: "On average, one unit lasts 6–8 weeks with daily use. Many customers opt for the 2-pack or 3-pack to ensure they always have a backup." },
+    { q: "When will I see results?", a: "Most customers report visible improvement within 14 days of consistent daily use. For best results, follow the 3-step routine on the packaging." },
+    { q: "Is it safe for sensitive skin?", a: "Yes. The formula is fragrance-free, hypoallergenic, and dermatologist-tested. We recommend a patch test if you have known sensitivities." },
+    { q: "How does Subscribe & Save work?", a: "Pick a frequency (every 30, 60, or 90 days), save 15% on every order, free shipping included, and skip or cancel anytime in one click." },
+    { q: "Do you ship internationally?", a: "Yes — we ship to 38 countries. Free shipping over $35 in the US, $60 internationally. Most US orders arrive in 2–5 business days." },
+    { q: "What if I don't love it?", a: "You're covered by our 30-day love-it-or-refund guarantee. Email support@brand.com and we'll refund your order in full — keep the product." },
+    { q: "Where is it made?", a: "Formulated and manufactured in California, USA, in our small-batch facility. Every batch is third-party tested for safety and purity." },
+  ],
+  specs: [
+    ["Net weight", "3.4 oz / 100 g"],
+    ["Dimensions", '4.5" × 2.0" × 2.0"'],
+    ["Format", "Solid stick"],
+    ["Shelf life", "24 months unopened, 12 months after opening"],
+    ["Country of origin", "Made in California, USA"],
+    ["Certifications", "Leaping Bunny · USDA Organic · Climate Neutral"],
+    ["Allergens", "Contains tree nut derivatives"],
+  ],
+  crossSells: [
+    { t: "Companion Product A", stars: 4.7, count: 142, price: 24, was: 29, ico: "◐" },
+    { t: "Companion Product B", stars: 4.9, count: 308, price: 18, was: null, ico: "◇" },
+    { t: "Travel Kit (3 items)", stars: 4.8, count: 96, price: 65, was: 84, ico: "✦" },
+  ],
+  comparison: [
+    ["Plant-based ingredients", "Always", "Sometimes"],
+    ["Refillable packaging", "100% refill program", "Single-use plastic"],
+    ["Cruelty-free", "Leaping Bunny certified", "Often unclear"],
+    ["Money-back guarantee", "30 days, no questions", "14 days, restocking fee"],
+    ["Average customer rating", "4.8 / 5 (487 reviews)", "3.9 / 5"],
+    ["Price per use", "$0.42", "$0.78"],
+  ],
+  announce: [
+    "Free shipping on US orders $35+",
+    "30-day money-back guarantee",
+    "Subscribe & save 15% always",
+    "Now shipping to 38 countries",
+    "Cruelty-free · Climate Neutral certified",
+  ],
+  brand: {
+    name: "brand.",
+    tagline: "One sentence about the brand mission. Made by humans, in [location], for people who care.",
+    location: "San Francisco, CA",
+    founderName: "Founder Name",
+    founderTitle: "Founder & Formulator · Ex-cosmetic chemist",
+    founderQuote:
+      "I built this product because I couldn't find one that actually worked the way I wanted it to. Three years, fourteen formulations, and a lot of feedback later — here it is.",
+    contact: {
+      email: "hello@brand.com",
+      phone: "+1 (800) 555-0142",
+      address: "1234 Mission St, San Francisco, CA",
+    },
+    social: { instagram: 48200, tiktok: 112000, x: 9400 },
+  },
+};
+
+export const DEFAULT_TOKENS: LandingTokens = {
+  accent: "#c7551e",
+  accentDeep: "#8a3a14",
+  accentSoft: "#f7e8dc",
+  ink: "#1a1a1a",
+  ink2: "#4a4a4a",
+  muted: "#8a8a8a",
+  line: "#e6e6e6",
+  surface: "#f7f4ef",
+  bg: "#ffffff",
+  fontDisplay: '"Fraunces", Georgia, serif',
+  fontBody: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
+  fontMono: '"JetBrains Mono", ui-monospace, monospace',
+};

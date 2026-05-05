@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Product Name — Brand Co. | Single Product Landing Template</title>
+<meta name="description" content="High-converting single product landing page template. Replace this meta with your product's value prop in under 160 chars for SEO." />
+<meta property="og:title" content="Product Name — Brand Co." />
+<meta property="og:description" content="The unique, effortless solution to [pain point]." />
+<meta property="og:image" content="og-image.jpg" />
+<meta property="og:type" content="product" />
+<meta name="twitter:card" content="summary_large_image" />
+<link rel="canonical" href="https://brand.com/products/product-name" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org/",
+  "@type": "Product",
+  "name": "Product Name",
+  "image": ["https://brand.com/images/product.jpg"],
+  "description": "The unique, effortless [category] that solves [pain point].",
+  "brand": { "@type": "Brand", "name": "Brand Co." },
+  "offers": {
+    "@type": "Offer",
+    "url": "https://brand.com/products/product-name",
+    "priceCurrency": "USD",
+    "price": "39",
+    "availability": "https://schema.org/InStock"
+  },
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.8",
+    "reviewCount": "487"
+  }
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<a id="top"></a>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="components.jsx"></script>
+
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+function App() {
+  const [cartCount, setCartCount] = useState(0);
+  const [qty, setQty] = useState(1);
+  const [offer, setOffer] = useState(2);
+  const [color, setColor] = useState('natural');
+  const [size, setSize] = useState('md');
+  const [sub, setSub] = useState(true);
+  const [stickyVisible, setStickyVisible] = useState(false);
+  const [topStickyVisible, setTopStickyVisible] = useState(false);
+  const [addedFlash, setAddedFlash] = useState(false);
+
+  const sel = PRODUCT.offers.find(o => o.id === offer);
+  const subDiscount = sub ? 0.85 : 1;
+  const totalPrice = (sel.price * subDiscount * qty).toFixed(2);
+
+  useEffect(() => {
+    const onScroll = () => {
+      const y = window.scrollY;
+      const max = document.body.scrollHeight - window.innerHeight;
+      setStickyVisible(y > 700 && y < max - 400);
+      setTopStickyVisible(y > 900);
+    };
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  const addToCart = () => {
+    setCartCount(c => c + qty);
+    setAddedFlash(true);
+    setTimeout(() => setAddedFlash(false), 2000);
+  };
+
+  const onShop = () => {
+    document.getElementById('shop')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  return (
+    <>
+      <AnnouncementBar />
+      <FreeShipBar progress={(cartCount * sel.price / 35) * 100 || 0} current={cartCount * sel.price} />
+      <Nav cartCount={cartCount} />
+      <StickyProductBar visible={topStickyVisible} price={totalPrice} addToCart={addToCart} />
+
+      <section className="product" id="shop">
+        <div className="container product-grid">
+          <Gallery />
+          <ProductInfo
+            qty={qty} setQty={setQty}
+            offer={offer} setOffer={setOffer}
+            color={color} setColor={setColor}
+            size={size} setSize={setSize}
+            sub={sub} setSub={setSub}
+            addToCart={addToCart}
+            addedFlash={addedFlash}
+          />
+        </div>
+      </section>
+
+      <Press />
+      <BenefitsSection />
+      <HowItWorks />
+      <Comparison />
+      <Ingredients />
+      <ReviewsSection />
+      <UGC />
+      <CrossSell />
+      <FounderSection />
+      <Specs />
+      <FAQSection />
+      <FinalCTA onShop={onShop} />
+      <Footer />
+
+      <StickyAtcBar visible={stickyVisible} price={totalPrice} qty={qty} onShop={addToCart} />
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

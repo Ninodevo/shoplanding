@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Kerrimi · Pocket Butter — Solid Lotion You Can Actually Carry</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel" src="components.jsx"></script>
+
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "theme": "butter",
+  "ctaCopy": "Get Pocket Butter"
+}/*EDITMODE-END*/;
+
+const THEMES = {
+  lavender: { color: '#B9A4D4', deep: '#8A6FB0', label: 'Lavender' },
+  butter:   { color: '#FFD66B', deep: '#C9A23A', label: 'Butter' },
+  peach:    { color: '#FF9F7A', deep: '#D46A47', label: 'Peach' },
+  mint:     { color: '#A8DDB8', deep: '#6BAA80', label: 'Mint' },
+  sky:      { color: '#BFD8F0', deep: '#7DA8CF', label: 'Sky' },
+};
+
+const CTA_OPTIONS = [
+  'Get Pocket Butter',
+  'Add to bag',
+  'Pocket me up',
+  'Shop the butter',
+  'Start glowing',
+];
+
+function App() {
+  const [tweaks, setTweak] = useTweaks(TWEAK_DEFAULTS);
+  const [bundle, setBundle] = useState(2);
+  const [scent, setScent] = useState('cocoa');
+  const [freq, setFreq] = useState('sub');
+  const [cartCount, setCartCount] = useState(0);
+  const [stickyVisible, setStickyVisible] = useState(false);
+  const heroRef = useRef(null);
+
+  // Apply theme via CSS vars
+  useEffect(() => {
+    const t = THEMES[tweaks.theme] || THEMES.lavender;
+    document.documentElement.style.setProperty('--theme', t.color);
+    document.documentElement.style.setProperty('--theme-deep', t.deep);
+  }, [tweaks.theme]);
+
+  // Sticky ATC visibility on scroll
+  useEffect(() => {
+    const onScroll = () => {
+      setStickyVisible(window.scrollY > 600 && window.scrollY < document.body.scrollHeight - window.innerHeight - 400);
+    };
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  const onShop = () => {
+    setCartCount(c => c + 1);
+    document.getElementById('bundle')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  const b = BUNDLES.find(x => x.id === bundle);
+  const f = FREQUENCIES.find(x => x.id === freq);
+  const total = (b.price * f.mult).toFixed(2);
+
+  return (
+    <>
+      <AnnouncementBar />
+      <Nav cartCount={cartCount} />
+      <Hero ctaCopy={tweaks.ctaCopy} onShop={onShop} />
+      <MarqueeDivider />
+      <BundleSection
+        bundle={bundle} setBundle={setBundle}
+        scent={scent} setScent={setScent}
+        freq={freq} setFreq={setFreq}
+        ctaCopy={tweaks.ctaCopy}
+      />
+      <Benefits />
+      <HowItWorks />
+      <TextureDemo />
+      <Comparison />
+      <Ingredients />
+      <PressWall />
+      <Reviews />
+      <UGCWall />
+      <Founder />
+      <FAQSection />
+      <FinalCTA ctaCopy={tweaks.ctaCopy} onShop={onShop} />
+      <Footer />
+      <StickyATC visible={stickyVisible} onShop={onShop} ctaCopy={tweaks.ctaCopy} total={total} />
+
+      <TweaksPanel title="Tweaks">
+        <TweakSection title="Theme color">
+          <TweakRadio
+            value={tweaks.theme}
+            onChange={(v) => setTweak('theme', v)}
+            options={Object.entries(THEMES).map(([k, v]) => ({ value: k, label: v.label }))}
+          />
+        </TweakSection>
+        <TweakSection title="CTA copy A/B">
+          <TweakSelect
+            value={tweaks.ctaCopy}
+            onChange={(v) => setTweak('ctaCopy', v)}
+            options={CTA_OPTIONS.map(c => ({ value: c, label: c }))}
+          />
+        </TweakSection>
+      </TweaksPanel>
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
