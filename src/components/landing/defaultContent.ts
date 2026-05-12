@@ -200,6 +200,8 @@ export const DEFAULT_TOKENS: LandingTokens = {
   muted: "#8a8a8a",
   line: "#e6e6e6",
   surface: "#f7f4ef",
+  surface2: "#efece4",
+  card: "#ffffff",
   bg: "#ffffff",
   fontDisplay: '"Fraunces", Georgia, serif',
   fontBody: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',

@@ -1,0 +1,770 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ShopLanding — Option B · Annotated artifact tour</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* ============================================================
+         OPTION B — Annotated artifact tour
+         The home page IS a real ShopLanding theme, scrolled with a
+         right-rail annotation that maps each section to checklist rules.
+         ============================================================ */
+      :root {
+        --paper: #faf7f1;
+        --paper-2: #f3eee3;
+        --ink: #0f0e0d;
+        --ink-2: #2a2823;
+        --muted: #807868;
+        --rule: #e3dac0;
+        --accent: #1f5a40;
+        --accent-2: #2e8c63;
+        --accent-soft: #e6f0ea;
+        --pop: #b9261b;
+
+        /* Theme tokens (skincare) */
+        --theme: #f5e6d6;
+        --theme-deep: #c9a37a;
+        --theme-cta: #1f5a40;
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html { scroll-behavior: smooth; scroll-padding-top: 64px; }
+      body {
+        background: var(--paper);
+        color: var(--ink);
+        font-family: "Inter", system-ui, sans-serif;
+        font-size: 16px;
+        line-height: 1.55;
+        -webkit-font-smoothing: antialiased;
+      }
+      a { color: inherit; text-decoration: none; }
+      ::selection { background: var(--ink); color: var(--paper); }
+
+      /* Two-column layout: artifact (left) + annotation rail (right) */
+      .layout {
+        max-width: 1400px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1fr 360px;
+        gap: 48px;
+        padding: 0 32px;
+      }
+      @media (max-width: 1100px) { .layout { grid-template-columns: 1fr; } }
+
+      /* ===== Top mode bar ===== */
+      .modebar {
+        position: sticky; top: 0; z-index: 30;
+        background: rgba(15,14,13,0.96);
+        color: var(--paper);
+        backdrop-filter: blur(8px);
+      }
+      .modebar-inner {
+        max-width: 1400px; margin: 0 auto;
+        padding: 12px 32px;
+        display: flex; align-items: center; justify-content: space-between; gap: 24px;
+      }
+      .modebar .brand { display: inline-flex; gap: 10px; align-items: center; font-weight: 600; }
+      .modebar .brand-mark { width: 22px; height: 22px; border-radius: 5px; background: var(--accent-2); position: relative; }
+      .modebar .brand-mark::after { content: ""; position: absolute; inset: 6px; background: var(--paper); border-radius: 1px; }
+      .modebar .label {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+        color: rgba(255,255,255,0.6);
+      }
+      .modebar .label b { color: var(--accent-2); }
+      .modebar .actions { display: flex; gap: 10px; align-items: center; }
+      .btn {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 9px 16px; border-radius: 999px;
+        font-size: 13px; font-weight: 600;
+        transition: all 200ms ease;
+      }
+      .btn-primary { background: var(--accent-2); color: #052e1c; }
+      .btn-primary:hover { background: var(--paper); }
+      .btn-ghost { color: var(--paper); border: 1px solid rgba(255,255,255,0.15); }
+      .btn-ghost:hover { border-color: var(--paper); }
+
+      /* ===== ARTIFACT (the real theme rendered as the page itself) ===== */
+      .artifact {
+        background: var(--paper);
+        border-radius: 14px;
+        margin-top: 24px;
+        margin-bottom: 64px;
+        overflow: hidden;
+        box-shadow: 0 1px 0 rgba(0,0,0,0.04) inset;
+        border: 1px solid var(--rule);
+      }
+
+      /* Free-ship strip */
+      .strip {
+        background: var(--ink);
+        color: var(--paper);
+        padding: 10px 24px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+        text-align: center;
+      }
+
+      /* Theme nav */
+      .a-nav {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 18px 32px;
+        border-bottom: 1px solid var(--rule);
+      }
+      .a-nav .logo { font-family: "Fraunces", serif; font-size: 22px; font-weight: 700; }
+      .a-nav .links { display: flex; gap: 24px; font-size: 14px; color: var(--ink-2); }
+
+      /* Hero / PDP */
+      .pdp {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 48px;
+        padding: 48px 32px 64px;
+        position: relative;
+      }
+      @media (max-width: 800px) { .pdp { grid-template-columns: 1fr; } }
+      .gallery {
+        aspect-ratio: 1;
+        border-radius: 14px;
+        background: linear-gradient(135deg, var(--theme), var(--theme-deep));
+        position: relative;
+        display: grid; place-items: center;
+        font-family: "Fraunces", serif;
+        font-size: 88px; font-style: italic; font-weight: 500;
+        color: rgba(0,0,0,0.15);
+        letter-spacing: -0.04em;
+      }
+      .gallery::before { content: "Daystick"; }
+      .gallery .badges {
+        position: absolute; top: 16px; left: 16px;
+        display: flex; gap: 6px;
+      }
+      .gallery .b {
+        padding: 4px 10px; border-radius: 999px;
+        background: rgba(0,0,0,0.85); color: #fff;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 600;
+      }
+      .info {
+        display: grid; gap: 14px; align-content: start;
+      }
+      .info .crumbs { font-family: "JetBrains Mono", monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); }
+      .info h1 { font-family: "Fraunces", serif; font-size: clamp(32px, 4vw, 48px); font-weight: 600; letter-spacing: -0.02em; line-height: 1.05; }
+      .info .sub { color: var(--ink-2); font-size: 17px; }
+      .info .stars { color: #d49a3a; font-size: 14px; }
+      .info .stars a { color: var(--ink-2); margin-left: 8px; text-decoration: underline; text-underline-offset: 4px; }
+      .info ul { list-style: none; display: grid; gap: 8px; font-size: 14px; color: var(--ink-2); margin: 4px 0; }
+      .info ul li::before { content: "✓"; color: var(--accent); margin-right: 10px; font-weight: 700; }
+      .info .price { display: flex; align-items: baseline; gap: 12px; margin-top: 6px; }
+      .info .price b { font-family: "Fraunces", serif; font-size: 40px; font-weight: 600; }
+      .info .price s { font-size: 18px; color: var(--muted); }
+      .info .save {
+        background: var(--accent-soft); color: var(--accent);
+        padding: 4px 10px; border-radius: 4px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px; letter-spacing: 0.12em; font-weight: 700;
+      }
+      .info .bundle { display: grid; gap: 8px; margin-top: 8px; }
+      .info .bundle .row {
+        display: flex; align-items: center; gap: 14px;
+        padding: 14px 16px; border-radius: 10px;
+        border: 1px solid var(--rule); background: #fff;
+      }
+      .info .bundle .row.active { border-color: var(--accent); background: var(--accent-soft); }
+      .info .bundle .row .radio { width: 16px; height: 16px; border-radius: 999px; border: 1.5px solid var(--ink-2); }
+      .info .bundle .row.active .radio { border-color: var(--accent); background: radial-gradient(circle, var(--accent) 0 35%, transparent 36%); }
+      .info .bundle .row .t { font-weight: 600; }
+      .info .bundle .row .s { font-size: 12px; color: var(--muted); }
+      .info .bundle .row .p { margin-left: auto; font-weight: 700; }
+      .info .pill {
+        padding: 2px 8px; border-radius: 4px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700;
+      }
+      .info .pill.rec { background: var(--accent); color: #fff; }
+      .info .pill.best { background: var(--ink); color: #fff; }
+      .info .cta {
+        display: flex; align-items: center; justify-content: center;
+        gap: 10px; height: 56px; border-radius: 999px;
+        background: var(--accent); color: #fff;
+        font-weight: 700; letter-spacing: 0.02em; font-size: 16px;
+        margin-top: 6px;
+      }
+      .info .delivery {
+        display: grid; gap: 6px; padding: 16px;
+        background: var(--paper-2); border-radius: 10px;
+        font-size: 13px; color: var(--ink-2);
+        margin-top: 6px;
+      }
+      .info .delivery .row { display: flex; gap: 8px; }
+      .info .delivery .row::before { content: ""; width: 4px; height: 4px; border-radius: 999px; background: var(--accent); margin-top: 8px; flex-shrink: 0; }
+
+      /* In-flow sections (a few — Press / Benefits / How / Reviews / FAQ) */
+      .a-section {
+        padding: 64px 32px;
+        border-top: 1px solid var(--rule);
+        position: relative;
+      }
+      .a-section.surface { background: var(--paper-2); }
+      .a-section .eyebrow {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+        color: var(--accent); margin-bottom: 14px; font-weight: 600;
+      }
+      .a-section h2 {
+        font-family: "Fraunces", serif;
+        font-size: clamp(28px, 3.5vw, 40px); font-weight: 600;
+        letter-spacing: -0.02em; line-height: 1.05;
+        margin-bottom: 32px;
+      }
+
+      .press {
+        display: flex; gap: 36px; flex-wrap: wrap; align-items: baseline;
+        font-family: serif; font-size: 22px; color: var(--muted);
+      }
+      .press .vogue { letter-spacing: 0.18em; font-weight: 700; }
+      .press .goop { font-style: italic; font-family: "Fraunces", serif; }
+      .press .scr { font-family: "Fraunces", serif; font-style: italic; }
+
+      .benefits-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+      @media (max-width: 800px) { .benefits-grid { grid-template-columns: 1fr 1fr; } }
+      .b-card {
+        background: #fff; border: 1px solid var(--rule); border-radius: 12px;
+        padding: 22px;
+      }
+      .b-card .ico {
+        width: 36px; height: 36px; border-radius: 8px;
+        background: var(--accent-soft); color: var(--accent);
+        display: grid; place-items: center;
+        font-size: 18px; font-weight: 700;
+        margin-bottom: 14px;
+      }
+      .b-card h3 { font-family: "Fraunces", serif; font-size: 18px; font-weight: 600; margin-bottom: 6px; }
+      .b-card p { font-size: 14px; color: var(--ink-2); }
+
+      .reviews-summary { display: flex; gap: 48px; align-items: center; flex-wrap: wrap; padding: 28px; background: #fff; border-radius: 12px; border: 1px solid var(--rule); margin-bottom: 28px; }
+      .reviews-summary .big { font-family: "Fraunces", serif; font-size: 64px; font-weight: 600; line-height: 1; }
+      .reviews-summary .stars { color: #d49a3a; font-size: 20px; }
+      .reviews-summary .small { color: var(--muted); font-size: 14px; }
+      .reviews-bars { display: grid; gap: 8px; flex: 1; min-width: 240px; }
+      .reviews-bars .row { display: grid; grid-template-columns: 60px 1fr 40px; gap: 10px; align-items: center; font-size: 13px; }
+      .reviews-bars .bar { height: 8px; background: var(--paper-2); border-radius: 999px; overflow: hidden; }
+      .reviews-bars .bar .fill { height: 100%; background: var(--accent); }
+      .reviews-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+      @media (max-width: 800px) { .reviews-grid { grid-template-columns: 1fr; } }
+      .r-card { background: #fff; border: 1px solid var(--rule); border-radius: 12px; padding: 20px; }
+      .r-card .stars { color: #d49a3a; font-size: 14px; }
+      .r-card h4 { font-family: "Fraunces", serif; font-size: 16px; font-weight: 600; margin: 8px 0; }
+      .r-card p { font-size: 13px; color: var(--ink-2); margin-bottom: 14px; }
+      .r-card .who { display: flex; gap: 10px; align-items: center; font-size: 13px; }
+      .r-card .who .av {
+        width: 32px; height: 32px; border-radius: 999px;
+        background: var(--accent-soft); color: var(--accent);
+        display: grid; place-items: center;
+        font-size: 11px; font-weight: 700;
+      }
+
+      /* ===== ANNOTATION RAIL ===== */
+      .rail {
+        position: relative;
+      }
+      .rail-inner {
+        position: sticky;
+        top: 80px;
+      }
+      .rail-card {
+        background: var(--ink); color: var(--paper);
+        border-radius: 14px;
+        padding: 22px;
+        font-size: 13px;
+        line-height: 1.55;
+        box-shadow: 0 30px 60px -30px rgba(0,0,0,0.3);
+      }
+      .rail-card .meta {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase;
+        color: var(--accent-2); margin-bottom: 10px; font-weight: 600;
+      }
+      .rail-card h4 {
+        font-family: "Fraunces", serif;
+        font-size: 22px; font-weight: 600; line-height: 1.1;
+        margin-bottom: 12px;
+        letter-spacing: -0.01em;
+      }
+      .rail-card .summary { color: rgba(250,247,241,0.7); margin-bottom: 16px; font-size: 13px; }
+      .rail-card ul { list-style: none; display: grid; gap: 10px; }
+      .rail-card ul li {
+        display: grid; grid-template-columns: 28px 1fr; gap: 10px;
+        font-size: 12.5px; color: #d8d4cc;
+      }
+      .rail-card ul .num {
+        background: var(--accent-2); color: #052e1c;
+        border-radius: 999px;
+        width: 24px; height: 24px;
+        display: grid; place-items: center;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px; font-weight: 700;
+      }
+      .rail-card ul li b { color: #fff; }
+      .rail-foot {
+        margin-top: 14px; padding-top: 14px;
+        border-top: 1px solid rgba(255,255,255,0.08);
+        display: flex; justify-content: space-between; align-items: center;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+        color: rgba(250,247,241,0.5);
+      }
+      .rail-foot a { color: var(--accent-2); }
+
+      /* Pin overlay (visible numbered pins on the artifact) */
+      .pin {
+        position: absolute;
+        width: 32px; height: 32px;
+        border-radius: 999px;
+        background: var(--accent); color: #fff;
+        display: grid; place-items: center;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13px; font-weight: 700;
+        box-shadow: 0 6px 20px rgba(31, 90, 64, 0.5), 0 0 0 4px rgba(31, 90, 64, 0.15);
+        cursor: pointer;
+        z-index: 5;
+        transition: transform 200ms ease, background 200ms ease;
+      }
+      .pin:hover { transform: scale(1.1); background: var(--ink); }
+      .pin.active { background: var(--ink); transform: scale(1.15); }
+
+      /* "About this section" header inside artifact */
+      .a-section .eyebrow .pin-ref {
+        background: var(--accent); color: #fff;
+        padding: 2px 8px; border-radius: 4px;
+        margin-right: 6px;
+        font-family: "JetBrains Mono", monospace;
+        font-weight: 700;
+      }
+
+      /* CTA / pricing finisher (after the artifact) */
+      .closer {
+        max-width: 1400px; margin: 0 auto; padding: 96px 32px;
+      }
+      .closer .head { text-align: center; margin-bottom: 56px; }
+      .closer .head .meta {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+        color: var(--accent); margin-bottom: 14px; display: inline-block; font-weight: 600;
+      }
+      .closer h2 {
+        font-family: "Fraunces", serif;
+        font-size: clamp(36px, 5vw, 64px); font-weight: 600;
+        letter-spacing: -0.025em; line-height: 1.05;
+        max-width: 22ch; margin: 0 auto;
+      }
+      .closer .sub {
+        max-width: 56ch; margin: 18px auto 0;
+        font-size: 18px; color: var(--ink-2);
+      }
+      .closer-grid {
+        display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px;
+      }
+      @media (max-width: 900px) { .closer-grid { grid-template-columns: 1fr; } }
+      .pcard {
+        background: #fff; border: 1px solid var(--rule); border-radius: 14px;
+        padding: 28px; display: flex; flex-direction: column;
+      }
+      .pcard.featured {
+        background: var(--ink); color: var(--paper); border-color: var(--ink);
+      }
+      .pcard .e {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+        color: var(--accent); margin-bottom: 10px; font-weight: 600;
+      }
+      .pcard.featured .e { color: var(--accent-2); }
+      .pcard h3 { font-family: "Fraunces", serif; font-size: 22px; font-weight: 600; margin-bottom: 12px; }
+      .pcard.featured h3 { color: #fff; }
+      .pcard .num { font-family: "Fraunces", serif; font-size: 56px; font-weight: 600; letter-spacing: -0.03em; line-height: 1; margin-bottom: 6px; }
+      .pcard .cad { font-size: 13px; color: var(--muted); margin-bottom: 18px; }
+      .pcard.featured .cad { color: rgba(250,247,241,0.5); }
+      .pcard ul { list-style: none; display: grid; gap: 8px; font-size: 14px; color: var(--ink-2); margin-bottom: 22px; }
+      .pcard.featured ul { color: #d8d4cc; }
+      .pcard ul li::before { content: "✓"; color: var(--accent); margin-right: 8px; font-weight: 700; }
+      .pcard .btn { justify-content: center; }
+      .pcard.featured .btn-primary { background: var(--accent-2); color: #052e1c; }
+
+      .foot { background: var(--paper-2); padding: 40px 32px; text-align: center; font-family: "JetBrains Mono", monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+
+      .back {
+        position: fixed; top: 60px; left: 16px; z-index: 50;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+        color: var(--muted);
+        background: rgba(255,255,255,0.92);
+        backdrop-filter: blur(8px);
+        padding: 8px 14px; border-radius: 999px;
+        border: 1px solid var(--rule);
+      }
+      .back:hover { color: var(--accent); border-color: var(--accent); }
+    </style>
+  </head>
+  <body>
+    <a class="back" href="/explorations/">← Back</a>
+
+    <!-- TOP MODE BAR — frames the page as "you are looking at our product, annotated" -->
+    <div class="modebar">
+      <div class="modebar-inner">
+        <a class="brand" href="/">
+          <span class="brand-mark"></span>
+          <span>ShopLanding</span>
+        </a>
+        <div class="label">
+          You're reading a real theme. <b>The right rail tells you why each block is here.</b>
+        </div>
+        <div class="actions">
+          <a href="#closer" class="btn btn-ghost">Pricing</a>
+          <a href="#closer" class="btn btn-primary">Buy from $99 →</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="layout">
+      <!-- ===== LEFT: artifact (the real theme rendered as the page) ===== -->
+      <main class="artifact-col">
+        <div class="artifact" id="artifact">
+
+          <!-- 1. Free-shipping strip -->
+          <div class="strip" id="block-1" style="position: relative;">
+            <span class="pin" style="top: 6px; right: 16px; width: 24px; height: 24px; font-size: 11px;" data-block="1">1</span>
+            FREE SHIPPING ON ORDERS OVER $35 · 30-DAY GUARANTEE
+          </div>
+
+          <!-- 2. Theme nav -->
+          <nav class="a-nav" id="block-2" style="position: relative;">
+            <span class="pin" style="top: 14px; right: 16px;" data-block="2">2</span>
+            <span class="logo">orelle.</span>
+            <div class="links"><span>Shop</span><span>How it works</span><span>Reviews</span><span>FAQ</span></div>
+            <div style="display: flex; gap: 14px; font-size: 13px; color: var(--ink-2);">⌕ ◐ ⊞</div>
+          </nav>
+
+          <!-- 3. Hero PDP -->
+          <section class="pdp" id="block-3">
+            <span class="pin" style="top: 36px; right: -16px;" data-block="3">3</span>
+            <div class="gallery">
+              <div class="badges">
+                <span class="b">−20% OFF</span>
+                <span class="b" style="background: var(--accent);">New</span>
+              </div>
+            </div>
+            <div class="info">
+              <div class="crumbs">Daily Essentials</div>
+              <h1>Daystick — solid lotion you can actually carry.</h1>
+              <p class="sub">The unique, effortless lotion stick that keeps skin happy on planes, hikes, and Tuesdays.</p>
+              <div class="stars">★★★★★ <span style="color: var(--ink-2); font-weight: 600;">4.8</span> <a href="#">· Read 487 reviews</a></div>
+              <ul>
+                <li>Solid format — pocketable, no spills</li>
+                <li>Hero ingredient: organic shea, clinically-tested</li>
+                <li>Plant-based, refillable, 1% to charity</li>
+                <li>30-day money-back guarantee</li>
+              </ul>
+              <div class="price"><b>$39</b> <s>$49</s> <span class="save">SAVE 20%</span></div>
+              <div class="bundle">
+                <div class="row"><span class="radio"></span><div><div class="t">1× Single</div><div class="s">$39 / unit</div></div><div class="p">$39</div></div>
+                <div class="row active"><span class="radio"></span><div><div class="t">2× Pack <span class="pill rec">Recommended</span></div><div class="s">$35 / unit</div></div><div class="p">$70</div></div>
+                <div class="row"><span class="radio"></span><div><div class="t">3× Bundle <span class="pill best">Best Value</span></div><div class="s">$33 / unit</div></div><div class="p">$99</div></div>
+              </div>
+              <div class="cta">⊞ Add to cart · $70</div>
+              <div class="delivery">
+                <div class="row">🇺🇸 Ships from California · Free over $35</div>
+                <div class="row">Estimated delivery: <b style="color: var(--ink); margin-left: 4px;">Thursday, May 14</b></div>
+                <div class="row">In stock · Only 23 left at this price</div>
+              </div>
+            </div>
+          </section>
+
+          <!-- 4. Press -->
+          <section class="a-section" id="block-4" style="position: relative;">
+            <span class="pin" style="top: 36px; right: -16px;" data-block="4">4</span>
+            <div class="eyebrow">As featured in</div>
+            <div class="press">
+              <span class="vogue">VOGUE</span>
+              <span class="goop">goop</span>
+              <span class="scr">Refinery29</span>
+              <span class="vogue">BAZAAR</span>
+              <span class="goop">Forbes</span>
+              <span class="vogue">WELL+GOOD</span>
+            </div>
+          </section>
+
+          <!-- 5. Benefits -->
+          <section class="a-section surface" id="block-5" style="position: relative;">
+            <span class="pin" style="top: 36px; right: -16px;" data-block="5">5</span>
+            <div class="eyebrow">Why customers choose us</div>
+            <h2>Better ingredients. Better results.</h2>
+            <div class="benefits-grid">
+              <div class="b-card"><div class="ico">✦</div><h3>Made with care</h3><p>Small-batch California with traceable ingredients.</p></div>
+              <div class="b-card"><div class="ico">◐</div><h3>Visible results</h3><p>9/10 customers see a difference within 14 days.</p></div>
+              <div class="b-card"><div class="ico">◇</div><h3>Refillable</h3><p>Refill packs cut packaging by 80%.</p></div>
+              <div class="b-card"><div class="ico">✓</div><h3>Risk-free</h3><p>30-day full refund — keep the product.</p></div>
+            </div>
+          </section>
+
+          <!-- 6. Reviews -->
+          <section class="a-section" id="block-6" style="position: relative;">
+            <span class="pin" style="top: 36px; right: -16px;" data-block="6">6</span>
+            <div class="eyebrow">487 verified reviews</div>
+            <h2>Real customers, real results.</h2>
+            <div class="reviews-summary">
+              <div>
+                <div class="stars">★★★★★</div>
+                <div class="big">4.8</div>
+                <div class="small">out of 5 · 487 reviews</div>
+              </div>
+              <div class="reviews-bars">
+                <div class="row"><span>5 stars</span><div class="bar"><div class="fill" style="width: 82%;"></div></div><span>82%</span></div>
+                <div class="row"><span>4 stars</span><div class="bar"><div class="fill" style="width: 12%;"></div></div><span>12%</span></div>
+                <div class="row"><span>3 stars</span><div class="bar"><div class="fill" style="width: 4%;"></div></div><span>4%</span></div>
+                <div class="row"><span>2 stars</span><div class="bar"><div class="fill" style="width: 1%;"></div></div><span>1%</span></div>
+                <div class="row"><span>1 star</span><div class="bar"><div class="fill" style="width: 1%;"></div></div><span>1%</span></div>
+              </div>
+            </div>
+            <div class="reviews-grid">
+              <div class="r-card">
+                <div class="stars">★★★★★</div>
+                <h4>Exceeded every expectation</h4>
+                <p>"I was skeptical but bought it on a recommendation. Two weeks in and I'm a convert."</p>
+                <div class="who"><div class="av">SM</div><span><b>Sarah Mitchell</b> · Marketing Director · ✓ Verified</span></div>
+              </div>
+              <div class="r-card">
+                <div class="stars">★★★★★</div>
+                <h4>Worth every penny</h4>
+                <p>"I've tried every product in this category. This is the only one I've repurchased."</p>
+                <div class="who"><div class="av">JC</div><span><b>James Chen</b> · Software Engineer · ✓ Verified</span></div>
+              </div>
+              <div class="r-card">
+                <div class="stars">★★★★★</div>
+                <h4>My husband stole mine</h4>
+                <p>"I had to order a second one because my husband kept using mine. Now we both have one."</p>
+                <div class="who"><div class="av">MR</div><span><b>Maria Rodriguez</b> · Teacher · ✓ Verified</span></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- 7. Final CTA -->
+          <section class="a-section surface" id="block-7" style="position: relative; text-align: center;">
+            <span class="pin" style="top: 36px; right: -16px;" data-block="7">7</span>
+            <h2 style="max-width: 22ch; margin-left: auto; margin-right: auto;">Ready to try it?</h2>
+            <p style="max-width: 50ch; margin: 0 auto 24px; color: var(--ink-2);">30-day money-back guarantee. Free shipping over $35. Cancel anytime.</p>
+            <div class="cta" style="display: inline-flex; padding: 0 32px; max-width: 320px; margin: 0 auto;">Shop now → $39</div>
+            <div style="margin-top: 18px; display: flex; gap: 24px; justify-content: center; font-size: 13px; color: var(--muted);">
+              <span>✓ Free shipping over $35</span>
+              <span>✓ 30-day guarantee</span>
+              <span>✓ 487+ five-star reviews</span>
+            </div>
+          </section>
+
+        </div>
+      </main>
+
+      <!-- ===== RIGHT: annotation rail ===== -->
+      <aside class="rail">
+        <div class="rail-inner">
+          <div class="rail-card" id="rail-card" data-block="3">
+            <!-- Default rail content; updates per block via JS -->
+            <div class="meta" id="rail-meta">Block 3 / 7 · CTA area</div>
+            <h4 id="rail-title">Hero buy box.</h4>
+            <p class="summary" id="rail-summary">The block doing the most work on the page. 23 of the 69 documented conversion rules apply here. We hit the high-impact ones by default; you can layer the optional ones via the tweaks panel.</p>
+            <ul id="rail-rules">
+              <li><span class="num">25</span><span><b>The main CTA is the most visible element</b> on the product page and contains the cart icon.</span></li>
+              <li><span class="num">29</span><span><b>Interactive variant selectors</b> — gallery image and price update without page reload.</span></li>
+              <li><span class="num">35</span><span><b>Price prominent</b> — especially when discounted.</span></li>
+              <li><span class="num">40</span><span><b>Free shipping highlighted</b> near the main CTA.</span></li>
+              <li><span class="num">59</span><span><b>Quantity discounts</b> with "Recommended" / "Best value" badges.</span></li>
+            </ul>
+            <div class="rail-foot">
+              <span id="rail-progress">Block 3 of 7</span>
+              <a href="#closer">Buy from $99 →</a>
+            </div>
+          </div>
+
+          <div style="margin-top: 18px; padding: 16px 20px; background: var(--paper-2); border-radius: 12px; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted);">
+            Scroll to walk through all 7 blocks · 69 rules total
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <!-- ===== CLOSER: pricing + buy ===== -->
+    <section class="closer" id="closer">
+      <div class="head">
+        <span class="meta">Pricing · one-time</span>
+        <h2>You just read the proof. Now ship one.</h2>
+        <p class="sub">$99 single store. $249 unlimited. Both Shopify and WooCommerce zips, lifetime updates, 14-day refund.</p>
+      </div>
+      <div class="closer-grid">
+        <div class="pcard">
+          <div class="e">For founders</div>
+          <h3>Single-store license</h3>
+          <div class="num">$99</div>
+          <div class="cad">one-time · one Shopify or Woo store</div>
+          <ul>
+            <li>Both .zip artifacts + system spec</li>
+            <li>Tweaks panel + personalized preview</li>
+            <li>Lifetime updates for that store</li>
+          </ul>
+          <a href="#" class="btn btn-primary" style="background: var(--accent); color: #fff;">Buy single-store</a>
+        </div>
+        <div class="pcard featured">
+          <div class="e">Best value · for operators</div>
+          <h3>Unlimited-stores license</h3>
+          <div class="num">$249</div>
+          <div class="cad">one-time · every store you'll ever build</div>
+          <ul>
+            <li>Everything in single-store</li>
+            <li>Use across unlimited stores</li>
+            <li>Resell client builds</li>
+            <li>Priority on niche-preset releases</li>
+          </ul>
+          <a href="#" class="btn btn-primary">Buy unlimited</a>
+        </div>
+        <div class="pcard">
+          <div class="e">Add-on</div>
+          <h3>Done-for-you setup</h3>
+          <div class="num">+$199</div>
+          <div class="cad">one-time · we install it for you</div>
+          <ul>
+            <li>We install on your store</li>
+            <li>Wire payments + shipping</li>
+            <li>Five sections of copy</li>
+          </ul>
+          <a href="#" class="btn" style="background: transparent; color: var(--ink); border: 1px solid var(--rule);">Request setup</a>
+        </div>
+      </div>
+    </section>
+
+    <footer class="foot">
+      © 2026 ShopLanding · Option B · Annotated artifact
+    </footer>
+
+    <script>
+      // Block-aware rail content
+      const RULES = {
+        1: {
+          meta: "Block 1 / 7 · General",
+          title: "Free-shipping strip.",
+          summary: "Persistent above the nav. Two of the four 'General' rules trigger here — and the AOV booster around the threshold message.",
+          rules: [
+            ["6", "<b>Live chat / phone</b> available — strip can carry the support number."],
+            ["62", "<b>Urgency triggers</b> near the main CTA — free-ship threshold counts."],
+            ["40", "<b>Free shipping highlighted</b> near the main CTA."],
+          ],
+        },
+        2: {
+          meta: "Block 2 / 7 · General",
+          title: "Theme nav.",
+          summary: "Single-product landing nav is intentionally minimal. No category dump, no menu walls. Only anchors that lower friction to the buy decision.",
+          rules: [
+            ["5", "<b>No outgoing links</b> in the landing nav — only on-page anchors."],
+            ["4", "<b>Sticky navigation</b> with availability + CTA, hides on scroll-down, reappears on scroll-up."],
+          ],
+        },
+        3: {
+          meta: "Block 3 / 7 · CTA area",
+          title: "Hero buy box.",
+          summary: "The block doing the most work on the page. 23 of the 69 CRO rules apply here. We hit the high-impact ones by default; the rest layer in via the tweaks panel.",
+          rules: [
+            ["25", "<b>The main CTA is the most visible element</b> on the product page and contains the cart icon."],
+            ["29", "<b>Interactive variant selectors</b> — gallery image and price update without page reload."],
+            ["35", "<b>Price prominent</b> — especially when discounted."],
+            ["40", "<b>Free shipping highlighted</b> near the main CTA."],
+            ["59", "<b>Quantity discounts</b> with 'Recommended' / 'Best value' badges."],
+          ],
+        },
+        4: {
+          meta: "Block 4 / 7 · Social proof",
+          title: "Press / As-seen-in.",
+          summary: "Logo strip of publications, retailers, or notable customers. The first social-proof block — placed before benefits because trust opens the door to attention.",
+          rules: [
+            ["49", "<b>Press exposure logos</b> — Vogue, goop, Forbes, etc."],
+          ],
+        },
+        5: {
+          meta: "Block 5 / 7 · Product description",
+          title: "Benefits grid.",
+          summary: "Four cards translating features into benefits. Section titles lead with benefits, not specs. One of the rules buyers most-often miss.",
+          rules: [
+            ["68", "<b>Easy to read</b> — single column, ≤75 chars per line, line-height 1.5."],
+            ["71", "<b>Section titles explain benefits,</b> not features."],
+            ["72", "<b>Show all things included</b> with photos."],
+          ],
+        },
+        6: {
+          meta: "Block 6 / 7 · Social proof",
+          title: "Reviews.",
+          summary: "8 of the 8 social-proof rules trigger here — star distribution, photo evidence, verified badges, occupation. Background slightly tinted to stand out.",
+          rules: [
+            ["50", "<b>Reviews show photos, ratings, name, occupation, age, verified badge.</b>"],
+            ["51", "<b>Reviews stand out visually</b> — slightly yellow background."],
+            ["53", "<b>Star ratings filterable.</b>"],
+            ["52", "<b>Customer photos with the product.</b>"],
+          ],
+        },
+        7: {
+          meta: "Block 7 / 7 · CTA area",
+          title: "Final CTA.",
+          summary: "Repeats the offer for the buyer who scrolled all the way through without clicking. Trust line below answers their last three doubts.",
+          rules: [
+            ["34", "<b>CTA copy clearly explains</b> what happens next."],
+            ["38", "<b>CTA background contrasts</b> the page."],
+            ["44", "<b>Returns + refunds + guarantee info</b> visible."],
+          ],
+        },
+      };
+
+      const railMeta = document.getElementById("rail-meta");
+      const railTitle = document.getElementById("rail-title");
+      const railSummary = document.getElementById("rail-summary");
+      const railRules = document.getElementById("rail-rules");
+      const railProgress = document.getElementById("rail-progress");
+
+      function renderBlock(n) {
+        const r = RULES[n];
+        if (!r) return;
+        railMeta.textContent = r.meta;
+        railTitle.textContent = r.title;
+        railSummary.textContent = r.summary;
+        railRules.innerHTML = r.rules
+          .map(([num, html]) => `<li><span class="num">${num}</span><span>${html}</span></li>`)
+          .join("");
+        railProgress.textContent = `Block ${n} of 7`;
+      }
+
+      // Click pin to switch
+      document.querySelectorAll(".pin").forEach((p) => {
+        p.addEventListener("click", (e) => {
+          e.preventDefault();
+          const n = +p.dataset.block;
+          document.querySelectorAll(".pin").forEach((q) => q.classList.toggle("active", q === p));
+          renderBlock(n);
+        });
+      });
+
+      // Auto-switch on scroll (intersection observer)
+      const blocks = [1,2,3,4,5,6,7].map((n) => document.getElementById("block-" + n));
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              const n = +entry.target.id.replace("block-", "");
+              renderBlock(n);
+              document.querySelectorAll(".pin").forEach((q) => q.classList.toggle("active", +q.dataset.block === n));
+            }
+          });
+        },
+        { rootMargin: "-30% 0px -50% 0px", threshold: 0 },
+      );
+      blocks.forEach((b) => b && io.observe(b));
+    </script>
+  </body>
+</html>

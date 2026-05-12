@@ -4,7 +4,7 @@
 
 Three layers, one product:
 
-1. **The Playbook** — 7 CRO blocks distilled from the Conversion.design landing-page checklist (69 rules total). The *what* and *why* of an optimized single-product page. Lives at `/playbook`. Free; SEO + marketing surface.
+1. **The Playbook** — 7 CRO blocks with 69 documented conversion rules. The *what* and *why* of an optimized single-product page. Lives at `/playbook`. Free; SEO + marketing surface.
 2. **The Rendered Components** — 20 React-shaped blocks (Hero / Gallery / ProductInfo / Sticky ATC / Press / Benefits / How-It-Works / Comparison / Ingredients / Reviews / UGC / Cross-Sell / Founder / Specs / FAQ / Final CTA / Footer / Announcement Bar / Free-Ship Bar / Sticky Product Bar). The *how it shows up on screen*. Each component links to the playbook blocks whose CRO rules it satisfies.
 3. **The Themes** — for each niche-tuned `LayoutPreset`, we ship a Shopify `.zip` and a WooCommerce `.zip` that render every component, plus an exportable system spec (JSON + Markdown) for teams who want to reimplement themselves.
 
@@ -30,7 +30,7 @@ Every theme on Themeforest / Shopify Theme Store positions on visuals. ShopLandi
 
 Four `LayoutPreset`s, each tuned for one niche:
 
-1. **Skincare / cosmetics** (Kerrimi-style — already designed in `handoff/project/Kerrimi Pocket Butter.html`)
+1. **Skincare / cosmetics** (anatomy in `handoff/project/Orelle Daystick.html`; live preset is Orelle · Daystick, seeded from `scripts/seed-presets.ts`)
 2. **Food / CPG**
 3. **Gadget / single-SKU electronics**
 4. **Supplement**

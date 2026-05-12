@@ -12,6 +12,12 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Reference material from the design handoff. Linting the prototype
+    // sources (different React version, ad-hoc patterns) generates noise that
+    // isn't actionable for the production app.
+    "handoff/**",
+    // Generated Prisma client.
+    "src/generated/**",
   ]),
 ]);
 

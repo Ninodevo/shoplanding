@@ -1,0 +1,1217 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ShopLanding — Option A · Catalog (Cruip × Untitled UI)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* ============================================================
+         OPTION A — Catalog (Cruip × Untitled UI)
+         Hero = 3-up tilted preset stack. Theme grid is the centerpiece.
+         Per-card price + checklist coverage chip.
+         Light body, dark accent only.
+         ============================================================ */
+      :root {
+        --paper: #faf7f1;
+        --paper-2: #f3eee3;
+        --ink: #0f0e0d;
+        --ink-2: #2a2823;
+        --muted: #807868;
+        --rule: #e3dac0;
+        --accent: #1f5a40;
+        --accent-2: #2e8c63;
+        --accent-soft: #e6f0ea;
+        --pop: #b9261b;
+        --maxw: 1200px;
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+      body {
+        background: var(--paper);
+        color: var(--ink);
+        font-family: "Inter", system-ui, sans-serif;
+        font-size: 16px;
+        line-height: 1.55;
+        -webkit-font-smoothing: antialiased;
+        overflow-x: hidden;
+      }
+      a { color: inherit; text-decoration: none; }
+      ::selection { background: var(--ink); color: var(--paper); }
+
+      .container { width: 100%; max-width: var(--maxw); margin: 0 auto; padding: 0 32px; }
+
+      /* Display */
+      .display {
+        font-family: "Fraunces", Georgia, serif;
+        font-weight: 600;
+        letter-spacing: -0.025em;
+        line-height: 1.04;
+      }
+      h1.display { font-size: clamp(42px, 6.4vw, 80px); }
+      h2.display { font-size: clamp(28px, 4vw, 48px); }
+      .mono {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      /* Nav */
+      .nav {
+        position: sticky; top: 0; z-index: 30;
+        backdrop-filter: blur(12px);
+        background: rgba(250, 247, 241, 0.85);
+        border-bottom: 1px solid transparent;
+        transition: border-color 200ms ease;
+      }
+      .nav.scrolled { border-color: var(--rule); }
+      .nav-inner {
+        display: flex; align-items: center; justify-content: space-between;
+        height: 64px;
+      }
+      .brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 600; }
+      .brand-mark {
+        width: 22px; height: 22px; border-radius: 5px; background: var(--ink);
+        position: relative;
+      }
+      .brand-mark::after {
+        content: ""; position: absolute; inset: 6px;
+        background: var(--accent-2); border-radius: 1px;
+      }
+      .nav-links { display: flex; gap: 28px; }
+      .nav-links a { font-size: 14px; color: var(--ink-2); }
+      .nav-links a:hover { color: var(--ink); }
+      .btn {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 11px 18px; border-radius: 999px;
+        font-size: 13px; font-weight: 600;
+        transition: all 200ms ease;
+      }
+      .btn-primary { background: var(--ink); color: var(--paper); }
+      .btn-primary:hover { background: var(--accent); }
+      .btn-ghost { color: var(--ink); border: 1px solid var(--rule); background: rgba(255,255,255,0.5); }
+      .btn-ghost:hover { background: #fff; border-color: var(--ink); }
+
+      /* Hero */
+      .hero { padding: 80px 0 40px; }
+      .hero-eyebrow {
+        display: inline-flex; align-items: center; gap: 10px;
+        padding: 6px 12px; border-radius: 999px;
+        background: var(--accent-soft); color: var(--accent);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+        font-weight: 600;
+      }
+      .hero-eyebrow .dot {
+        width: 6px; height: 6px; border-radius: 50%; background: var(--accent-2);
+        animation: pulse 2s ease-in-out infinite;
+      }
+      @keyframes pulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.5; transform: scale(0.8); }
+      }
+      .hero h1 { margin: 22px 0 22px; max-width: 18ch; }
+      .hero-sub { max-width: 56ch; font-size: 19px; color: var(--ink-2); margin-bottom: 32px; }
+      .cta-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+      .cta-row .meta { font-size: 13px; color: var(--muted); margin-left: 8px; }
+
+      /* Hero — 3-up tilted preset stack */
+      .stack-wrap {
+        margin-top: 80px;
+        position: relative;
+        height: 540px;
+        perspective: 1800px;
+      }
+      .stack {
+        position: absolute; inset: 0;
+        display: grid;
+        grid-template-columns: 1fr 1.2fr 1fr;
+        align-items: center;
+        gap: 0;
+      }
+      .frame {
+        position: relative;
+        border-radius: 14px;
+        overflow: hidden;
+        background: #fff;
+        box-shadow:
+          0 1px 0 rgba(0,0,0,0.04) inset,
+          0 30px 60px -25px rgba(0,0,0,0.25),
+          0 10px 20px -10px rgba(0,0,0,0.1);
+        border: 1px solid rgba(0,0,0,0.06);
+      }
+      .frame .chrome {
+        display: flex; align-items: center; gap: 5px;
+        padding: 8px 12px;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        background: #fafaf8;
+      }
+      .frame .chrome span {
+        width: 9px; height: 9px; border-radius: 50%; background: #ddd;
+      }
+      .frame .chrome span:nth-child(1) { background: #ff6058; }
+      .frame .chrome span:nth-child(2) { background: #ffbd2e; }
+      .frame .chrome span:nth-child(3) { background: #28ca42; }
+      .frame .url {
+        margin-left: 8px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px; color: #999;
+      }
+
+      /* Mocked landing page contents inside the frame */
+      .mock {
+        padding: 24px;
+        display: grid; gap: 14px;
+        position: relative;
+        min-height: 380px;
+      }
+      .mock .ann {
+        height: 18px; border-radius: 4px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase;
+        display: flex; align-items: center; justify-content: center;
+      }
+      .mock .nav-mock { display: flex; gap: 8px; align-items: center; height: 14px; }
+      .mock .nav-mock span { height: 6px; border-radius: 2px; background: rgba(0,0,0,0.1); }
+      .mock .nav-mock .logo { width: 28px; }
+      .mock .nav-mock .l { width: 22px; }
+      .mock .nav-mock .cart { margin-left: auto; width: 14px; height: 14px; border-radius: 4px; background: rgba(0,0,0,0.1); }
+      .mock .hero-mock { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+      .mock .gallery {
+        aspect-ratio: 1 / 1; border-radius: 8px;
+        position: relative;
+      }
+      .mock .info { display: grid; gap: 6px; align-content: start; }
+      .mock .h { height: 12px; border-radius: 3px; background: rgba(0,0,0,0.85); }
+      .mock .h.short { width: 60%; }
+      .mock .h.mid { width: 80%; height: 8px; background: rgba(0,0,0,0.4); }
+      .mock .price { display: flex; gap: 6px; align-items: baseline; margin-top: 4px; }
+      .mock .price b { font-size: 16px; font-weight: 700; }
+      .mock .price s { font-size: 10px; color: rgba(0,0,0,0.4); }
+      .mock .pill {
+        display: inline-block; padding: 2px 6px;
+        font-size: 8px; border-radius: 4px;
+        background: rgba(0,0,0,0.06);
+        font-weight: 600;
+      }
+      .mock .cta-mock {
+        margin-top: 4px; height: 22px; border-radius: 999px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 8px; color: #fff; font-weight: 600; letter-spacing: 0.06em;
+      }
+      .mock .reviews-bar { display: flex; gap: 4px; margin-top: 2px; }
+      .mock .reviews-bar span { font-size: 9px; }
+
+      /* Per-niche palettes */
+      .preset-skincare { --p: #f5e6d6; --p-deep: #c9a37a; --p-cta: #1f5a40; }
+      .preset-skincare .ann { background: var(--p-deep); color: #fff; }
+      .preset-skincare .gallery { background: linear-gradient(135deg, var(--p), var(--p-deep)); }
+      .preset-skincare .cta-mock { background: var(--p-cta); }
+
+      .preset-supplement { --p: #1a1a1a; --p-deep: #2a2a2a; --p-cta: #00d57a; }
+      .preset-supplement .ann { background: var(--p-cta); color: #052e1c; }
+      .preset-supplement .gallery { background: linear-gradient(135deg, var(--p), var(--p-deep)); }
+      .preset-supplement .cta-mock { background: var(--p-cta); color: #052e1c; }
+      .preset-supplement .h { background: rgba(0,0,0,0.85); }
+
+      .preset-gadget { --p: #e8e8eb; --p-deep: #b0b0b8; --p-cta: #0066ff; }
+      .preset-gadget .ann { background: #0a0a0a; color: #fff; }
+      .preset-gadget .gallery { background: linear-gradient(135deg, var(--p), var(--p-deep)); }
+      .preset-gadget .cta-mock { background: var(--p-cta); }
+
+      /* Stack tilts */
+      .stack .frame:nth-child(1) {
+        transform: rotate(-6deg) translateY(20px);
+        z-index: 1;
+      }
+      .stack .frame:nth-child(2) {
+        transform: rotate(0deg) translateY(-10px) scale(1.05);
+        z-index: 2;
+        box-shadow:
+          0 1px 0 rgba(0,0,0,0.04) inset,
+          0 50px 80px -30px rgba(0,0,0,0.35),
+          0 20px 30px -15px rgba(0,0,0,0.15);
+      }
+      .stack .frame:nth-child(3) {
+        transform: rotate(6deg) translateY(20px);
+        z-index: 1;
+      }
+      .frame-label {
+        position: absolute;
+        bottom: -36px; left: 50%; transform: translateX(-50%);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase;
+        color: var(--muted); font-weight: 600;
+        white-space: nowrap;
+      }
+
+      /* Price strip */
+      .price-strip {
+        margin-top: 100px;
+        padding: 14px 24px;
+        background: var(--ink); color: var(--paper);
+        border-radius: 12px;
+        display: flex; gap: 24px; flex-wrap: wrap;
+        justify-content: space-between; align-items: center;
+      }
+      .price-strip strong { font-weight: 600; font-size: 15px; }
+      .price-strip .strip-tags {
+        display: flex; gap: 18px; font-size: 13px; color: rgba(250,247,241,0.7);
+      }
+      .price-strip .strip-tags span { display: inline-flex; gap: 6px; align-items: center; }
+      .price-strip .strip-tags span::before {
+        content: "✓"; color: var(--accent-2);
+      }
+
+      /* Section */
+      section { padding: 120px 0; }
+      .section-head { margin-bottom: 64px; max-width: 60ch; }
+      .section-head .mono { color: var(--accent); margin-bottom: 18px; display: inline-block; }
+      .section-head h2 { margin-bottom: 18px; }
+      .section-head p { font-size: 18px; color: var(--ink-2); }
+
+      /* Theme grid */
+      .grid-themes {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+      }
+      @media (max-width: 900px) { .grid-themes { grid-template-columns: 1fr; } }
+
+      .theme-card {
+        background: #fff;
+        border: 1px solid var(--rule);
+        border-radius: 18px;
+        overflow: hidden;
+        transition: transform 280ms ease, box-shadow 280ms ease, border-color 280ms ease;
+        cursor: pointer;
+        display: flex; flex-direction: column;
+      }
+      .theme-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 30px 60px -25px rgba(0,0,0,0.18);
+        border-color: var(--accent);
+      }
+      .theme-thumbs {
+        position: relative;
+        aspect-ratio: 4 / 3;
+        background: var(--paper-2);
+        overflow: hidden;
+      }
+      .thumb {
+        position: absolute; inset: 0;
+        display: flex; align-items: center; justify-content: center;
+        transition: opacity 320ms ease;
+      }
+      .thumb-front { opacity: 1; }
+      .thumb-back { opacity: 0; }
+      .theme-card:hover .thumb-front { opacity: 0; }
+      .theme-card:hover .thumb-back { opacity: 1; }
+      .thumb .frame { width: 80%; transform: rotate(-2deg); }
+      .theme-card .body {
+        padding: 22px 24px 24px;
+        display: flex; flex-direction: column; gap: 10px;
+        flex: 1;
+      }
+      .theme-card .row1 {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 12px;
+      }
+      .theme-card h3 {
+        font-family: "Fraunces", serif;
+        font-size: 22px; font-weight: 600; letter-spacing: -0.01em;
+      }
+      .theme-card .pos { color: var(--ink-2); font-size: 14px; min-height: 22px; }
+      .badges { display: flex; gap: 6px; flex-wrap: wrap; }
+      .badge {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+        font-weight: 600;
+        padding: 4px 8px; border-radius: 5px;
+        background: var(--paper-2); color: var(--ink-2);
+      }
+      .badge.cov { background: var(--accent-soft); color: var(--accent); }
+      .theme-card .footer-row {
+        display: flex; align-items: center; justify-content: space-between;
+        margin-top: auto;
+        padding-top: 18px;
+        border-top: 1px solid var(--rule);
+      }
+      .theme-card .price-line { font-weight: 600; font-size: 17px; }
+      .theme-card .price-line span { color: var(--muted); font-weight: 400; font-size: 13px; }
+      .theme-card .actions { display: flex; gap: 8px; }
+      .theme-card .actions a {
+        font-size: 12px; color: var(--ink-2);
+        text-decoration: underline; text-underline-offset: 4px;
+      }
+      .theme-card .actions a:hover { color: var(--accent); }
+
+      /* Annotated proof */
+      .proof {
+        background: var(--paper-2);
+      }
+      .proof-grid {
+        display: grid; grid-template-columns: 1fr 320px; gap: 64px;
+        align-items: start;
+      }
+      @media (max-width: 900px) { .proof-grid { grid-template-columns: 1fr; } }
+      .proof-frame {
+        position: relative;
+        border-radius: 14px; overflow: hidden;
+        background: #fff;
+        border: 1px solid rgba(0,0,0,0.06);
+        box-shadow: 0 30px 60px -30px rgba(0,0,0,0.2);
+      }
+      .proof-page {
+        padding: 0;
+        background: #fff;
+      }
+      .proof-page .strip {
+        height: 28px; background: var(--ink); color: #fff;
+        display: flex; align-items: center; justify-content: center;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+      }
+      .proof-page .nav-mock {
+        height: 56px;
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 0 24px;
+        border-bottom: 1px solid #eee;
+      }
+      .proof-page .nav-mock .logo { font-family: "Fraunces", serif; font-size: 18px; font-weight: 700; }
+      .proof-page .pdp {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+        padding: 32px 24px;
+      }
+      .proof-page .gal {
+        aspect-ratio: 1; border-radius: 12px;
+        background: linear-gradient(135deg, #f5e6d6, #c9a37a);
+      }
+      .proof-page .info { display: grid; gap: 12px; align-content: start; }
+      .proof-page .info h4 { font-family: "Fraunces", serif; font-size: 22px; font-weight: 600; }
+      .proof-page .info p { font-size: 13px; color: var(--ink-2); }
+      .proof-page .info .stars { font-size: 13px; color: #d49a3a; }
+      .proof-page .info .price { font-size: 26px; font-weight: 700; }
+      .proof-page .info .cta {
+        height: 38px; border-radius: 999px;
+        background: var(--accent); color: #fff;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 13px; font-weight: 600;
+      }
+      .proof-page .section-block {
+        padding: 32px 24px; border-top: 1px solid #f3f3f3;
+      }
+      .proof-page .section-block .label {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+        color: var(--accent); margin-bottom: 8px;
+      }
+      .proof-page .section-block h5 {
+        font-family: "Fraunces", serif; font-size: 18px; font-weight: 600;
+      }
+      .proof-page .section-block .body-mock {
+        display: grid; gap: 6px; margin-top: 12px;
+      }
+      .proof-page .section-block .ln { height: 6px; background: #eee; border-radius: 3px; }
+      .proof-page .section-block .ln.s { width: 60%; }
+      .proof-page .section-block .grid3 {
+        display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 12px;
+      }
+      .proof-page .section-block .gcard {
+        height: 80px; border-radius: 8px; background: var(--paper-2);
+      }
+      .pin {
+        position: absolute;
+        width: 28px; height: 28px; border-radius: 999px;
+        background: var(--accent); color: #fff;
+        display: flex; align-items: center; justify-content: center;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12px; font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 14px rgba(31, 90, 64, 0.4);
+      }
+
+      .proof-side {
+        position: sticky; top: 96px;
+      }
+      .proof-side .mono { color: var(--accent); margin-bottom: 14px; }
+      .proof-side h3 {
+        font-family: "Fraunces", serif;
+        font-size: 28px; font-weight: 600; line-height: 1.1; letter-spacing: -0.02em;
+        margin-bottom: 16px;
+      }
+      .proof-side > p { color: var(--ink-2); margin-bottom: 24px; font-size: 15px; }
+      .rule-list {
+        background: #fff;
+        border: 1px solid var(--rule);
+        border-radius: 14px;
+        padding: 6px;
+      }
+      .rule-list li {
+        list-style: none;
+        padding: 14px 14px;
+        border-bottom: 1px solid var(--rule);
+        display: flex; gap: 12px;
+        font-size: 13px;
+      }
+      .rule-list li:last-child { border-bottom: none; }
+      .rule-list .num {
+        flex-shrink: 0;
+        width: 26px; height: 26px; border-radius: 999px;
+        background: var(--accent); color: #fff;
+        display: flex; align-items: center; justify-content: center;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px; font-weight: 600;
+      }
+      .rule-list .body { color: var(--ink-2); line-height: 1.4; }
+      .rule-list .body b { color: var(--ink); }
+
+      /* Without/with */
+      .vs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+      @media (max-width: 900px) { .vs-grid { grid-template-columns: 1fr; } }
+      .vs-card {
+        border-radius: 14px;
+        overflow: hidden;
+        border: 1px solid var(--rule);
+        background: #fff;
+      }
+      .vs-card .vs-head {
+        padding: 16px 20px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 600;
+        display: flex; justify-content: space-between; align-items: center;
+      }
+      .vs-card.bad .vs-head { background: #fff3f0; color: var(--pop); border-bottom: 1px solid #f5d8d2; }
+      .vs-card.good .vs-head { background: var(--accent-soft); color: var(--accent); border-bottom: 1px solid #cfe2d7; }
+      .vs-screen {
+        aspect-ratio: 4 / 5;
+        background: linear-gradient(180deg, #fafaf6 0%, #efece4 100%);
+        position: relative;
+        overflow: hidden;
+      }
+      .vs-card.bad .vs-screen { filter: saturate(0.6) brightness(1.02); }
+      .vs-screen .empty {
+        padding: 16px;
+        display: grid; gap: 12px;
+      }
+      .vs-screen .empty .h { height: 14px; background: rgba(0,0,0,0.15); border-radius: 4px; }
+      .vs-screen .empty .h.s { width: 50%; }
+      .vs-screen .empty .h.t { background: rgba(0,0,0,0.85); height: 22px; }
+      .vs-screen .empty .ph {
+        height: 140px; border-radius: 8px;
+        background: linear-gradient(135deg, #ddd, #bbb);
+      }
+      .vs-screen .filled .check {
+        position: absolute; left: 8px;
+        background: var(--accent); color: #fff;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: 600;
+      }
+      .vs-screen .filled .miss {
+        position: absolute; left: 8px;
+        background: var(--pop); color: #fff;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: 600;
+      }
+
+      /* Pricing */
+      .pricing { background: var(--ink); color: var(--paper); }
+      .pricing .section-head .mono { color: var(--accent-2); }
+      .pricing h2 { color: var(--paper); }
+      .pricing p { color: rgba(250,247,241,0.7); }
+      .pricing .grid-prices { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+      @media (max-width: 900px) { .pricing .grid-prices { grid-template-columns: 1fr; } }
+      .pricing .pcard {
+        background: #1a1a1c; border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 16px; padding: 28px;
+        display: flex; flex-direction: column;
+      }
+      .pricing .pcard.featured {
+        border-color: var(--accent-2);
+        background: linear-gradient(180deg, #1f3a2e, #1a1a1c 60%);
+      }
+      .pricing .pcard .eyebrow {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+        color: var(--accent-2); margin-bottom: 14px;
+      }
+      .pricing .pcard h3 { font-family: "Fraunces", serif; font-size: 22px; font-weight: 600; margin-bottom: 14px; color: #fff; }
+      .pricing .pcard .num {
+        font-family: "Fraunces", serif;
+        font-size: 56px; font-weight: 600; letter-spacing: -0.03em;
+        margin-bottom: 6px;
+      }
+      .pricing .pcard .cad { font-size: 13px; color: rgba(250,247,241,0.6); margin-bottom: 22px; }
+      .pricing .pcard ul { list-style: none; display: grid; gap: 10px; font-size: 14px; color: #d8d4cc; margin-bottom: 28px; }
+      .pricing .pcard ul li::before { content: "✓"; color: var(--accent-2); margin-right: 8px; font-weight: 600; }
+      .pricing .pcard .btn { justify-content: center; }
+      .pricing .pcard.featured .btn-primary { background: var(--accent-2); color: #052e1c; }
+      .pricing .pcard.featured .btn-primary:hover { background: #fff; }
+      .pricing .pcard .help { font-size: 12px; color: rgba(250,247,241,0.5); margin-top: 12px; text-align: center; }
+
+      /* FAQ */
+      .faq-list { display: grid; gap: 0; max-width: 880px; margin: 0 auto; }
+      .faq-item {
+        border-top: 1px solid var(--rule);
+        padding: 22px 0;
+      }
+      .faq-item:last-child { border-bottom: 1px solid var(--rule); }
+      .faq-q {
+        display: flex; justify-content: space-between; gap: 24px;
+        font-family: "Fraunces", serif;
+        font-size: 20px; font-weight: 600;
+        cursor: pointer;
+      }
+      .faq-q::after { content: "+"; color: var(--accent); font-weight: 400; font-size: 24px; line-height: 1; }
+      .faq-a { padding-top: 12px; color: var(--ink-2); max-width: 70ch; }
+
+      /* Footer */
+      footer.foot {
+        background: var(--paper-2);
+        padding: 64px 0 40px;
+      }
+      .foot-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1fr;
+        gap: 48px;
+      }
+      @media (max-width: 800px) { .foot-grid { grid-template-columns: 1fr 1fr; } }
+      .foot-grid h5 {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+        color: var(--muted); margin-bottom: 14px; font-weight: 600;
+      }
+      .foot-grid ul { list-style: none; display: grid; gap: 8px; font-size: 14px; color: var(--ink-2); }
+      .foot-grid ul a:hover { color: var(--accent); }
+      .foot-bottom {
+        margin-top: 64px; padding-top: 24px;
+        border-top: 1px solid var(--rule);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+        color: var(--muted);
+        display: flex; justify-content: space-between; gap: 24px;
+      }
+
+      /* Back to explorations */
+      .back {
+        position: fixed; top: 16px; left: 16px; z-index: 50;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+        color: var(--muted);
+        background: rgba(255,255,255,0.92);
+        backdrop-filter: blur(8px);
+        padding: 8px 14px; border-radius: 999px;
+        border: 1px solid var(--rule);
+      }
+      .back:hover { color: var(--accent); border-color: var(--accent); }
+    </style>
+  </head>
+  <body>
+    <a class="back" href="/explorations/">← Back to explorations</a>
+
+    <header class="nav" id="nav">
+      <div class="container nav-inner">
+        <a class="brand" href="/">
+          <span class="brand-mark"></span>
+          <span>ShopLanding</span>
+        </a>
+        <nav class="nav-links">
+          <a href="#themes">Themes</a>
+          <a href="#proof">How it works</a>
+          <a href="#vs">vs. generic</a>
+          <a href="#pricing">Pricing</a>
+          <a href="#faq">FAQ</a>
+        </nav>
+        <a href="#themes" class="btn btn-primary">See the themes →</a>
+      </div>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="container">
+        <span class="hero-eyebrow">
+          <span class="dot"></span>
+          Shopify · WooCommerce · 69-rule CRO system
+        </span>
+        <h1 class="display">Sell <em style="font-style: italic; color: var(--accent);">one</em> product. Convert like ten stores.</h1>
+        <p class="hero-sub">
+          Pre-built single-product landing themes for skincare, supplements, and gadgets — every block traceable to a documented conversion rule.
+        </p>
+        <div class="cta-row">
+          <a href="#themes" class="btn btn-primary">See the themes <span aria-hidden>→</span></a>
+          <a href="#proof" class="btn btn-ghost">How it works</a>
+          <span class="meta">$99 single · $249 unlimited · One-time, lifetime updates</span>
+        </div>
+
+        <!-- 3-up tilted preset stack -->
+        <div class="stack-wrap" aria-hidden>
+          <div class="stack">
+            <!-- Skincare -->
+            <div class="frame preset-skincare">
+              <div class="chrome"><span></span><span></span><span></span><span class="url">orelle.com</span></div>
+              <div class="mock">
+                <div class="ann">FREE SHIPPING $35+</div>
+                <div class="nav-mock">
+                  <span class="logo"></span>
+                  <span class="l"></span><span class="l"></span><span class="l"></span>
+                  <span class="cart"></span>
+                </div>
+                <div class="hero-mock">
+                  <div class="gallery"></div>
+                  <div class="info">
+                    <span class="pill">Daily Essentials</span>
+                    <div class="h"></div>
+                    <div class="h short"></div>
+                    <div class="h mid"></div>
+                    <div class="h mid" style="width: 50%"></div>
+                    <div class="price"><b>$39</b><s>$49</s></div>
+                    <div class="cta-mock">+ Add to bag · $39</div>
+                  </div>
+                </div>
+              </div>
+              <span class="frame-label">Skincare · Orelle</span>
+            </div>
+
+            <!-- Supplement (centered, larger) -->
+            <div class="frame preset-supplement">
+              <div class="chrome"><span></span><span></span><span></span><span class="url">vitalstack.io</span></div>
+              <div class="mock">
+                <div class="ann">SUBSCRIBE · SAVE 20%</div>
+                <div class="nav-mock">
+                  <span class="logo" style="background: rgba(255,255,255,0.4);"></span>
+                  <span class="l" style="background: rgba(255,255,255,0.2);"></span>
+                  <span class="l" style="background: rgba(255,255,255,0.2);"></span>
+                  <span class="cart" style="background: rgba(255,255,255,0.2);"></span>
+                </div>
+                <div class="hero-mock">
+                  <div class="gallery"></div>
+                  <div class="info">
+                    <span class="pill" style="background: rgba(0,213,122,0.2); color: #00d57a;">DAILY · 30 SERVINGS</span>
+                    <div class="h" style="background: #fff;"></div>
+                    <div class="h short" style="background: #fff;"></div>
+                    <div class="h mid" style="background: rgba(255,255,255,0.5);"></div>
+                    <div class="price"><b style="color: #fff;">$48</b><s style="color: rgba(255,255,255,0.4);">$60</s></div>
+                    <div class="cta-mock">START SUBSCRIPTION</div>
+                  </div>
+                </div>
+              </div>
+              <span class="frame-label">Supplement · VitalStack</span>
+            </div>
+
+            <!-- Gadget -->
+            <div class="frame preset-gadget">
+              <div class="chrome"><span></span><span></span><span></span><span class="url">aurabud.co</span></div>
+              <div class="mock">
+                <div class="ann">FREE 2-DAY SHIPPING</div>
+                <div class="nav-mock">
+                  <span class="logo"></span>
+                  <span class="l"></span><span class="l"></span>
+                  <span class="cart"></span>
+                </div>
+                <div class="hero-mock">
+                  <div class="gallery"></div>
+                  <div class="info">
+                    <span class="pill">Gen 2 · 2026</span>
+                    <div class="h"></div>
+                    <div class="h short"></div>
+                    <div class="h mid"></div>
+                    <div class="h mid" style="width: 40%"></div>
+                    <div class="price"><b>$129</b></div>
+                    <div class="cta-mock">Add to cart</div>
+                  </div>
+                </div>
+              </div>
+              <span class="frame-label">Gadget · Aurabud</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Price strip -->
+        <div class="price-strip">
+          <strong>$99 single store · $249 unlimited stores · +$199 done-for-you setup</strong>
+          <div class="strip-tags">
+            <span>One-time license</span>
+            <span>Lifetime updates</span>
+            <span>14-day refund</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- THEME GRID — the centerpiece -->
+    <section id="themes">
+      <div class="container">
+        <div class="section-head">
+          <span class="mono">The catalog · launch lineup</span>
+          <h2 class="display">Three niche presets. One system underneath.</h2>
+          <p>Same 20 components. Same 7-block anatomy. Different palette, different copy, different demo seed — picked to match the category your buyer is in.</p>
+        </div>
+
+        <div class="grid-themes">
+          <!-- CARD 1 — Skincare -->
+          <a class="theme-card" href="#">
+            <div class="theme-thumbs preset-skincare">
+              <div class="thumb thumb-front">
+                <div class="frame">
+                  <div class="chrome"><span></span><span></span><span></span></div>
+                  <div class="mock">
+                    <div class="ann">FREE SHIPPING $35+</div>
+                    <div class="hero-mock">
+                      <div class="gallery"></div>
+                      <div class="info">
+                        <div class="h"></div>
+                        <div class="h short"></div>
+                        <div class="h mid"></div>
+                        <div class="cta-mock">+ Add to bag</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="thumb thumb-back">
+                <div class="frame">
+                  <div class="chrome"><span></span><span></span><span></span></div>
+                  <div class="mock" style="padding-top: 20px;">
+                    <div class="mono" style="color: var(--p-cta); margin-bottom: 8px;">487 verified reviews</div>
+                    <div class="h"></div>
+                    <div class="h short"></div>
+                    <div class="grid3" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px;">
+                      <div style="aspect-ratio: 1; border-radius: 6px; background: linear-gradient(135deg, #f5e6d6, #c9a37a);"></div>
+                      <div style="aspect-ratio: 1; border-radius: 6px; background: linear-gradient(135deg, #c9a37a, #f5e6d6);"></div>
+                      <div style="aspect-ratio: 1; border-radius: 6px; background: linear-gradient(135deg, #f5e6d6, #c9a37a);"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="body">
+              <div class="row1">
+                <h3>Orelle</h3>
+                <span class="badge cov">69 / 69 rules</span>
+              </div>
+              <p class="pos">Pocketable solid lotion. Cream paper, sage accent.</p>
+              <div class="badges">
+                <span class="badge">Skincare</span>
+                <span class="badge">Shopify</span>
+                <span class="badge">Woo</span>
+                <span class="badge">Subscription</span>
+              </div>
+              <div class="footer-row">
+                <div class="price-line">$99 <span>· single store</span></div>
+                <div class="actions">
+                  <a href="#">Live demo ↗</a>
+                </div>
+              </div>
+            </div>
+          </a>
+
+          <!-- CARD 2 — Supplement -->
+          <a class="theme-card" href="#">
+            <div class="theme-thumbs preset-supplement">
+              <div class="thumb thumb-front">
+                <div class="frame">
+                  <div class="chrome"><span></span><span></span><span></span></div>
+                  <div class="mock" style="background: #1a1a1a;">
+                    <div class="ann">SUBSCRIBE · SAVE 20%</div>
+                    <div class="hero-mock">
+                      <div class="gallery"></div>
+                      <div class="info">
+                        <div class="h" style="background: #fff;"></div>
+                        <div class="h short" style="background: #fff;"></div>
+                        <div class="h mid" style="background: rgba(255,255,255,0.4);"></div>
+                        <div class="cta-mock">START SUBSCRIPTION</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="thumb thumb-back">
+                <div class="frame">
+                  <div class="chrome"><span></span><span></span><span></span></div>
+                  <div class="mock" style="background: #1a1a1a; padding-top: 20px;">
+                    <div class="mono" style="color: #00d57a; margin-bottom: 8px;">Bundle &amp; Save</div>
+                    <div style="display: grid; gap: 6px;">
+                      <div style="height: 32px; border-radius: 6px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);"></div>
+                      <div style="height: 32px; border-radius: 6px; background: rgba(0,213,122,0.15); border: 1px solid #00d57a;"></div>
+                      <div style="height: 32px; border-radius: 6px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="body">
+              <div class="row1">
+                <h3>VitalStack</h3>
+                <span class="badge cov">69 / 69 rules</span>
+              </div>
+              <p class="pos">Daily greens stick. Dark-mode default, neon-green CTAs.</p>
+              <div class="badges">
+                <span class="badge">Supplement</span>
+                <span class="badge">Shopify</span>
+                <span class="badge">Woo</span>
+                <span class="badge">Bundle</span>
+              </div>
+              <div class="footer-row">
+                <div class="price-line">$99 <span>· single store</span></div>
+                <div class="actions">
+                  <a href="#">Live demo ↗</a>
+                </div>
+              </div>
+            </div>
+          </a>
+
+          <!-- CARD 3 — Gadget -->
+          <a class="theme-card" href="#">
+            <div class="theme-thumbs preset-gadget">
+              <div class="thumb thumb-front">
+                <div class="frame">
+                  <div class="chrome"><span></span><span></span><span></span></div>
+                  <div class="mock">
+                    <div class="ann">FREE 2-DAY SHIPPING</div>
+                    <div class="hero-mock">
+                      <div class="gallery"></div>
+                      <div class="info">
+                        <div class="h"></div>
+                        <div class="h short"></div>
+                        <div class="h mid"></div>
+                        <div class="cta-mock">Add to cart</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="thumb thumb-back">
+                <div class="frame">
+                  <div class="chrome"><span></span><span></span><span></span></div>
+                  <div class="mock" style="padding-top: 20px;">
+                    <div class="mono" style="color: #0066ff; margin-bottom: 8px;">Tech specs</div>
+                    <div style="display: grid; gap: 4px;">
+                      <div style="display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #eee;"><div class="h" style="height: 6px; width: 50px;"></div><div class="h" style="height: 6px; width: 30px;"></div></div>
+                      <div style="display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #eee;"><div class="h" style="height: 6px; width: 60px;"></div><div class="h" style="height: 6px; width: 40px;"></div></div>
+                      <div style="display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #eee;"><div class="h" style="height: 6px; width: 40px;"></div><div class="h" style="height: 6px; width: 50px;"></div></div>
+                      <div style="display: flex; justify-content: space-between; padding: 4px 0;"><div class="h" style="height: 6px; width: 70px;"></div><div class="h" style="height: 6px; width: 30px;"></div></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="body">
+              <div class="row1">
+                <h3>Aurabud</h3>
+                <span class="badge cov">69 / 69 rules</span>
+              </div>
+              <p class="pos">Single-SKU earbud. Steel-grey, electric-blue, spec-table heavy.</p>
+              <div class="badges">
+                <span class="badge">Gadget</span>
+                <span class="badge">Shopify</span>
+                <span class="badge">Woo</span>
+                <span class="badge">Spec table</span>
+              </div>
+              <div class="footer-row">
+                <div class="price-line">$99 <span>· single store</span></div>
+                <div class="actions">
+                  <a href="#">Live demo ↗</a>
+                </div>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ANNOTATED PROOF -->
+    <section id="proof" class="proof">
+      <div class="container">
+        <div class="section-head">
+          <span class="mono">The proof · open any block</span>
+          <h2 class="display">Every block ties to a documented rule.</h2>
+          <p>This is one of our themes, annotated. Click a pin and we'll tell you which CRO rules that block is doing the work for.</p>
+        </div>
+
+        <div class="proof-grid">
+          <div class="proof-frame">
+            <div class="proof-page">
+              <div class="strip">FREE SHIPPING ON ORDERS $35+ · 30-DAY GUARANTEE</div>
+              <div class="nav-mock">
+                <div class="logo">brand.</div>
+                <div style="display: flex; gap: 18px; font-size: 13px; color: var(--ink-2);">
+                  <span>Shop</span><span>How it works</span><span>Reviews</span><span>FAQ</span>
+                </div>
+              </div>
+
+              <!-- Hero with pin 1 -->
+              <div class="pdp" style="position: relative;">
+                <div class="pin" style="top: 20px; right: -14px;">1</div>
+                <div class="gal"></div>
+                <div class="info">
+                  <div class="mono" style="color: var(--accent);">Daily Essentials</div>
+                  <h4>Daystick — solid lotion</h4>
+                  <div class="stars">★★★★★ 4.8 · 487 reviews</div>
+                  <p>The unique, effortless lotion stick that keeps skin happy all day.</p>
+                  <div class="price">$39 <s style="font-size: 16px; color: var(--muted); font-weight: 400;">$49</s></div>
+                  <div class="cta">+ Add to bag · $39</div>
+                </div>
+              </div>
+
+              <div class="section-block" style="position: relative;">
+                <div class="pin" style="top: 28px; right: -14px;">2</div>
+                <div class="label">As featured in</div>
+                <div style="display: flex; gap: 24px; flex-wrap: wrap; font-family: serif; color: var(--muted); font-size: 14px; margin-top: 12px;">
+                  <span>VOGUE</span><span style="font-style: italic;">goop</span><span>Refinery29</span><span>BAZAAR</span><span>Forbes</span>
+                </div>
+              </div>
+
+              <div class="section-block" style="position: relative;">
+                <div class="pin" style="top: 28px; right: -14px;">3</div>
+                <div class="label">Why customers choose us</div>
+                <h5>Better ingredients. Better results.</h5>
+                <div class="grid3">
+                  <div class="gcard"></div>
+                  <div class="gcard"></div>
+                  <div class="gcard"></div>
+                </div>
+              </div>
+
+              <div class="section-block" style="position: relative;">
+                <div class="pin" style="top: 28px; right: -14px;">4</div>
+                <div class="label">Real customers, real results</div>
+                <h5>4.8 / 5 · 487 verified reviews</h5>
+                <div class="grid3">
+                  <div class="gcard" style="background: #fff5e1;"></div>
+                  <div class="gcard" style="background: #fff5e1;"></div>
+                  <div class="gcard" style="background: #fff5e1;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <aside class="proof-side">
+            <span class="mono">Block 4 / 7 · CTA area</span>
+            <h3>Pin #1 → Hero buy box.</h3>
+            <p>This single block does the work of 23 conversion rules. Here are the ones it satisfies right now:</p>
+            <ul class="rule-list">
+              <li><span class="num">25</span><span class="body"><b>The main CTA is the most visible element</b> on the product page and contains the cart icon.</span></li>
+              <li><span class="num">29</span><span class="body"><b>Interactive variant selectors</b> — gallery image and price update in real-time, no reload.</span></li>
+              <li><span class="num">35</span><span class="body"><b>Price prominent enough,</b> especially when discounted.</span></li>
+              <li><span class="num">40</span><span class="body"><b>Free-shipping highlighted</b> near the main CTA.</span></li>
+            </ul>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <!-- WITHOUT / WITH -->
+    <section id="vs">
+      <div class="container">
+        <div class="section-head">
+          <span class="mono">Without · with</span>
+          <h2 class="display">A generic Shopify theme, vs. ours.</h2>
+          <p>The same product. The same imagery. One missed every conversion rule we ship by default.</p>
+        </div>
+
+        <div class="vs-grid">
+          <div class="vs-card bad">
+            <div class="vs-head">
+              <span>Generic Dawn-style PDP</span>
+              <span style="color: var(--pop);">⚠ 14 rules missed</span>
+            </div>
+            <div class="vs-screen">
+              <div class="empty">
+                <div class="h s"></div>
+                <div class="ph"></div>
+                <div class="h t"></div>
+                <div class="h"></div>
+                <div class="h s"></div>
+                <div class="h" style="height: 28px; background: var(--accent); border-radius: 999px;"></div>
+              </div>
+              <div class="filled">
+                <span class="miss" style="top: 80px;">No urgency</span>
+                <span class="miss" style="top: 130px;">No reviews near CTA</span>
+                <span class="miss" style="top: 200px;">No bundle option</span>
+                <span class="miss" style="top: 260px;">No express pay</span>
+                <span class="miss" style="top: 320px;">No sticky ATC</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="vs-card good">
+            <div class="vs-head">
+              <span>ShopLanding · Orelle preset</span>
+              <span style="color: var(--accent);">✓ 69/69 covered</span>
+            </div>
+            <div class="vs-screen">
+              <div class="empty">
+                <div class="h s"></div>
+                <div class="ph" style="background: linear-gradient(135deg, #f5e6d6, #c9a37a);"></div>
+                <div class="h t"></div>
+                <div class="h"></div>
+                <div class="h s"></div>
+                <div class="h" style="height: 28px; background: var(--accent); border-radius: 999px;"></div>
+              </div>
+              <div class="filled">
+                <span class="check" style="top: 70px;">+ rating · trust</span>
+                <span class="check" style="top: 120px;">+ bundle picker</span>
+                <span class="check" style="top: 170px;">+ subscription</span>
+                <span class="check" style="top: 220px;">+ delivery date</span>
+                <span class="check" style="top: 270px;">+ free-ship strip</span>
+                <span class="check" style="top: 320px;">+ sticky ATC</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRICING -->
+    <section id="pricing" class="pricing">
+      <div class="container">
+        <div class="section-head">
+          <span class="mono">Pricing · one-time</span>
+          <h2 class="display">No subscription. Pay once.</h2>
+          <p>Both Shopify .zip and WooCommerce .zip ship together. Lifetime updates. 14-day refund.</p>
+        </div>
+
+        <div class="grid-prices">
+          <div class="pcard">
+            <div class="eyebrow">For founders</div>
+            <h3>Single-store license</h3>
+            <div class="num">$99</div>
+            <div class="cad">one-time · one Shopify or Woo store</div>
+            <ul>
+              <li>Both .zip artifacts + system spec</li>
+              <li>Tweaks panel + personalized preview</li>
+              <li>Lifetime updates for that store</li>
+            </ul>
+            <a href="#" class="btn btn-primary">Buy single-store</a>
+            <div class="help">Stripe checkout opens with the first preset.</div>
+          </div>
+
+          <div class="pcard featured">
+            <div class="eyebrow">For operators &amp; agencies · Best value</div>
+            <h3>Unlimited-stores license</h3>
+            <div class="num">$249</div>
+            <div class="cad">one-time · every store you'll ever build</div>
+            <ul>
+              <li>Everything in single-store</li>
+              <li>Use across unlimited stores</li>
+              <li>Resell client builds, no re-license</li>
+              <li>Priority on niche-preset releases</li>
+            </ul>
+            <a href="#" class="btn btn-primary">Buy unlimited</a>
+            <div class="help">Stripe checkout opens with the first preset.</div>
+          </div>
+
+          <div class="pcard">
+            <div class="eyebrow">Add-on</div>
+            <h3>Done-for-you setup</h3>
+            <div class="num">+$199</div>
+            <div class="cad">one-time · we install it for you</div>
+            <ul>
+              <li>We install on your store</li>
+              <li>Wire payments + shipping + inventory</li>
+              <li>Five sections of copy from a brief</li>
+              <li>One round of revisions</li>
+            </ul>
+            <a href="#" class="btn btn-ghost" style="border-color: rgba(255,255,255,0.15); color: #fff;">Request setup</a>
+            <div class="help">Refundable until work begins.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq">
+      <div class="container">
+        <div class="section-head" style="text-align: center; margin-left: auto; margin-right: auto;">
+          <span class="mono">FAQ</span>
+          <h2 class="display">The questions buyers ask before paying.</h2>
+        </div>
+
+        <div class="faq-list">
+          <div class="faq-item"><div class="faq-q">Is this a page builder?</div><div class="faq-a">No. The block order is opinionated and fixed — only content and visual tokens change between themes. Every block exists for a documented reason; rearranging silently breaks rule coverage.</div></div>
+          <div class="faq-item"><div class="faq-q">Will this work for my niche?</div><div class="faq-a">Yes for any single-product launch where the customer is making one decision. We ship niche presets so the defaults match the category.</div></div>
+          <div class="faq-item"><div class="faq-q">How is this different from a Theme Store theme?</div><div class="faq-a">Theme Store themes position on visuals. ShopLanding positions on conversion logic. The marketing site you're reading is the proof — every section is one of the blocks we sell, traceable to a documented rule.</div></div>
+          <div class="faq-item"><div class="faq-q">Can my agency rebuild on a different stack?</div><div class="faq-a">Yes. The unlimited license includes a portable system spec (JSON + Markdown) so a competent team can reimplement on Hydrogen, Astro, Webflow, or anywhere else.</div></div>
+          <div class="faq-item"><div class="faq-q">Do I get updates after I buy?</div><div class="faq-a">Lifetime updates for the stores covered by your license. No subscription, no upgrade cycle. New niche presets land for free.</div></div>
+          <div class="faq-item"><div class="faq-q">Refund policy?</div><div class="faq-a">14 days, no questions, on the digital license. Setup add-on refundable until work begins.</div></div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="foot">
+      <div class="container">
+        <div class="foot-grid">
+          <div>
+            <a class="brand" href="/">
+              <span class="brand-mark"></span>
+              <span>ShopLanding</span>
+            </a>
+            <p style="margin-top: 14px; max-width: 36ch; color: var(--ink-2); font-size: 14px;">The block system, the playbook, and the themes for high-converting single-product landing pages.</p>
+          </div>
+          <div>
+            <h5>System</h5>
+            <ul>
+              <li><a href="#">Playbook</a></li>
+              <li><a href="#">Showcase</a></li>
+              <li><a href="#">System spec</a></li>
+            </ul>
+          </div>
+          <div>
+            <h5>Buy</h5>
+            <ul>
+              <li><a href="#">Themes</a></li>
+              <li><a href="#">Pricing</a></li>
+              <li><a href="#">Done-for-you</a></li>
+            </ul>
+          </div>
+          <div>
+            <h5>Legal</h5>
+            <ul>
+              <li><a href="#">License</a></li>
+              <li><a href="#">Refunds</a></li>
+              <li><a href="#">Privacy</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="foot-bottom">
+          <span>© 2026 ShopLanding</span>
+          <span>Option A · Catalog</span>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // Sticky nav border on scroll
+      const nav = document.getElementById("nav");
+      const onScroll = () => nav.classList.toggle("scrolled", window.scrollY > 8);
+      onScroll();
+      window.addEventListener("scroll", onScroll, { passive: true });
+
+      // FAQ accordion
+      document.querySelectorAll(".faq-q").forEach((q) => {
+        const a = q.nextElementSibling;
+        a.style.maxHeight = "0";
+        a.style.overflow = "hidden";
+        a.style.transition = "max-height 240ms ease, padding-top 240ms ease";
+        a.style.paddingTop = "0";
+        q.addEventListener("click", () => {
+          const open = a.style.maxHeight !== "0px" && a.style.maxHeight !== "0";
+          if (open) {
+            a.style.maxHeight = "0";
+            a.style.paddingTop = "0";
+          } else {
+            a.style.maxHeight = a.scrollHeight + 20 + "px";
+            a.style.paddingTop = "12px";
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

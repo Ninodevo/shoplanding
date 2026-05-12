@@ -1,0 +1,848 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ShopLanding · 01 Editorial</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,300;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #f5efe2;
+        --bg-2: #ece4d2;
+        --ink: #1a1a1a;
+        --ink-2: #4a4a4a;
+        --muted: #8a8a8a;
+        --line: #d8cfb9;
+        --accent: #1f5a40;
+        --accent-deep: #143b29;
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html { scroll-behavior: smooth; }
+      body {
+        background: var(--bg);
+        color: var(--ink);
+        font-family: "Inter", system-ui, sans-serif;
+        font-size: 17px;
+        line-height: 1.6;
+        cursor: none;
+        overflow-x: hidden;
+      }
+      a { color: inherit; }
+      ::selection { background: var(--accent); color: var(--bg); }
+
+      /* Magnetic cursor */
+      .cursor {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 14px;
+        height: 14px;
+        border-radius: 999px;
+        background: var(--accent);
+        pointer-events: none;
+        z-index: 9999;
+        transform: translate(-50%, -50%);
+        transition: width 0.25s, height 0.25s, background 0.25s;
+        mix-blend-mode: difference;
+      }
+      .cursor-ring {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 36px;
+        height: 36px;
+        border: 1px solid var(--ink);
+        border-radius: 999px;
+        pointer-events: none;
+        z-index: 9998;
+        transform: translate(-50%, -50%);
+        transition: transform 120ms ease, width 0.25s, height 0.25s, opacity 0.25s;
+        mix-blend-mode: difference;
+      }
+      .cursor.hover { width: 56px; height: 56px; }
+      .cursor-ring.hover { opacity: 0; }
+      @media (max-width: 800px), (pointer: coarse) {
+        body { cursor: auto; }
+        .cursor, .cursor-ring { display: none; }
+      }
+
+      /* Top rail */
+      .rail {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 50;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 22px 32px;
+        background: linear-gradient(180deg, var(--bg) 60%, transparent);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--ink-2);
+      }
+      .rail nav { display: flex; gap: 28px; }
+      .rail a { text-decoration: none; }
+      .rail a:hover { color: var(--accent); }
+      .rail .left { display: flex; gap: 24px; align-items: center; }
+      .ticker {
+        font-variant-numeric: tabular-nums;
+        color: var(--accent);
+      }
+      @media (max-width: 800px) { .rail nav { display: none; } }
+
+      /* Hero */
+      .hero {
+        min-height: 100vh;
+        padding: 140px 32px 80px;
+        max-width: 1400px;
+        margin: 0 auto;
+        position: relative;
+      }
+      .hero-eyebrow {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 32px;
+      }
+      .hero h1 {
+        font-family: "Fraunces", serif;
+        font-weight: 500;
+        font-size: clamp(70px, 13vw, 220px);
+        line-height: 0.86;
+        letter-spacing: -0.05em;
+        font-variation-settings: "opsz" 144, "SOFT" 50;
+      }
+      .hero h1 em {
+        font-style: italic;
+        font-weight: 400;
+        font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 1;
+        color: var(--accent);
+      }
+      .hero h1 .word {
+        display: inline-block;
+        opacity: 0;
+        transform: translateY(40%);
+        animation: rise 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+      }
+      .hero h1 .word:nth-child(2) { animation-delay: 0.05s; }
+      .hero h1 .word:nth-child(3) { animation-delay: 0.1s; }
+      .hero h1 .word:nth-child(4) { animation-delay: 0.15s; }
+      .hero h1 .word:nth-child(5) { animation-delay: 0.2s; }
+      .hero h1 .word:nth-child(6) { animation-delay: 0.25s; }
+      .hero h1 .word:nth-child(7) { animation-delay: 0.3s; }
+      @keyframes rise {
+        to { opacity: 1; transform: none; }
+      }
+
+      .hero-meta {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 32px;
+        margin-top: 80px;
+        padding-top: 32px;
+        border-top: 1px solid var(--line);
+        align-items: end;
+      }
+      @media (max-width: 800px) {
+        .hero-meta { grid-template-columns: 1fr; }
+      }
+      .hero-stat {
+        font-family: "Fraunces", serif;
+        font-size: 64px;
+        line-height: 1;
+        letter-spacing: -0.03em;
+        font-variation-settings: "opsz" 60;
+        font-weight: 500;
+      }
+      .hero-stat-label {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-top: 12px;
+      }
+      .hero-pull {
+        font-family: "Fraunces", serif;
+        font-size: 22px;
+        line-height: 1.4;
+        max-width: 30ch;
+        font-style: italic;
+        color: var(--ink-2);
+      }
+
+      /* Marquee */
+      .marquee {
+        margin: 96px 0 0;
+        border-top: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+        overflow: hidden;
+        background: var(--bg);
+      }
+      .marquee-track {
+        display: flex;
+        gap: 64px;
+        white-space: nowrap;
+        animation: mq 50s linear infinite;
+        padding: 24px 0;
+        font-family: "Fraunces", serif;
+        font-size: 36px;
+        font-style: italic;
+        font-weight: 400;
+        color: var(--ink-2);
+      }
+      .marquee-track span::after {
+        content: " ✦ ";
+        margin-left: 64px;
+        color: var(--accent);
+      }
+      @keyframes mq {
+        to { transform: translateX(-50%); }
+      }
+
+      /* Pinned manifesto */
+      .manifesto {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 120px 32px;
+        display: grid;
+        grid-template-columns: 1fr 1.4fr;
+        gap: 80px;
+      }
+      @media (max-width: 1000px) {
+        .manifesto { grid-template-columns: 1fr; gap: 32px; }
+      }
+      .manifesto-sticky {
+        position: sticky;
+        top: 120px;
+        align-self: start;
+      }
+      .manifesto-sticky h2 {
+        font-family: "Fraunces", serif;
+        font-size: clamp(40px, 5vw, 80px);
+        line-height: 1;
+        letter-spacing: -0.03em;
+        font-weight: 500;
+        font-variation-settings: "opsz" 100;
+      }
+      .manifesto-sticky h2 em {
+        font-style: italic;
+        color: var(--accent);
+      }
+      .manifesto-sticky .num {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 24px;
+      }
+      .manifesto-list { display: flex; flex-direction: column; gap: 80px; }
+      .manifesto-item {
+        opacity: 0.25;
+        transition: opacity 0.5s ease;
+      }
+      .manifesto-item.in { opacity: 1; }
+      .manifesto-item h3 {
+        font-family: "Fraunces", serif;
+        font-size: 36px;
+        line-height: 1.1;
+        letter-spacing: -0.02em;
+        font-weight: 500;
+        margin-bottom: 16px;
+      }
+      .manifesto-item p {
+        max-width: 56ch;
+        color: var(--ink-2);
+      }
+      .manifesto-item .tag {
+        display: inline-block;
+        margin-bottom: 18px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--accent);
+      }
+
+      /* Block atlas */
+      .atlas {
+        background: var(--ink);
+        color: var(--bg);
+        padding: 120px 32px;
+      }
+      .atlas-inner { max-width: 1400px; margin: 0 auto; }
+      .atlas h2 {
+        font-family: "Fraunces", serif;
+        font-size: clamp(48px, 8vw, 120px);
+        line-height: 0.95;
+        letter-spacing: -0.04em;
+        font-weight: 400;
+        max-width: 16ch;
+        margin-bottom: 64px;
+        font-variation-settings: "opsz" 144;
+      }
+      .atlas h2 em {
+        font-style: italic;
+        color: var(--accent);
+      }
+      .atlas-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 12px;
+      }
+      @media (max-width: 1000px) {
+        .atlas-grid { grid-template-columns: repeat(2, 1fr); }
+      }
+      .atlas-block {
+        position: relative;
+        padding: 24px 20px;
+        border: 1px solid #2a2a2a;
+        border-radius: 4px;
+        cursor: pointer;
+        background: #131313;
+        transition:
+          background 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
+          transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+        height: 280px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+      .atlas-block:hover {
+        background: var(--accent);
+        color: var(--ink);
+        transform: translateY(-6px);
+      }
+      .atlas-block .num {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        letter-spacing: 0.18em;
+      }
+      .atlas-block .name {
+        font-family: "Fraunces", serif;
+        font-size: 20px;
+        line-height: 1.1;
+        letter-spacing: -0.01em;
+      }
+      .atlas-block .rules {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        opacity: 0.7;
+      }
+      .atlas-block .icon {
+        font-family: "Fraunces", serif;
+        font-size: 64px;
+        line-height: 0.8;
+        font-style: italic;
+        opacity: 0.3;
+        position: absolute;
+        bottom: 16px;
+        right: 16px;
+      }
+      .atlas-block:hover .icon { opacity: 0.9; }
+
+      /* Pricing */
+      .pricing {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 140px 32px;
+      }
+      .pricing-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: end;
+        margin-bottom: 64px;
+        gap: 32px;
+        flex-wrap: wrap;
+      }
+      .pricing h2 {
+        font-family: "Fraunces", serif;
+        font-size: clamp(48px, 7vw, 96px);
+        line-height: 0.95;
+        letter-spacing: -0.03em;
+        font-weight: 400;
+        max-width: 14ch;
+        font-variation-settings: "opsz" 144;
+      }
+      .pricing h2 em {
+        font-style: italic;
+        color: var(--accent);
+      }
+      .pricing-note {
+        font-family: "Fraunces", serif;
+        font-style: italic;
+        font-size: 18px;
+        max-width: 30ch;
+        color: var(--ink-2);
+      }
+      .price-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        border-top: 1px solid var(--line);
+      }
+      @media (max-width: 1000px) { .price-grid { grid-template-columns: 1fr; } }
+      .price-tier {
+        padding: 40px 32px;
+        border-bottom: 1px solid var(--line);
+        border-right: 1px solid var(--line);
+        position: relative;
+      }
+      .price-tier:last-child { border-right: none; }
+      .price-tier .num {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 32px;
+      }
+      .price-tier h3 {
+        font-family: "Fraunces", serif;
+        font-size: 32px;
+        line-height: 1.1;
+        font-weight: 500;
+        margin-bottom: 24px;
+      }
+      .price-tier .price {
+        font-family: "Fraunces", serif;
+        font-size: 88px;
+        line-height: 1;
+        letter-spacing: -0.04em;
+        font-weight: 500;
+        font-variation-settings: "opsz" 144;
+        margin-bottom: 24px;
+      }
+      .price-tier .price em {
+        font-style: italic;
+        color: var(--accent);
+      }
+      .price-tier ul {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 32px;
+        font-size: 15px;
+        color: var(--ink-2);
+      }
+      .price-tier ul li {
+        padding: 10px 0;
+        border-bottom: 1px solid var(--line);
+        display: flex;
+        gap: 12px;
+        align-items: baseline;
+      }
+      .price-tier ul li::before {
+        content: "→";
+        color: var(--accent);
+        font-family: "JetBrains Mono", monospace;
+      }
+      .btn {
+        display: inline-block;
+        padding: 18px 28px;
+        background: var(--ink);
+        color: var(--bg);
+        text-decoration: none;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        border-radius: 999px;
+        transition: background 0.3s ease, transform 0.3s ease;
+      }
+      .btn:hover { background: var(--accent); transform: translateY(-2px); }
+      .price-tier.featured {
+        background: var(--ink);
+        color: var(--bg);
+      }
+      .price-tier.featured ul li { color: rgba(255,255,255,0.7); border-bottom-color: #2a2a2a; }
+      .price-tier.featured .btn { background: var(--accent); }
+      .price-tier.featured .price em { color: var(--accent); }
+      .price-tier.featured .num { color: var(--accent); }
+
+      /* Footer */
+      footer.foot {
+        background: var(--ink);
+        color: var(--bg);
+        padding: 96px 32px 48px;
+      }
+      .foot-inner {
+        max-width: 1400px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1fr;
+        gap: 64px;
+      }
+      @media (max-width: 1000px) { .foot-inner { grid-template-columns: 1fr 1fr; } }
+      .foot h4 {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.5);
+        font-weight: 500;
+        margin-bottom: 16px;
+      }
+      .foot ul { list-style: none; padding: 0; margin: 0; }
+      .foot ul li { padding: 6px 0; }
+      .foot a { color: var(--bg); text-decoration: none; opacity: 0.85; }
+      .foot a:hover { color: var(--accent); }
+      .foot .signoff {
+        font-family: "Fraunces", serif;
+        font-size: 96px;
+        line-height: 0.9;
+        font-style: italic;
+        font-weight: 400;
+        letter-spacing: -0.03em;
+        font-variation-settings: "opsz" 144;
+        margin-bottom: 24px;
+      }
+      .foot .signoff em { color: var(--accent); }
+      .foot-bottom {
+        max-width: 1400px;
+        margin: 64px auto 0;
+        padding-top: 32px;
+        border-top: 1px solid #2a2a2a;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.4);
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 16px;
+      }
+
+      /* Reveal */
+      .reveal {
+        opacity: 0;
+        transform: translateY(24px);
+        transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+      }
+      .reveal.in { opacity: 1; transform: none; }
+
+      @media (prefers-reduced-motion: reduce) {
+        .reveal, .hero h1 .word, .marquee-track {
+          animation: none !important;
+          opacity: 1 !important;
+          transform: none !important;
+          transition: none !important;
+        }
+      }
+
+      .back {
+        position: fixed;
+        bottom: 24px;
+        left: 24px;
+        z-index: 60;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--ink);
+        text-decoration: none;
+        background: var(--bg);
+        padding: 10px 14px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+      }
+      .back:hover { background: var(--ink); color: var(--bg); }
+    </style>
+  </head>
+  <body>
+    <div class="cursor"></div>
+    <div class="cursor-ring"></div>
+
+    <div class="rail">
+      <div class="left">
+        <strong>ShopLanding</strong>
+        <span class="ticker" id="ticker">00:00 · est. 2026</span>
+      </div>
+      <nav>
+        <a href="#manifesto">Position</a>
+        <a href="#atlas">System</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#start">Begin</a>
+      </nav>
+    </div>
+
+    <a class="back" href="index.html">← All explorations</a>
+
+    <section class="hero">
+      <div class="hero-eyebrow">Issue 01 · Conversion logic, not pretty pixels</div>
+      <h1 aria-label="Sell one product. Convert like a thousand stores.">
+        <span class="word">Sell</span>
+        <span class="word">one</span>
+        <span class="word">product.</span>
+        <br />
+        <span class="word">Convert</span>
+        <span class="word">like</span>
+        <span class="word"><em>a thousand</em></span>
+        <span class="word">stores.</span>
+      </h1>
+      <div class="hero-meta">
+        <div>
+          <div class="hero-stat" data-count="7">0</div>
+          <div class="hero-stat-label">CRO blocks</div>
+        </div>
+        <div>
+          <div class="hero-stat" data-count="69">0</div>
+          <div class="hero-stat-label">Conversion rules</div>
+        </div>
+        <div class="hero-pull">
+          The marketing site is the proof. Every section is a block we sell, traceable to a documented conversion rule.
+        </div>
+      </div>
+    </section>
+
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee-track">
+        <span>Defensibly good baseline</span>
+        <span>One product, one page</span>
+        <span>Shipped as Shopify + WooCommerce</span>
+        <span>Lifetime updates</span>
+        <span>Defensibly good baseline</span>
+        <span>One product, one page</span>
+        <span>Shipped as Shopify + WooCommerce</span>
+        <span>Lifetime updates</span>
+      </div>
+    </div>
+
+    <section class="manifesto" id="manifesto">
+      <div class="manifesto-sticky">
+        <p class="num">§ 01 — Position</p>
+        <h2>Why this <em>beats</em><br />a Theme Store theme.</h2>
+      </div>
+      <div class="manifesto-list">
+        <article class="manifesto-item reveal">
+          <span class="tag">01 — Defensible</span>
+          <h3>You don't have to defend section order in a meeting.</h3>
+          <p>Every block is mapped to the rules it satisfies. Open the playbook, audit the page yourself. The argument is already won.</p>
+        </article>
+        <article class="manifesto-item reveal">
+          <span class="tag">02 — Specific</span>
+          <h3>One product, one page, one decision.</h3>
+          <p>No homepage. No category. No wishlist. The whole anatomy is built for the launch where the customer is choosing buy or don't.</p>
+        </article>
+        <article class="manifesto-item reveal">
+          <span class="tag">03 — Real</span>
+          <h3>The renderer that makes this page makes your page.</h3>
+          <p>Demos, the buyer preview, and the shipped zip all render through the same component tree. What you see is what you ship.</p>
+        </article>
+        <article class="manifesto-item reveal">
+          <span class="tag">04 — Portable</span>
+          <h3>Rebuild it on any stack you want.</h3>
+          <p>The unlimited-stores license includes a portable JSON + Markdown system spec. Any agency can re-implement the same anatomy in Hydrogen, Astro, Webflow, you name it.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="atlas" id="atlas">
+      <div class="atlas-inner">
+        <h2>The seven blocks. <em>In order.</em></h2>
+        <div class="atlas-grid" id="atlas-grid"></div>
+      </div>
+    </section>
+
+    <section class="pricing" id="pricing">
+      <div class="pricing-head">
+        <h2>One purchase. <em>Lifetime</em> updates.</h2>
+        <p class="pricing-note">No subscription. No discount theatre. Pay once, ship one product, keep the updates as we keep adding niches.</p>
+      </div>
+      <div class="price-grid">
+        <article class="price-tier">
+          <p class="num">For founders</p>
+          <h3>Single store</h3>
+          <p class="price">$<em>99</em></p>
+          <ul>
+            <li>One Shopify or WooCommerce store</li>
+            <li>Both .zip artifacts + system spec</li>
+            <li>Tweaks panel + personalized preview</li>
+            <li>Lifetime updates for that store</li>
+          </ul>
+          <a class="btn" href="#start">Begin</a>
+        </article>
+        <article class="price-tier featured">
+          <p class="num">For operators &amp; agencies</p>
+          <h3>Unlimited stores</h3>
+          <p class="price">$<em>249</em></p>
+          <ul>
+            <li>Everything in single-store</li>
+            <li>Use across unlimited stores you operate</li>
+            <li>Resell client builds without a re-license</li>
+            <li>Priority on niche-preset releases</li>
+          </ul>
+          <a class="btn" href="#start">Begin</a>
+        </article>
+        <article class="price-tier">
+          <p class="num">Add-on</p>
+          <h3>Done-for-you setup</h3>
+          <p class="price">+$<em>199</em></p>
+          <ul>
+            <li>We install the theme on your store</li>
+            <li>Wire payments + shipping + inventory</li>
+            <li>Five sections of copy from your brief</li>
+            <li>One round of revisions</li>
+          </ul>
+          <a class="btn" href="#start">Request</a>
+        </article>
+      </div>
+    </section>
+
+    <footer class="foot" id="start">
+      <div class="foot-inner">
+        <div>
+          <p class="signoff">Be <em>first</em> when<br />the themes ship.</p>
+          <form onsubmit="event.preventDefault(); this.querySelector('button').textContent='On the list ✦'; this.querySelector('input').disabled=true;">
+            <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+              <input
+                type="email"
+                required
+                placeholder="you@studio.com"
+                style="flex:1;min-width:220px;background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,0.4);color:#fff;font:inherit;padding:14px 0;outline:none;font-size:18px;"
+              />
+              <button class="btn" style="background:var(--accent);color:var(--ink);" type="submit">Join the waitlist</button>
+            </div>
+          </form>
+        </div>
+        <div>
+          <h4>System</h4>
+          <ul><li><a href="#">Playbook</a></li><li><a href="#">Showcase</a></li><li><a href="#">Themes</a></li></ul>
+        </div>
+        <div>
+          <h4>Company</h4>
+          <ul><li><a href="#">About</a></li><li><a href="#">Contact</a></li></ul>
+        </div>
+        <div>
+          <h4>Legal</h4>
+          <ul><li><a href="#">License</a></li><li><a href="#">Terms</a></li><li><a href="#">Privacy</a></li></ul>
+        </div>
+      </div>
+      <div class="foot-bottom">
+        <span>© 2026 ShopLanding</span>
+        <span>One product. One page. One decision.</span>
+      </div>
+    </footer>
+
+    <script>
+      // Cursor
+      const cursor = document.querySelector(".cursor");
+      const ring = document.querySelector(".cursor-ring");
+      let cx = 0, cy = 0, rx = 0, ry = 0;
+      window.addEventListener("mousemove", (e) => {
+        cx = e.clientX; cy = e.clientY;
+        cursor.style.transform = `translate(${cx}px, ${cy}px) translate(-50%, -50%)`;
+      });
+      function loop() {
+        rx += (cx - rx) * 0.18;
+        ry += (cy - ry) * 0.18;
+        ring.style.transform = `translate(${rx}px, ${ry}px) translate(-50%, -50%)`;
+        requestAnimationFrame(loop);
+      }
+      loop();
+      document.querySelectorAll("a, button, .atlas-block, .price-tier").forEach((el) => {
+        el.addEventListener("mouseenter", () => {
+          cursor.classList.add("hover");
+          ring.classList.add("hover");
+        });
+        el.addEventListener("mouseleave", () => {
+          cursor.classList.remove("hover");
+          ring.classList.remove("hover");
+        });
+      });
+
+      // Counter animation on hero stats
+      const counters = document.querySelectorAll(".hero-stat[data-count]");
+      function tick(el, target) {
+        let n = 0;
+        const start = performance.now();
+        const dur = 1400;
+        function step(t) {
+          const p = Math.min((t - start) / dur, 1);
+          const eased = 1 - Math.pow(1 - p, 3);
+          el.textContent = Math.round(target * eased);
+          if (p < 1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+      }
+      const co = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              tick(e.target, parseInt(e.target.dataset.count, 10));
+              co.unobserve(e.target);
+            }
+          });
+        },
+        { threshold: 0.4 },
+      );
+      counters.forEach((c) => co.observe(c));
+
+      // Reveal on scroll
+      const ro = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              e.target.classList.add("in");
+              if (e.target.classList.contains("manifesto-item")) {
+                e.target.classList.add("in");
+              }
+              ro.unobserve(e.target);
+            }
+          });
+        },
+        { threshold: 0.2, rootMargin: "0px 0px -10% 0px" },
+      );
+      document.querySelectorAll(".reveal, .manifesto-item").forEach((el) => ro.observe(el));
+
+      // Atlas blocks (renders dynamically so we don't repeat HTML)
+      const blocks = [
+        { name: "General", icon: "✦", rules: 4 },
+        { name: "Product overview", icon: "✱", rules: 6 },
+        { name: "Image gallery", icon: "❖", rules: 9 },
+        { name: "CTA area", icon: "→", rules: 23 },
+        { name: "Social proof", icon: "✧", rules: 8 },
+        { name: "AOV boosters", icon: "+", rules: 9 },
+        { name: "Description", icon: "§", rules: 10 },
+      ];
+      const atlas = document.getElementById("atlas-grid");
+      blocks.forEach((b, i) => {
+        const el = document.createElement("article");
+        el.className = "atlas-block";
+        el.innerHTML = `
+          <div>
+            <div class="num">0${i + 1}</div>
+          </div>
+          <div class="name">${b.name}</div>
+          <div class="rules">${b.rules} rules</div>
+          <span class="icon" aria-hidden>${b.icon}</span>
+        `;
+        atlas.appendChild(el);
+      });
+
+      // Live ticker
+      const tickerEl = document.getElementById("ticker");
+      function updateTicker() {
+        const d = new Date();
+        const hh = String(d.getHours()).padStart(2, "0");
+        const mm = String(d.getMinutes()).padStart(2, "0");
+        tickerEl.textContent = `${hh}:${mm} · Issue 01`;
+      }
+      updateTicker();
+      setInterval(updateTicker, 30000);
+    </script>
+  </body>
+</html>

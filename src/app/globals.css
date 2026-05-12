@@ -1,26 +1,1029 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Marketing tokens (modern SaaS, single accent) */
+  --bg: #ffffff;
+  --surface: #fafaf7;
+  --surface-2: #f4f2ed;
+  --ink: #0a0a0a;
+  --ink-2: #3f3f46;
+  --muted: #71717a;
+  --line: #e5e7eb;
+  --line-2: #f1f1ee;
+
+  /* Accent — the green the buyer sees in shipped themes (template/styles.css) */
+  --accent: #2e7d5b;
+  --accent-deep: #1f5a40;
+  --accent-soft: #e8f3ec;
+
+  /* Hero band (dark) */
+  --hero-bg: #0a0a0a;
+  --hero-ink: #fafaf7;
+  --hero-ink-2: #a1a1aa;
+  --hero-line: #1f1f1f;
+
+  /* Geometry */
+  --r-sm: 6px;
+  --r-md: 12px;
+  --r-lg: 18px;
+  --r-pill: 999px;
+
+  --maxw: 1200px;
+  --maxw-narrow: 920px;
+
+  /* Legacy tailwind-bridged tokens used by shadcn-ish utilities */
+  --background: var(--bg);
+  --foreground: var(--ink);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-accent: var(--accent);
+  --color-accent-deep: var(--accent-deep);
+  --color-accent-soft: var(--accent-soft);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Smooth in-page anchor scroll for nav links. Applied to BOTH html and body
+   so it works regardless of which element ends up being the scroll container
+   (Tailwind's `h-full` on html + `min-h-full` on body can flip this). The
+   `scroll-padding-top` reserves space so the 64px sticky `<Nav>` doesn't
+   cover the target heading. */
+html,
+body {
+  scroll-behavior: smooth;
+  scroll-padding-top: 80px;
+}
+@media (prefers-reduced-motion: reduce) {
+  html,
+  body { scroll-behavior: auto; }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  font-size: 16px;
+  line-height: 1.55;
 }
+
+/* ---------- Marketing primitives ---------- */
+
+.mk-eyebrow {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent-deep);
+}
+
+.mk-eyebrow-on-dark {
+  color: #6ee7a8;
+}
+
+.mk-section {
+  padding-block: clamp(64px, 8vw, 112px);
+}
+
+.mk-container {
+  width: 100%;
+  max-width: var(--maxw);
+  margin-inline: auto;
+  padding-inline: 24px;
+}
+
+.mk-h1 {
+  font-size: clamp(40px, 6.4vw, 72px);
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  font-weight: 600;
+}
+
+.mk-h2 {
+  font-size: clamp(28px, 4vw, 44px);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+}
+
+.mk-h3 {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+}
+
+.mk-mono {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* Pill button */
+.mk-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 22px;
+  border-radius: var(--r-pill);
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1;
+  transition:
+    transform 160ms ease,
+    background-color 160ms ease,
+    color 160ms ease,
+    border-color 160ms ease;
+  white-space: nowrap;
+}
+
+.mk-btn:active {
+  transform: translateY(1px);
+}
+
+.mk-btn-primary {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.05) inset;
+}
+.mk-btn-primary:hover {
+  background: var(--accent-deep);
+}
+
+.mk-btn-light {
+  background: #fff;
+  color: var(--ink);
+}
+.mk-btn-light:hover {
+  background: var(--surface);
+}
+
+.mk-btn-ghost {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--line);
+}
+.mk-btn-ghost:hover {
+  background: var(--surface);
+  border-color: #d4d4d4;
+}
+
+.mk-btn-ghost-on-dark {
+  background: transparent;
+  color: var(--hero-ink);
+  border: 1px solid var(--hero-line);
+}
+.mk-btn-ghost-on-dark:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: #2a2a2a;
+}
+
+/* Cards / chrome */
+.mk-card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  padding: 24px;
+  transition:
+    transform 200ms ease,
+    border-color 200ms ease,
+    box-shadow 200ms ease;
+}
+.mk-card:hover {
+  transform: translateY(-2px);
+  border-color: #d4d4d4;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    0 8px 24px -12px rgba(0, 0, 0, 0.08);
+}
+
+.mk-card-accent {
+  position: relative;
+  overflow: hidden;
+}
+.mk-card-accent::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 2px;
+  background: var(--accent);
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 240ms ease;
+}
+.mk-card-accent:hover::before {
+  transform: scaleY(1);
+}
+
+/* Eyebrow chip used for block IDs */
+.mk-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+
+.mk-chip-accent {
+  background: var(--accent-soft);
+  border-color: rgba(46, 125, 91, 0.18);
+  color: var(--accent-deep);
+}
+
+/* Hero band */
+.mk-hero {
+  background:
+    radial-gradient(
+      1200px 600px at 75% -10%,
+      rgba(46, 125, 91, 0.18),
+      transparent 60%
+    ),
+    radial-gradient(
+      900px 500px at 0% 100%,
+      rgba(46, 125, 91, 0.08),
+      transparent 70%
+    ),
+    var(--hero-bg);
+  color: var(--hero-ink);
+}
+
+.mk-hero a.mk-link {
+  color: var(--hero-ink);
+}
+
+/* Faux browser chrome */
+.mk-frame {
+  position: relative;
+  border-radius: var(--r-lg);
+  border: 1px solid #1f1f1f;
+  background: #0f0f0f;
+  overflow: hidden;
+  box-shadow:
+    0 1px 0 0 rgba(255, 255, 255, 0.04) inset,
+    0 30px 60px -20px rgba(0, 0, 0, 0.6),
+    0 10px 30px -10px rgba(46, 125, 91, 0.25);
+}
+
+.mk-frame-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-bottom: 1px solid #1f1f1f;
+  background: linear-gradient(180deg, #131313 0%, #0f0f0f 100%);
+}
+
+.mk-frame-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: #2a2a2a;
+}
+.mk-frame-dot:nth-child(1) {
+  background: #ef4444;
+}
+.mk-frame-dot:nth-child(2) {
+  background: #f59e0b;
+}
+.mk-frame-dot:nth-child(3) {
+  background: #22c55e;
+}
+
+.mk-frame-url {
+  margin-left: 12px;
+  flex: 1;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: #71717a;
+  background: #1a1a1a;
+  border: 1px solid #262626;
+  border-radius: 999px;
+  padding: 5px 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Reveal animation */
+.mk-reveal {
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    opacity 480ms ease,
+    transform 480ms ease;
+}
+.mk-reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Block-showcase row */
+.mk-bs-row {
+  display: grid;
+  grid-template-columns: 80px 1fr auto;
+  gap: 16px;
+  align-items: start;
+  padding: 18px 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: #fff;
+  transition:
+    border-color 200ms ease,
+    background-color 200ms ease,
+    transform 200ms ease;
+  cursor: pointer;
+}
+.mk-bs-row[data-active="true"],
+.mk-bs-row:hover {
+  border-color: rgba(46, 125, 91, 0.35);
+  background: linear-gradient(180deg, var(--accent-soft) 0%, #fff 60%);
+}
+
+.mk-bs-num {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 12px;
+  color: var(--accent-deep);
+  letter-spacing: 0.08em;
+}
+
+/* Comparison check / dash */
+.mk-check,
+.mk-dash {
+  display: inline-flex;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+}
+.mk-check {
+  background: var(--accent-soft);
+  color: var(--accent-deep);
+}
+.mk-dash {
+  background: var(--surface-2);
+  color: var(--muted);
+}
+
+/* StickyCta */
+.mk-sticky-cta {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translate(-50%, 120%);
+  z-index: 40;
+  transition:
+    transform 280ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    opacity 280ms ease;
+  opacity: 0;
+}
+.mk-sticky-cta[data-visible="true"] {
+  transform: translate(-50%, 0);
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mk-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .mk-card,
+  .mk-bs-row,
+  .mk-btn,
+  .mk-sticky-cta {
+    transition: none;
+  }
+  .mk-card:hover,
+  .mk-card:hover {
+    transform: none;
+  }
+}
+
+/* Marquee for announcement bar */
+@keyframes mk-marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.mk-marquee-track {
+  display: inline-flex;
+  gap: 48px;
+  padding-block: 8px;
+  white-space: nowrap;
+  animation: mk-marquee 38s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .mk-marquee-track {
+    animation: none;
+  }
+}
+
+/* ============================================================
+   Option A — catalog primitives (preset stack, theme card,
+   annotated proof, vs-cards, price strip).
+   ============================================================ */
+
+/* Preset stack inside the hero */
+.mk-stack {
+  position: relative;
+  height: clamp(380px, 48vw, 540px);
+  perspective: 1800px;
+}
+.mk-stack-inner {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: 1fr 1.15fr 1fr;
+  align-items: center;
+  gap: 0;
+}
+@media (max-width: 760px) {
+  .mk-stack-inner { grid-template-columns: 1fr; gap: 18px; height: auto; }
+  .mk-stack { height: auto; padding-block: 24px; }
+}
+.mk-frame-card {
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow:
+    0 1px 0 rgba(0,0,0,0.04) inset,
+    0 30px 60px -25px rgba(0,0,0,0.25),
+    0 10px 20px -10px rgba(0,0,0,0.10);
+}
+.mk-stack-inner > .mk-frame-card:nth-child(1) {
+  transform: rotate(-6deg) translateY(20px);
+  z-index: 1;
+}
+.mk-stack-inner > .mk-frame-card:nth-child(2) {
+  transform: rotate(0deg) translateY(-10px) scale(1.05);
+  z-index: 2;
+  box-shadow:
+    0 1px 0 rgba(0,0,0,0.04) inset,
+    0 50px 80px -30px rgba(0,0,0,0.35),
+    0 20px 30px -15px rgba(0,0,0,0.15);
+}
+.mk-stack-inner > .mk-frame-card:nth-child(3) {
+  transform: rotate(6deg) translateY(20px);
+  z-index: 1;
+}
+@media (max-width: 760px) {
+  .mk-stack-inner > .mk-frame-card { transform: none !important; }
+}
+.mk-frame-label {
+  position: absolute;
+  bottom: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 600;
+  white-space: nowrap;
+}
+.mk-chrome {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 12px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  background: #fafaf8;
+}
+.mk-chrome span {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #ddd;
+}
+.mk-chrome span:nth-child(1) { background: #ff6058; }
+.mk-chrome span:nth-child(2) { background: #ffbd2e; }
+.mk-chrome span:nth-child(3) { background: #28ca42; }
+.mk-chrome-url {
+  margin-left: 8px;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 10px;
+  color: #999;
+}
+
+/* Mock landing page contents inside a frame */
+.mk-mock {
+  padding: 22px;
+  display: grid;
+  gap: 12px;
+  position: relative;
+}
+.mk-mock-ann {
+  height: 18px;
+  border-radius: 4px;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+}
+.mk-mock-nav {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  height: 14px;
+}
+.mk-mock-nav span {
+  height: 6px;
+  border-radius: 2px;
+  background: rgba(0, 0, 0, 0.10);
+}
+.mk-mock-nav .mk-logo { width: 28px; }
+.mk-mock-nav .mk-l { width: 22px; }
+.mk-mock-nav .mk-cart {
+  margin-left: auto;
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.10);
+}
+.mk-mock-hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.mk-mock-gal {
+  aspect-ratio: 1 / 1;
+  border-radius: 8px;
+}
+.mk-mock-info {
+  display: grid;
+  gap: 6px;
+  align-content: start;
+}
+.mk-mock-h {
+  height: 12px;
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.85);
+}
+.mk-mock-h.short { width: 60%; }
+.mk-mock-h.mid { width: 80%; height: 8px; background: rgba(0, 0, 0, 0.55); }
+.mk-mock-price {
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+  margin-top: 4px;
+}
+.mk-mock-price b { font-size: 16px; font-weight: 700; }
+.mk-mock-price s { font-size: 10px; color: rgba(0, 0, 0, 0.50); }
+.mk-mock-pill {
+  display: inline-block;
+  padding: 2px 6px;
+  font-size: 8px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.10);
+  color: rgba(0, 0, 0, 0.75);
+  font-weight: 600;
+  width: fit-content;
+}
+.mk-mock-cta {
+  margin-top: 4px;
+  height: 22px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8px;
+  color: #fff;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+}
+
+/* "Below the fold" preview rows — give mocks a realistic page-density feel
+   without requiring an artificial min-height. Press strip + benefits tiles. */
+.mk-mock-divider {
+  margin-top: 8px;
+  height: 1px;
+  background: rgba(0, 0, 0, 0.08);
+}
+.mk-mock-press {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  justify-content: space-between;
+  padding-block: 4px;
+}
+.mk-mock-press span {
+  height: 6px;
+  border-radius: 2px;
+  background: rgba(0, 0, 0, 0.30);
+  flex: 1;
+}
+.mk-mock-press span:nth-child(2) { flex: 0.7; }
+.mk-mock-press span:nth-child(4) { flex: 0.85; }
+.mk-mock-tiles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+.mk-mock-tiles div {
+  aspect-ratio: 1.4 / 1;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.06);
+}
+/* Dark-theme press + tile overrides */
+.preset-supplement .mk-mock-divider { background: rgba(255, 255, 255, 0.08); }
+.preset-supplement .mk-mock-press span { background: rgba(255, 255, 255, 0.30); }
+.preset-supplement .mk-mock-tiles div { background: rgba(255, 255, 255, 0.06); }
+
+/* Per-niche palettes — applied as a class on .mk-mock or .mk-frame-card */
+.preset-skincare { --p: #f5e6d6; --p-deep: #c9a37a; --p-cta: #1f5a40; }
+.preset-skincare .mk-mock-ann { background: var(--p-deep); color: #fff; }
+.preset-skincare .mk-mock-gal { background: linear-gradient(135deg, var(--p), var(--p-deep)); }
+.preset-skincare .mk-mock-cta { background: var(--p-cta); }
+
+.preset-supplement { --p: #1a1a1a; --p-deep: #2a2a2a; --p-cta: #00d57a; }
+.preset-supplement .mk-mock { background: var(--p); }
+.preset-supplement .mk-mock-ann { background: var(--p-cta); color: #052e1c; }
+.preset-supplement .mk-mock-gal { background: linear-gradient(135deg, var(--p), var(--p-deep)); }
+.preset-supplement .mk-mock-cta { background: var(--p-cta); color: #052e1c; }
+.preset-supplement .mk-mock-h { background: rgba(255, 255, 255, 1); }
+.preset-supplement .mk-mock-h.mid { background: rgba(255, 255, 255, 0.40); }
+.preset-supplement .mk-mock-pill { background: rgba(0, 213, 122, 0.20); color: #00d57a; }
+.preset-supplement .mk-mock-price b { color: #fff; }
+.preset-supplement .mk-mock-price s { color: rgba(255, 255, 255, 0.40); }
+.preset-supplement .mk-mock-nav span { background: rgba(255, 255, 255, 0.20); }
+.preset-supplement .mk-mock-nav .mk-cart { background: rgba(255, 255, 255, 0.20); }
+
+.preset-gadget { --p: #e8e8eb; --p-deep: #b0b0b8; --p-cta: #0066ff; }
+.preset-gadget .mk-mock-ann { background: #0a0a0a; color: #fff; }
+.preset-gadget .mk-mock-gal { background: linear-gradient(135deg, var(--p), var(--p-deep)); }
+.preset-gadget .mk-mock-cta { background: var(--p-cta); }
+
+/* Dark price strip */
+.mk-price-strip {
+  background: var(--ink);
+  color: var(--bg);
+  border-radius: 12px;
+  padding: 14px 24px;
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+}
+.mk-price-strip strong { font-weight: 600; font-size: 15px; }
+.mk-price-strip .mk-strip-tags {
+  display: flex;
+  gap: 18px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+  flex-wrap: wrap;
+}
+.mk-price-strip .mk-strip-tags span {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+}
+.mk-price-strip .mk-strip-tags span::before {
+  content: "✓";
+  color: var(--accent);
+}
+
+/* Theme catalog card */
+.mk-theme-card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition:
+    transform 280ms ease,
+    box-shadow 280ms ease,
+    border-color 280ms ease;
+}
+.mk-theme-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 30px 60px -25px rgba(0, 0, 0, 0.18);
+  border-color: var(--accent);
+}
+.mk-theme-thumbs {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+.mk-theme-thumb {
+  position: absolute;
+  inset: 0;
+  /* Anchor to the top so the chrome bar + announcement strip are always
+     visible. The bottom (below-fold preview) clips naturally — that mirrors
+     how real landing-page screenshots crop on a card. */
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 18px;
+  transition: opacity 320ms ease;
+}
+.mk-theme-thumb-front { opacity: 1; }
+.mk-theme-thumb-back { opacity: 0; }
+.mk-theme-card:hover .mk-theme-thumb-front { opacity: 0; }
+.mk-theme-card:hover .mk-theme-thumb-back { opacity: 1; }
+.mk-theme-thumb .mk-frame-card {
+  width: 88%;
+  transform: rotate(-1.5deg);
+}
+.mk-theme-body {
+  padding: 22px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+.mk-theme-row1 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.mk-theme-card h3 {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.mk-theme-pos {
+  color: var(--ink-2);
+  font-size: 14px;
+  min-height: 22px;
+}
+.mk-badges {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.mk-badge {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 5px;
+  background: var(--surface-2);
+  color: var(--ink-2);
+}
+.mk-badge.mk-badge-cov {
+  background: var(--accent-soft);
+  color: var(--accent-deep);
+}
+.mk-theme-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+.mk-theme-price {
+  font-weight: 600;
+  font-size: 17px;
+}
+.mk-theme-price span {
+  color: var(--muted);
+  font-weight: 400;
+  font-size: 13px;
+}
+.mk-theme-actions a {
+  font-size: 12px;
+  color: var(--ink-2);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.mk-theme-actions a:hover { color: var(--accent-deep); }
+
+/* Annotated proof — pin */
+.mk-pin {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  z-index: 5;
+  box-shadow:
+    0 6px 20px rgba(46, 125, 91, 0.5),
+    0 0 0 4px rgba(46, 125, 91, 0.15);
+  transition: transform 200ms ease, background 200ms ease;
+}
+.mk-pin:hover { transform: scale(1.1); background: var(--ink); }
+.mk-pin[data-active="true"] {
+  background: var(--ink);
+  transform: scale(1.15);
+}
+
+/* Annotated proof — frame + side panel */
+.mk-proof-frame {
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 30px 60px -30px rgba(0, 0, 0, 0.20);
+}
+.mk-proof-strip {
+  height: 28px;
+  background: var(--ink);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.mk-proof-nav {
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  border-bottom: 1px solid #eee;
+}
+.mk-proof-logo {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.mk-proof-links {
+  display: flex;
+  gap: 18px;
+  font-size: 13px;
+  color: var(--ink-2);
+}
+.mk-proof-pdp {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  padding: 32px 24px;
+  position: relative;
+}
+@media (max-width: 700px) {
+  .mk-proof-pdp { grid-template-columns: 1fr; }
+}
+.mk-proof-gallery {
+  aspect-ratio: 1;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f5e6d6, #c9a37a);
+}
+.mk-proof-info {
+  display: grid;
+  gap: 12px;
+  align-content: start;
+}
+.mk-proof-info h4 {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.mk-proof-stars {
+  font-size: 13px;
+  color: #d49a3a;
+}
+.mk-proof-stars b {
+  color: var(--ink);
+  font-weight: 600;
+}
+.mk-proof-price {
+  font-size: 26px;
+  font-weight: 700;
+}
+.mk-proof-price s {
+  font-size: 16px;
+  color: var(--muted);
+  font-weight: 400;
+}
+.mk-proof-cta {
+  height: 38px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+}
+.mk-proof-section {
+  padding: 32px 24px;
+  border-top: 1px solid #f3f3f3;
+  position: relative;
+}
+.mk-proof-label {
+  color: var(--accent-deep);
+  margin-bottom: 8px;
+}
+.mk-proof-section h5 {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+}
+.mk-proof-grid3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 12px;
+}
+.mk-proof-gcard {
+  height: 80px;
+  border-radius: 8px;
+  background: var(--surface-2);
+}
+.mk-proof-press {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  font-size: 14px;
+  color: var(--muted);
+  margin-top: 12px;
+}
+/* Pins sit inset within the rounded `.mk-proof-frame` (which clips overflow). */
+.mk-proof-pin-1 {
+  top: 24px;
+  right: 16px;
+}
+.mk-proof-section .mk-pin {
+  top: 24px;
+  right: 16px;
+}
+
+/* Sticky side panel */
+.mk-proof-side {
+  position: sticky;
+  top: 96px;
+}
+.mk-rule-list {
+  list-style: none;
+  padding: 6px;
+  margin: 0;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+.mk-rule-list li {
+  display: flex;
+  gap: 12px;
+  padding: 14px;
+  border-bottom: 1px solid var(--line);
+  font-size: 13px;
+}
+.mk-rule-list li:last-child { border-bottom: none; }
+.mk-rule-num {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 11px;
+  font-weight: 600;
+}
+.mk-rule-body {
+  color: var(--ink-2);
+  line-height: 1.4;
+}
+
+/* (Without/with comparison now uses Tailwind utility classes in
+   `<Comparison>`. The mk-vs-* CSS that previously rendered mock screens
+   was deleted — feature table is HTML-driven now and can't break under HMR.) */

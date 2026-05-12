@@ -1,0 +1,844 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ShopLanding · 02 Brutalist Mono</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0c0c0c;
+        --bg-2: #131313;
+        --ink: #f3f3ee;
+        --muted: #888;
+        --line: #2a2a2a;
+        --line-2: #1c1c1c;
+        --accent: #6ee7a8;
+        --warn: #f59e0b;
+        --red: #ef4444;
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html { scroll-behavior: smooth; }
+      body {
+        background: var(--bg);
+        color: var(--ink);
+        font-family: "JetBrains Mono", ui-monospace, monospace;
+        font-size: 14px;
+        line-height: 1.55;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* Background grid */
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background-image:
+          linear-gradient(to right, rgba(255,255,255,0.025) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(255,255,255,0.025) 1px, transparent 1px);
+        background-size: 32px 32px;
+        z-index: -1;
+        pointer-events: none;
+      }
+
+      a { color: inherit; }
+      ::selection { background: var(--accent); color: var(--bg); }
+
+      /* Header rail */
+      .rail {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        gap: 16px;
+        align-items: center;
+        padding: 14px 24px;
+        background: var(--bg);
+        border-bottom: 1px solid var(--line);
+        font-size: 12px;
+      }
+      .rail .left,
+      .rail .right { display: flex; gap: 18px; align-items: center; }
+      .rail .right { justify-content: flex-end; }
+      .rail .center {
+        text-align: center;
+        color: var(--muted);
+      }
+      .rail a { text-decoration: none; }
+      .rail .nav a { padding: 4px 8px; border: 1px solid transparent; }
+      .rail .nav a:hover { border-color: var(--line); color: var(--accent); }
+      .rail .dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        background: var(--accent);
+        border-radius: 0;
+        animation: pulse 1.4s steps(2, end) infinite;
+        vertical-align: middle;
+        margin-right: 6px;
+      }
+      @keyframes pulse { 50% { opacity: 0.2; } }
+
+      .back {
+        position: fixed;
+        bottom: 16px;
+        left: 16px;
+        z-index: 60;
+        font-size: 11px;
+        text-decoration: none;
+        background: var(--bg);
+        color: var(--ink);
+        border: 1px solid var(--line);
+        padding: 8px 12px;
+      }
+      .back:hover { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+
+      /* Hero */
+      .hero {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 40px 24px 80px;
+        border-left: 1px solid var(--line);
+        border-right: 1px solid var(--line);
+      }
+      .terminal {
+        background: var(--bg-2);
+        border: 1px solid var(--line);
+        padding: 0;
+      }
+      .terminal-bar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 14px;
+        border-bottom: 1px solid var(--line);
+        background: #181818;
+        font-size: 11px;
+        color: var(--muted);
+      }
+      .term-dot { width: 10px; height: 10px; border: 1px solid var(--line); }
+      .term-dot.r { background: var(--red); }
+      .term-dot.y { background: var(--warn); }
+      .term-dot.g { background: var(--accent); }
+      .terminal-bar .path { margin-left: 14px; }
+      .terminal-body {
+        padding: 22px 24px 28px;
+        font-size: 14px;
+        line-height: 1.7;
+        white-space: pre-wrap;
+      }
+      .prompt { color: var(--accent); }
+      .muted { color: var(--muted); }
+      .key { color: var(--warn); }
+      .ok { color: var(--accent); }
+      .typed::after {
+        content: "▮";
+        color: var(--accent);
+        animation: blink 1s steps(2, end) infinite;
+        margin-left: 1px;
+      }
+      @keyframes blink { 50% { opacity: 0; } }
+
+      .hero-headline {
+        font-family: "JetBrains Mono", monospace;
+        font-size: clamp(40px, 8vw, 132px);
+        line-height: 0.95;
+        letter-spacing: -0.045em;
+        font-weight: 700;
+        margin-top: 56px;
+        text-transform: uppercase;
+      }
+      .hero-headline .accent { color: var(--accent); }
+      .hero-headline .strike { text-decoration: line-through; opacity: 0.35; }
+
+      .hero-meta {
+        margin-top: 32px;
+        display: grid;
+        grid-template-columns: 1.4fr 1fr 1fr 1fr;
+        gap: 0;
+        border-top: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+      }
+      @media (max-width: 800px) { .hero-meta { grid-template-columns: 1fr 1fr; } }
+      .hero-meta > div {
+        padding: 18px 20px;
+        border-right: 1px solid var(--line);
+      }
+      .hero-meta > div:last-child { border-right: none; }
+      .hero-meta .label {
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        color: var(--muted);
+        margin-bottom: 8px;
+      }
+      .hero-meta .value {
+        font-size: 22px;
+        font-weight: 600;
+        color: var(--ink);
+      }
+      .hero-meta .value.accent { color: var(--accent); }
+
+      /* Sections */
+      section.sect {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 80px 24px;
+        border-left: 1px solid var(--line);
+        border-right: 1px solid var(--line);
+      }
+      .sect-head {
+        display: grid;
+        grid-template-columns: 100px 1fr;
+        gap: 32px;
+        margin-bottom: 48px;
+        padding-bottom: 24px;
+        border-bottom: 1px solid var(--line);
+      }
+      .sect-num {
+        font-size: 11px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--accent);
+      }
+      .sect-head h2 {
+        font-size: clamp(28px, 4vw, 56px);
+        line-height: 1.05;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        text-transform: uppercase;
+      }
+      .sect-head h2 .accent { color: var(--accent); }
+      .sect-head h2 .underline {
+        text-decoration: underline;
+        text-decoration-thickness: 4px;
+        text-underline-offset: 8px;
+        text-decoration-color: var(--accent);
+      }
+      .sect-head .lead {
+        margin-top: 16px;
+        max-width: 60ch;
+        color: var(--muted);
+        font-family: "Inter", sans-serif;
+        font-size: 16px;
+        line-height: 1.6;
+        text-transform: none;
+      }
+
+      /* Block list */
+      .blocks {
+        border: 1px solid var(--line);
+      }
+      .block {
+        display: grid;
+        grid-template-columns: 80px 1fr 120px 60px;
+        gap: 16px;
+        align-items: center;
+        padding: 22px 20px;
+        border-bottom: 1px solid var(--line);
+        cursor: pointer;
+        transition: background 200ms ease, color 200ms ease;
+      }
+      .block:last-child { border-bottom: none; }
+      .block:hover { background: var(--accent); color: var(--bg); }
+      .block .b-num { font-size: 11px; opacity: 0.7; }
+      .block .b-name {
+        font-size: 18px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: -0.005em;
+      }
+      .block .b-rules { font-size: 11px; text-transform: uppercase; letter-spacing: 0.16em; opacity: 0.7; }
+      .block .b-arrow { text-align: right; font-size: 16px; opacity: 0.5; transition: transform 200ms ease, opacity 200ms ease; }
+      .block:hover .b-arrow { opacity: 1; transform: translateX(4px); }
+      .block .b-detail {
+        grid-column: 2 / 5;
+        max-height: 0;
+        overflow: hidden;
+        font-family: "Inter", sans-serif;
+        font-size: 14px;
+        line-height: 1.6;
+        opacity: 0.7;
+        text-transform: none;
+        margin-top: 0;
+        transition: max-height 0.3s ease, margin-top 0.3s ease;
+      }
+      .block.open { background: var(--bg-2); }
+      .block.open .b-detail { max-height: 240px; margin-top: 12px; }
+
+      /* Comparison */
+      .compare {
+        border: 1px solid var(--line);
+        overflow: auto;
+      }
+      .compare table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+      }
+      .compare th, .compare td {
+        padding: 14px 16px;
+        text-align: left;
+        border-right: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+      }
+      .compare th {
+        background: var(--bg-2);
+        font-size: 10px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--muted);
+        font-weight: 500;
+      }
+      .compare th.us { color: var(--accent); }
+      .compare td.cell { text-align: center; font-family: "JetBrains Mono", monospace; }
+      .compare td.yes { color: var(--accent); }
+      .compare td.no { color: var(--muted); }
+      .compare tbody tr:last-child td { border-bottom: none; }
+      .compare td:last-child, .compare th:last-child { border-right: none; }
+
+      /* Pricing */
+      .price-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        border: 1px solid var(--line);
+      }
+      @media (max-width: 1000px) { .price-grid { grid-template-columns: 1fr; } }
+      .price-card {
+        padding: 32px 28px;
+        border-right: 1px solid var(--line);
+        background: var(--bg-2);
+        position: relative;
+      }
+      .price-card:last-child { border-right: none; }
+      .price-card.feat {
+        background: var(--accent);
+        color: var(--bg);
+      }
+      .price-card.feat .label-mono { color: var(--bg); opacity: 0.65; }
+      .price-card .label-mono {
+        font-size: 10px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 24px;
+      }
+      .price-card h3 {
+        font-size: 18px;
+        text-transform: uppercase;
+        letter-spacing: -0.005em;
+        margin-bottom: 18px;
+      }
+      .price-card .price {
+        font-size: 64px;
+        font-weight: 700;
+        letter-spacing: -0.03em;
+        margin-bottom: 24px;
+        line-height: 1;
+      }
+      .price-card ul {
+        list-style: none;
+        margin: 0 0 24px;
+        padding: 0;
+        font-size: 13px;
+      }
+      .price-card ul li {
+        padding: 8px 0;
+        border-bottom: 1px solid currentColor;
+        opacity: 0.85;
+      }
+      .price-card ul li::before {
+        content: "[+] ";
+        color: var(--accent);
+        margin-right: 4px;
+      }
+      .price-card.feat ul li::before { color: var(--bg); }
+      .price-card .btn {
+        display: inline-block;
+        padding: 12px 18px;
+        background: var(--ink);
+        color: var(--bg);
+        text-decoration: none;
+        font-size: 11px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        border: 1px solid var(--ink);
+      }
+      .price-card .btn:hover { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+      .price-card.feat .btn { background: var(--bg); color: var(--accent); border-color: var(--bg); }
+      .price-card.feat .btn:hover { background: var(--ink); color: var(--accent); border-color: var(--ink); }
+
+      /* FAQ */
+      .faq {
+        border: 1px solid var(--line);
+      }
+      .faq details {
+        border-bottom: 1px solid var(--line);
+      }
+      .faq details:last-child { border-bottom: none; }
+      .faq summary {
+        list-style: none;
+        cursor: pointer;
+        padding: 18px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 15px;
+        text-transform: uppercase;
+        letter-spacing: -0.005em;
+        font-weight: 600;
+      }
+      .faq summary::-webkit-details-marker { display: none; }
+      .faq summary::after {
+        content: "[+]";
+        color: var(--accent);
+        font-size: 12px;
+      }
+      .faq details[open] summary::after { content: "[—]"; }
+      .faq details[open] { background: var(--bg-2); }
+      .faq .a {
+        padding: 0 20px 20px;
+        font-family: "Inter", sans-serif;
+        font-size: 15px;
+        line-height: 1.6;
+        color: var(--muted);
+        text-transform: none;
+        max-width: 70ch;
+      }
+
+      /* Final */
+      .final {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 100px 24px;
+        border: 1px solid var(--line);
+        border-top: none;
+        border-bottom: none;
+      }
+      .final-card {
+        background: var(--bg-2);
+        border: 1px solid var(--line);
+        padding: 64px 48px;
+        text-align: center;
+      }
+      .final-card h2 {
+        font-size: clamp(36px, 6vw, 88px);
+        line-height: 0.95;
+        letter-spacing: -0.04em;
+        font-weight: 700;
+        text-transform: uppercase;
+        margin-bottom: 16px;
+      }
+      .final-card h2 .accent { color: var(--accent); }
+      .final-card p {
+        font-family: "Inter", sans-serif;
+        color: var(--muted);
+        margin-bottom: 32px;
+        font-size: 16px;
+      }
+      .final-form {
+        display: flex;
+        gap: 0;
+        max-width: 520px;
+        margin: 0 auto;
+        border: 1px solid var(--line);
+      }
+      .final-form input {
+        flex: 1;
+        background: var(--bg);
+        color: var(--ink);
+        font: inherit;
+        font-size: 14px;
+        padding: 16px 18px;
+        border: none;
+        outline: none;
+      }
+      .final-form button {
+        background: var(--accent);
+        color: var(--bg);
+        font: inherit;
+        font-size: 11px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        font-weight: 600;
+        padding: 0 24px;
+        border: none;
+        cursor: pointer;
+      }
+      .final-form button:hover { background: var(--ink); color: var(--accent); }
+      .final-form input:focus { outline: 2px solid var(--accent); outline-offset: -2px; }
+
+      /* Footer */
+      footer.foot {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 48px 24px 24px;
+        border-left: 1px solid var(--line);
+        border-right: 1px solid var(--line);
+        border-top: 1px solid var(--line);
+        font-size: 12px;
+      }
+      .foot-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1fr;
+        gap: 48px;
+        padding-bottom: 32px;
+        border-bottom: 1px solid var(--line);
+      }
+      @media (max-width: 800px) { .foot-grid { grid-template-columns: 1fr 1fr; } }
+      .foot h4 {
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        color: var(--muted);
+        margin-bottom: 12px;
+        font-weight: 500;
+      }
+      .foot ul { list-style: none; padding: 0; margin: 0; }
+      .foot ul li { padding: 5px 0; }
+      .foot a { text-decoration: none; }
+      .foot a:hover { color: var(--accent); }
+      .foot-bottom {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        padding-top: 24px;
+        color: var(--muted);
+        flex-wrap: wrap;
+      }
+
+      /* Reveal */
+      .reveal {
+        opacity: 0;
+        transform: translateY(16px);
+        transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+      }
+      .reveal.in { opacity: 1; transform: none; }
+
+      @media (prefers-reduced-motion: reduce) {
+        .reveal, .typed::after, .rail .dot {
+          animation: none !important;
+          opacity: 1 !important;
+          transition: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="rail">
+      <div class="left">
+        <span><span class="dot"></span><strong>shoplanding</strong>@v0.1.0</span>
+      </div>
+      <div class="center muted">~/ shoplanding / marketing / brutalist</div>
+      <div class="right nav">
+        <a href="#system">system</a>
+        <a href="#compare">compare</a>
+        <a href="#pricing">pricing</a>
+        <a href="#faq">faq</a>
+        <a href="#start">[ join ]</a>
+      </div>
+    </div>
+
+    <a class="back" href="index.html">← all</a>
+
+    <div class="hero">
+      <div class="terminal">
+        <div class="terminal-bar">
+          <span class="term-dot r"></span>
+          <span class="term-dot y"></span>
+          <span class="term-dot g"></span>
+          <span class="path">— bash — shoplanding init</span>
+        </div>
+        <pre class="terminal-body" id="boot"></pre>
+      </div>
+
+      <h1 class="hero-headline">
+        <span>Sell&nbsp;one&nbsp;product.</span><br />
+        <span>Convert <span class="accent">like</span> a <span class="accent">thousand</span> stores.</span>
+      </h1>
+
+      <div class="hero-meta">
+        <div>
+          <div class="label">// Position</div>
+          <div class="value">The system, not just a theme.</div>
+        </div>
+        <div>
+          <div class="label">// Blocks</div>
+          <div class="value accent" data-count="7">0</div>
+        </div>
+        <div>
+          <div class="label">// Rules</div>
+          <div class="value accent" data-count="69">0</div>
+        </div>
+        <div>
+          <div class="label">// Components</div>
+          <div class="value accent" data-count="20">0</div>
+        </div>
+      </div>
+    </div>
+
+    <section class="sect" id="system">
+      <header class="sect-head">
+        <div class="sect-num">// 01<br />System</div>
+        <div>
+          <h2>Seven blocks. <span class="underline">In order.</span></h2>
+          <p class="lead">Each block maps to a documented conversion rule. Click any to reveal what it must include.</p>
+        </div>
+      </header>
+      <div class="blocks" id="blocks"></div>
+    </section>
+
+    <section class="sect" id="compare">
+      <header class="sect-head">
+        <div class="sect-num">// 02<br />Compare</div>
+        <div>
+          <h2>vs. <span class="strike">marketplace</span> <span class="accent">marketplaces</span>, vs. DIY.</h2>
+          <p class="lead">Why this beats a Theme Store theme — or rolling your own from scratch.</p>
+        </div>
+      </header>
+      <div class="compare">
+        <table>
+          <thead>
+            <tr>
+              <th>capability</th>
+              <th class="us">shoplanding</th>
+              <th>theme store</th>
+              <th>diy</th>
+            </tr>
+          </thead>
+          <tbody id="compare-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="sect" id="pricing">
+      <header class="sect-head">
+        <div class="sect-num">// 03<br />Pricing</div>
+        <div>
+          <h2>One-time. <span class="accent">Lifetime updates.</span></h2>
+          <p class="lead">No subscription. No discount theatre. No urgency timers. Pay once, ship one product, keep the updates.</p>
+        </div>
+      </header>
+      <div class="price-grid">
+        <article class="price-card">
+          <div class="label-mono">// founders</div>
+          <h3>single store</h3>
+          <div class="price">$99</div>
+          <ul>
+            <li>One Shopify or Woo store</li>
+            <li>Both .zip artifacts + spec</li>
+            <li>Tweaks panel + preview</li>
+            <li>Lifetime updates</li>
+          </ul>
+          <a class="btn" href="#start">Join waitlist</a>
+        </article>
+        <article class="price-card feat">
+          <div class="label-mono">// operators &amp; agencies — best value</div>
+          <h3>unlimited stores</h3>
+          <div class="price">$249</div>
+          <ul>
+            <li>Everything in single-store</li>
+            <li>Use across unlimited stores</li>
+            <li>Resell client builds</li>
+            <li>Priority preset releases</li>
+          </ul>
+          <a class="btn" href="#start">Join waitlist</a>
+        </article>
+        <article class="price-card">
+          <div class="label-mono">// add-on</div>
+          <h3>done-for-you</h3>
+          <div class="price">+$199</div>
+          <ul>
+            <li>We install on your store</li>
+            <li>Wire payments + inventory</li>
+            <li>5 sections of brand copy</li>
+            <li>One round of revisions</li>
+          </ul>
+          <a class="btn" href="#start">Request setup</a>
+        </article>
+      </div>
+    </section>
+
+    <section class="sect" id="faq">
+      <header class="sect-head">
+        <div class="sect-num">// 04<br />FAQ</div>
+        <div>
+          <h2>The questions buyers <span class="accent">ask</span> before paying.</h2>
+        </div>
+      </header>
+      <div class="faq" id="faq-list"></div>
+    </section>
+
+    <div class="final" id="start">
+      <div class="final-card">
+        <h2>Be <span class="accent">first</span>&nbsp;when the themes ship.</h2>
+        <p>One email when the first niche preset is purchasable. No drip. No upsell. No marketing automation theatre.</p>
+        <form class="final-form" onsubmit="event.preventDefault(); this.querySelector('button').textContent='[ on the list ]'; this.querySelector('input').disabled = true;">
+          <input type="email" required placeholder="you@studio.com" />
+          <button type="submit">[ join ]</button>
+        </form>
+      </div>
+    </div>
+
+    <footer class="foot">
+      <div class="foot-grid">
+        <div>
+          <h4>// shoplanding</h4>
+          <p style="font-family: 'Inter', sans-serif; color: var(--muted); max-width: 36ch; line-height: 1.6;">The block system, CRO playbook, and Shopify + WooCommerce themes for high-converting one-product landing pages.</p>
+        </div>
+        <div>
+          <h4>// system</h4>
+          <ul><li><a href="#">Playbook</a></li><li><a href="#">Showcase</a></li><li><a href="#">Themes</a></li></ul>
+        </div>
+        <div>
+          <h4>// company</h4>
+          <ul><li><a href="#">About</a></li><li><a href="#">Contact</a></li></ul>
+        </div>
+        <div>
+          <h4>// legal</h4>
+          <ul><li><a href="#">License</a></li><li><a href="#">Terms</a></li><li><a href="#">Privacy</a></li></ul>
+        </div>
+      </div>
+      <div class="foot-bottom">
+        <span>© 2026 shoplanding</span>
+        <span>one product. one page. one decision.</span>
+      </div>
+    </footer>
+
+    <script>
+      // Boot sequence (type-on)
+      const boot = document.getElementById("boot");
+      const lines = [
+        ['<span class="prompt">$</span> shoplanding init <span class="muted">--niche=skincare</span>', 60],
+        ['<span class="muted">→ resolving block taxonomy...</span>', 40],
+        ['  <span class="ok">✓</span> 7/7 blocks loaded', 60],
+        ['  <span class="ok">✓</span> 20/20 rendered components mapped', 50],
+        ['  <span class="ok">✓</span> 69/69 conversion rules satisfied', 70],
+        ['<span class="muted">→ rendering /preview...</span>', 40],
+        ['  <span class="ok">✓</span> tokens applied (palette, type, geometry)', 50],
+        ['  <span class="ok">✓</span> tweaks panel mounted', 40],
+        ['<span class="muted">→ artifact build...</span>', 40],
+        ['  <span class="ok">✓</span> shopify.zip <span class="muted">(2.4mb)</span>', 50],
+        ['  <span class="ok">✓</span> woocommerce.zip <span class="muted">(2.1mb)</span>', 50],
+        ['  <span class="ok">✓</span> system-spec.json <span class="muted">(38kb)</span>', 50],
+        ['<span class="prompt">$</span> <span class="key">ready_</span>', 0],
+      ];
+      let acc = "";
+      let idx = 0;
+      function next() {
+        if (idx >= lines.length) {
+          // Add caret to final line
+          const last = boot.querySelectorAll(".line");
+          if (last.length) last[last.length - 1].classList.add("typed");
+          return;
+        }
+        const [text, delay] = lines[idx];
+        const el = document.createElement("div");
+        el.className = "line";
+        el.innerHTML = text;
+        boot.appendChild(el);
+        idx++;
+        setTimeout(next, 280 + delay);
+      }
+      next();
+
+      // Counters
+      const counters = document.querySelectorAll("[data-count]");
+      function tick(el, target) {
+        let start = performance.now();
+        const dur = 1300;
+        function step(t) {
+          const p = Math.min((t - start) / dur, 1);
+          const eased = 1 - Math.pow(1 - p, 3);
+          el.textContent = Math.round(target * eased);
+          if (p < 1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+      }
+      const co = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              tick(e.target, parseInt(e.target.dataset.count, 10));
+              co.unobserve(e.target);
+            }
+          });
+        },
+        { threshold: 0.5 },
+      );
+      counters.forEach((c) => co.observe(c));
+
+      // Blocks list
+      const BLOCKS = [
+        { name: "General", rules: 4, detail: "Persistent, always-visible signals: announcement bar, sticky nav with product name + price + CTA, no outgoing links, support channel always reachable." },
+        { name: "Product overview (above the CTA area)", rules: 6, detail: "Headline + subtitle + bullet value props + rating + breadcrumb + recommendation pill above the buy box. The 5-second reading test." },
+        { name: "Image gallery", rules: 9, detail: "Hero shot, lifestyle, scale, packaging, ingredient/feature breakdown, video, badges, alt-angle, zoom. Nine angles before they ask 'what does it look like?'" },
+        { name: "CTA area", rules: 23, detail: "The buy box: variants, qty, BNPL, urgency, scarcity, live activity, express pay, free-ship progress, subscription option, trust micro-icons. The widest set of rules in the system." },
+        { name: "Social proof", rules: 8, detail: "Quantified rating + histogram + verified buyers + photo reviews + filterable + press logos + UGC tiles + handle. Press as authority, customers as proof." },
+        { name: "AOV boosters", rules: 9, detail: "Quantity discounts with badges, bundle offers, post-click cross-sell, charity tie-in, urgency triggers, scarcity counters, watching-now indicator." },
+        { name: "Product description", rules: 10, detail: "How it works, ingredients, comparison, founder story, specs, FAQ, full long-form. Objection handling for the buyer who reads everything." },
+      ];
+      const blocksEl = document.getElementById("blocks");
+      BLOCKS.forEach((b, i) => {
+        const el = document.createElement("article");
+        el.className = "block";
+        el.innerHTML = `
+          <div class="b-num">[ ${String(i+1).padStart(2,"0")} ]</div>
+          <div class="b-name">${b.name}</div>
+          <div class="b-rules">${b.rules} rules</div>
+          <div class="b-arrow">→</div>
+          <div class="b-detail">${b.detail}</div>
+        `;
+        el.addEventListener("click", () => el.classList.toggle("open"));
+        blocksEl.appendChild(el);
+      });
+
+      // Compare table
+      const COMPARE = [
+        ["Every block traceable to a CRO rule", true, false, false],
+        ["Opinionated, fixed block order", true, false, false],
+        ["Single-product scope (no homepage)", true, false, true],
+        ["Shopify + WooCommerce in one purchase", true, false, false],
+        ["Buyer tweaks panel + preview URL", true, false, false],
+        ["Portable system spec (rebuild it)", true, false, false],
+        ["Lifetime updates, no subscription", true, false, true],
+      ];
+      const cb = document.getElementById("compare-body");
+      COMPARE.forEach((row) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${row[0]}</td>
+          <td class="cell ${row[1] ? "yes" : "no"}">${row[1] ? "[ ✓ ]" : "[ — ]"}</td>
+          <td class="cell ${row[2] ? "yes" : "no"}">${row[2] ? "[ ✓ ]" : "[ — ]"}</td>
+          <td class="cell ${row[3] ? "yes" : "no"}">${row[3] ? "[ ✓ ]" : "[ — ]"}</td>
+        `;
+        cb.appendChild(tr);
+      });
+
+      // FAQ
+      const FAQ = [
+        ["Is this a page builder?", "No. The block order is opinionated and fixed — only content and visual tokens change between themes. The reason is conversion: every block exists for a documented reason."],
+        ["Will this work for my niche?", "Yes for any single-product launch where the customer is making one decision: skincare, supplements, food/CPG, candles, gadgets. We ship niche presets so the defaults match the category."],
+        ["How is this different from a Theme Store theme?", "Theme Store themes position on visuals. ShopLanding positions on conversion logic. The marketing site is the proof — every section is one of the blocks we sell."],
+        ["Can my agency rebuild it on a different stack?", "Yes. The unlimited-stores license includes a portable JSON + Markdown system spec so any team can re-implement the same anatomy in Hydrogen, Astro, Webflow, anywhere."],
+        ["Do I get updates after I buy?", "Lifetime updates for the stores covered by your license. No subscription. When a new niche preset lands you get the relevant ones for free."],
+        ["When does it launch?", "Soon. The system, the renderer, and the playbook are already live. We're finishing niche presets, Stripe checkout, and the buyer tweaks intake before opening sales."],
+      ];
+      const faqEl = document.getElementById("faq-list");
+      FAQ.forEach((row, i) => {
+        const d = document.createElement("details");
+        d.innerHTML = `
+          <summary><span>${String(i+1).padStart(2,"0")} — ${row[0]}</span></summary>
+          <div class="a">${row[1]}</div>
+        `;
+        faqEl.appendChild(d);
+      });
+    </script>
+  </body>
+</html>

@@ -23,7 +23,7 @@ Next 16 (App Router) + React 19 + Tailwind v4 + Prisma 7 with `@prisma/adapter-p
 ## Reference material
 
 - `handoff/project/template/Landing Template.html` — canonical block anatomy. Source of truth for the renderer.
-- `handoff/project/Kerrimi Pocket Butter.html` — concrete branded example using the same anatomy.
+- `handoff/project/Orelle Daystick.html` — concrete branded example using the same anatomy.
 - `handoff/project/tweaks-panel.jsx` — the runtime tweak primitive that becomes the buyer's intake form.
 - `handoff/project/uploads/checklist.xlsx`, sheet 🛬 — 69 CRO items each `Block.checklistRefs` points back to.
 

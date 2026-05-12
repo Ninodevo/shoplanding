@@ -119,6 +119,10 @@ export type LandingTokens = {
   muted: string;
   line: string;
   surface: string;
+  /** Slightly different tint of `surface` — used for hover states + small chips. */
+  surface2: string;
+  /** Background of cards, sticky bars, FAQ items, review cards. White on light themes; a 1-step-lighter-than-bg slate on dark themes. */
+  card: string;
   bg: string;
   /** CSS font-family value for display headlines */
   fontDisplay: string;

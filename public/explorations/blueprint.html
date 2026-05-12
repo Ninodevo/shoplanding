@@ -1,0 +1,3186 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ShopLanding — Blueprint (Editorial × SaaS)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* ============================================================
+         BLUEPRINT — Editorial × SaaS (single-file structural mockup)
+         ============================================================ */
+
+      :root {
+        --paper: #f4ecdc;
+        --paper-2: #ebe1cb;
+        --paper-3: #fbf6e9;
+        --ink: #0f0e0d;
+        --ink-2: #2a2823;
+        --muted: #807868;
+        --rule: #d6c9a8;
+        --accent: #1f5a40;
+        --accent-2: #2e8c63;
+        --accent-pop: #b9261b;
+
+        /* dark surface palette for product mocks / saas blocks */
+        --d-bg: #0b0b0c;
+        --d-surface: #131315;
+        --d-surface-2: #1a1a1d;
+        --d-line: rgba(255, 255, 255, 0.08);
+        --d-line-2: rgba(255, 255, 255, 0.04);
+        --d-ink: #fafafa;
+        --d-ink-2: #c9c9d2;
+        --d-muted: #6e6e76;
+        --d-accent: #6ee7a8;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        scroll-behavior: smooth;
+        scroll-padding-top: 96px;
+      }
+      body {
+        background: var(--paper);
+        color: var(--ink);
+        font-family: "Inter", system-ui, sans-serif;
+        font-size: 16px;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        overflow-x: hidden;
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      ::selection {
+        background: var(--ink);
+        color: var(--paper);
+      }
+
+      /* Subtle paper texture */
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background-image: radial-gradient(rgba(15, 14, 13, 0.03) 1px, transparent 1px);
+        background-size: 4px 4px;
+        z-index: -1;
+        pointer-events: none;
+      }
+
+      /* ============================================================
+         Cursor (subtle — dot only, mix-blend)
+         ============================================================ */
+      .cursor {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+        background: var(--ink);
+        pointer-events: none;
+        z-index: 9999;
+        transform: translate(-50%, -50%);
+        transition: width 0.25s, height 0.25s, opacity 0.2s;
+        mix-blend-mode: difference;
+      }
+      .cursor.hover {
+        width: 36px;
+        height: 36px;
+      }
+      @media (max-width: 800px), (pointer: coarse) {
+        .cursor { display: none; }
+        body { cursor: auto; }
+      }
+
+      /* ============================================================
+         Reading progress
+         ============================================================ */
+      .progress {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: rgba(15, 14, 13, 0.06);
+        z-index: 100;
+      }
+      .progress-bar {
+        height: 100%;
+        background: var(--accent);
+        width: 0;
+      }
+
+      /* ============================================================
+         Top rail
+         ============================================================ */
+      .rail {
+        position: sticky;
+        top: 2px;
+        z-index: 50;
+        background: rgba(244, 236, 220, 0.85);
+        backdrop-filter: blur(14px) saturate(160%);
+        -webkit-backdrop-filter: blur(14px) saturate(160%);
+        border-bottom: 1px solid var(--rule);
+      }
+      .rail-inner {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 16px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+      }
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-family: "Fraunces", serif;
+        font-weight: 500;
+        font-size: 18px;
+        letter-spacing: -0.01em;
+      }
+      .brand-mark {
+        display: inline-block;
+        width: 24px;
+        height: 24px;
+        background: var(--ink);
+        border-radius: 5px;
+        position: relative;
+      }
+      .brand-mark::after {
+        content: "";
+        position: absolute;
+        inset: 7px;
+        background: var(--accent);
+        border-radius: 1px;
+      }
+      .rail nav {
+        display: flex;
+        gap: 28px;
+        font-size: 13.5px;
+        color: var(--ink-2);
+      }
+      .rail nav a:hover { color: var(--accent); }
+      @media (max-width: 800px) { .rail nav { display: none; } }
+      .rail-cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--ink);
+        color: var(--paper);
+        padding: 10px 18px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 500;
+        transition: transform 0.18s, background 0.18s;
+      }
+      .rail-cta:hover {
+        background: var(--accent);
+        transform: translateY(-1px);
+      }
+
+      .back {
+        position: fixed;
+        bottom: 16px;
+        left: 16px;
+        z-index: 60;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--paper);
+        background: var(--ink);
+        padding: 10px 14px;
+        border-radius: 999px;
+      }
+      .back:hover { background: var(--accent); }
+
+      /* ============================================================
+         Reusable utilities
+         ============================================================ */
+      .container {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 0 24px;
+      }
+      .narrow {
+        max-width: 880px;
+        margin: 0 auto;
+        padding: 0 24px;
+      }
+      .eyebrow {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--accent);
+      }
+      .display {
+        font-family: "Fraunces", serif;
+        font-weight: 500;
+        font-variation-settings: "opsz" 144, "SOFT" 30;
+        letter-spacing: -0.035em;
+        line-height: 0.96;
+      }
+      .display em {
+        font-style: italic;
+        font-weight: 400;
+        font-variation-settings: "opsz" 144, "SOFT" 100;
+        color: var(--accent);
+      }
+      .deck {
+        font-family: "Fraunces", serif;
+        font-style: italic;
+        font-weight: 400;
+        font-size: 22px;
+        line-height: 1.4;
+        color: var(--ink-2);
+      }
+      .meta {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .reveal {
+        opacity: 0;
+        transform: translateY(18px);
+        transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
+      }
+      .reveal.in { opacity: 1; transform: none; }
+      @media (prefers-reduced-motion: reduce) {
+        .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 13px 22px;
+        border-radius: 999px;
+        font-size: 14px;
+        font-weight: 500;
+        font-family: "Inter", sans-serif;
+        transition: transform 0.18s, background 0.18s, border-color 0.18s, color 0.18s;
+      }
+      .btn-primary { background: var(--ink); color: var(--paper); }
+      .btn-primary:hover { background: var(--accent); transform: translateY(-1px); }
+      .btn-ghost {
+        border: 1px solid var(--ink);
+        color: var(--ink);
+      }
+      .btn-ghost:hover {
+        background: var(--ink);
+        color: var(--paper);
+      }
+      .btn-accent { background: var(--accent); color: var(--paper); }
+      .btn-accent:hover { background: var(--ink); }
+
+      /* ============================================================
+         Section header (chapter)
+         ============================================================ */
+      section.chapter {
+        padding: 96px 0;
+      }
+      .chapter-head {
+        display: grid;
+        grid-template-columns: 200px 1fr;
+        gap: 48px;
+        margin-bottom: 56px;
+        padding-bottom: 32px;
+        border-bottom: 1px solid var(--rule);
+      }
+      @media (max-width: 900px) {
+        .chapter-head { grid-template-columns: 1fr; gap: 16px; }
+      }
+      .chapter-head .num {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .chapter-head .num strong {
+        display: block;
+        font-family: "Fraunces", serif;
+        font-style: italic;
+        font-weight: 400;
+        font-size: 64px;
+        color: var(--accent);
+        margin-top: 8px;
+        line-height: 1;
+        letter-spacing: -0.02em;
+      }
+      .chapter-head h2 {
+        font-size: clamp(40px, 6vw, 80px);
+        max-width: 18ch;
+      }
+      .chapter-head .lead {
+        margin-top: 16px;
+        max-width: 60ch;
+        color: var(--ink-2);
+        font-size: 17px;
+      }
+
+      /* ============================================================
+         HERO
+         ============================================================ */
+      .hero {
+        padding: 80px 0 48px;
+      }
+      .hero-eyebrow {
+        margin-bottom: 32px;
+        display: flex;
+        gap: 16px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 5px 12px 5px 5px;
+        border: 1px solid var(--rule);
+        border-radius: 999px;
+        font-family: "Inter", sans-serif;
+        font-size: 12px;
+        color: var(--ink-2);
+        background: var(--paper-3);
+      }
+      .pill .dot {
+        display: inline-block;
+        width: 18px;
+        height: 18px;
+        background: var(--accent);
+        color: var(--paper);
+        border-radius: 999px;
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        text-align: center;
+        line-height: 18px;
+      }
+      .hero h1 {
+        font-size: clamp(56px, 10vw, 160px);
+        max-width: 13ch;
+        margin-bottom: 32px;
+      }
+      .hero-deck {
+        max-width: 56ch;
+        margin-bottom: 40px;
+        font-size: 21px;
+      }
+      .hero-deck strong { font-style: normal; color: var(--ink); font-weight: 600; }
+      .cta-row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+        margin-bottom: 80px;
+      }
+      .cta-row .meta-note { font-size: 13px; color: var(--muted); margin-left: 8px; }
+
+      /* What's in the box — preview row */
+      .box {
+        display: grid;
+        grid-template-columns: 200px 1fr;
+        gap: 48px;
+        padding-top: 32px;
+        border-top: 1px solid var(--rule);
+      }
+      @media (max-width: 900px) {
+        .box { grid-template-columns: 1fr; gap: 16px; }
+      }
+      .box .label {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .box .label strong {
+        display: block;
+        font-family: "Fraunces", serif;
+        font-style: italic;
+        font-weight: 400;
+        font-size: 24px;
+        color: var(--accent);
+        margin-top: 6px;
+        line-height: 1.1;
+        letter-spacing: -0.01em;
+      }
+      .box-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+      }
+      @media (max-width: 900px) { .box-grid { grid-template-columns: 1fr 1fr; } }
+      .file-card {
+        position: relative;
+        padding: 18px;
+        border: 1px solid var(--rule);
+        border-radius: 14px;
+        background: var(--paper-3);
+        transition: transform 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+        min-height: 150px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+      .file-card:hover {
+        transform: translateY(-3px);
+        border-color: var(--ink);
+        background: #fff;
+      }
+      .file-card .icon {
+        width: 40px;
+        height: 48px;
+        position: relative;
+        background: var(--paper-2);
+        border: 1px solid var(--rule);
+        border-radius: 4px;
+      }
+      .file-card .icon::before {
+        content: "";
+        position: absolute;
+        right: -1px;
+        top: -1px;
+        width: 14px;
+        height: 14px;
+        background: var(--paper);
+        border-left: 1px solid var(--rule);
+        border-bottom: 1px solid var(--rule);
+        clip-path: polygon(0 0, 100% 100%, 100% 0);
+      }
+      .file-card .icon::after {
+        content: attr(data-ext);
+        position: absolute;
+        bottom: 6px;
+        left: 4px;
+        right: 4px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 9px;
+        font-weight: 600;
+        background: var(--accent);
+        color: var(--paper);
+        padding: 2px 0;
+        text-align: center;
+        letter-spacing: 0.06em;
+        border-radius: 2px;
+      }
+      .file-card.shopify .icon::after { background: #95bf47; color: #003e1f; }
+      .file-card.woo .icon::after { background: #7f54b3; color: #fff; }
+      .file-card.json .icon::after { background: #f7df1e; color: #1a1a1a; }
+      .file-card.app .icon::after { background: var(--ink); color: var(--paper); }
+      .file-card .name {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--ink);
+        word-break: break-word;
+      }
+      .file-card .desc {
+        font-size: 13px;
+        color: var(--ink-2);
+        margin-top: -8px;
+      }
+      .file-card .size {
+        margin-top: auto;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      /* ============================================================
+         STAT STRIP
+         ============================================================ */
+      .stats {
+        padding: 56px 0;
+        border-top: 1px solid var(--rule);
+        border-bottom: 1px solid var(--rule);
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0;
+      }
+      @media (max-width: 900px) { .stats { grid-template-columns: 1fr 1fr; } }
+      .stat {
+        padding: 0 24px;
+        border-right: 1px solid var(--rule);
+      }
+      .stat:last-child { border-right: none; }
+      @media (max-width: 900px) {
+        .stat { padding: 16px 24px; }
+        .stat:nth-child(2) { border-right: none; }
+        .stat:nth-child(1), .stat:nth-child(2) { border-bottom: 1px solid var(--rule); }
+      }
+      .stat .v {
+        font-family: "Fraunces", serif;
+        font-weight: 500;
+        font-variation-settings: "opsz" 144;
+        font-size: clamp(56px, 7vw, 88px);
+        line-height: 0.95;
+        letter-spacing: -0.04em;
+      }
+      .stat .v em { font-style: italic; font-weight: 400; color: var(--accent); }
+      .stat .l { margin-top: 8px; }
+
+      /* ============================================================
+         CHAPTER LAYOUT (with side rail)
+         ============================================================ */
+      .layout {
+        display: grid;
+        grid-template-columns: 200px 1fr;
+        gap: 48px;
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 0 24px;
+      }
+      @media (max-width: 1100px) {
+        .layout { grid-template-columns: 1fr; }
+        .side-rail { display: none; }
+      }
+      .side-rail {
+        position: sticky;
+        top: 96px;
+        align-self: start;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+      }
+      .side-rail .lbl {
+        color: var(--muted);
+        margin-bottom: 14px;
+      }
+      .side-rail ol {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .side-rail ol a {
+        display: block;
+        padding: 6px 12px;
+        border-left: 2px solid var(--rule);
+        color: var(--muted);
+        transition: color 0.2s, border-color 0.2s;
+      }
+      .side-rail ol a:hover { color: var(--ink); }
+      .side-rail ol a.active {
+        color: var(--accent);
+        border-color: var(--accent);
+      }
+
+      /* ============================================================
+         CHAPTER 01 — Artifacts
+         ============================================================ */
+      .artifacts {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+      }
+      .artifact {
+        display: grid;
+        grid-template-columns: 1.1fr 1fr;
+        gap: 32px;
+        padding: 32px;
+        background: var(--paper-3);
+        border: 1px solid var(--rule);
+        border-radius: 18px;
+      }
+      @media (max-width: 900px) {
+        .artifact { grid-template-columns: 1fr; }
+      }
+      .artifact .info .num {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 12px;
+      }
+      .artifact .info h3 {
+        font-family: "Fraunces", serif;
+        font-size: 32px;
+        font-weight: 500;
+        line-height: 1.05;
+        letter-spacing: -0.02em;
+        margin-bottom: 12px;
+        font-variation-settings: "opsz" 100;
+      }
+      .artifact .info h3 em { font-style: italic; color: var(--accent); }
+      .artifact .info p {
+        color: var(--ink-2);
+        font-size: 16px;
+        margin-bottom: 16px;
+        max-width: 50ch;
+      }
+      .artifact .info ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .artifact .info ul li {
+        display: flex;
+        gap: 10px;
+        align-items: baseline;
+        font-size: 14.5px;
+        color: var(--ink-2);
+      }
+      .artifact .info ul li::before {
+        content: "→";
+        color: var(--accent);
+        font-family: "JetBrains Mono", monospace;
+      }
+      .artifact .demo {
+        background: var(--d-bg);
+        color: var(--d-ink);
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid var(--ink);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13px;
+        line-height: 1.6;
+        min-height: 280px;
+        display: flex;
+        flex-direction: column;
+      }
+      .artifact .demo-bar {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 10px 12px;
+        background: #0f0f10;
+        border-bottom: 1px solid var(--d-line);
+        font-size: 11px;
+        color: var(--d-muted);
+      }
+      .artifact .demo-bar .d-dot {
+        width: 9px; height: 9px; border-radius: 999px; background: #2a2a2c;
+      }
+      .artifact .demo-bar .path { margin-left: 12px; }
+      .artifact .demo-body { padding: 14px 16px; flex: 1; overflow: hidden; }
+      .artifact .demo-body .tree-ln { display: block; padding: 1px 0; }
+      .artifact .demo-body .dim { color: var(--d-muted); }
+      .artifact .demo-body .accent { color: var(--d-accent); }
+      .artifact .demo-body .key { color: #f4c674; }
+      .artifact .demo-body .str { color: #b6daff; }
+      .artifact .demo-body .num { color: #f59e0b; }
+
+      /* Tweaks panel mock */
+      .panel-mock {
+        background: var(--paper-3);
+        color: var(--ink);
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid var(--rule);
+        font-family: "Inter", sans-serif;
+        min-height: 300px;
+        font-size: 14px;
+      }
+      .panel-mock .panel-bar {
+        background: var(--paper-2);
+        border-bottom: 1px solid var(--rule);
+        padding: 10px 14px;
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        color: var(--muted);
+      }
+      .panel-mock .panel-bar .d-dot {
+        width: 9px; height: 9px; border-radius: 999px; background: var(--rule);
+      }
+      .panel-mock .panel-body { padding: 18px; display: flex; flex-direction: column; gap: 14px; }
+      .panel-mock .field { display: flex; flex-direction: column; gap: 6px; }
+      .panel-mock .field label {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.16em;
+        color: var(--muted);
+      }
+      .panel-mock .field input,
+      .panel-mock .field select {
+        width: 100%;
+        padding: 9px 12px;
+        border: 1px solid var(--rule);
+        border-radius: 8px;
+        background: #fff;
+        color: var(--ink);
+        font: inherit;
+        font-size: 14px;
+        outline: none;
+      }
+      .panel-mock .field input:focus,
+      .panel-mock .field select:focus { border-color: var(--accent); }
+      .panel-mock .swatches {
+        display: flex;
+        gap: 8px;
+      }
+      .panel-mock .swatch {
+        width: 28px; height: 28px; border-radius: 999px; border: 2px solid transparent;
+        cursor: pointer;
+      }
+      .panel-mock .swatch.active { border-color: var(--ink); }
+      .panel-mock .row {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+      }
+      .panel-mock .panel-cta {
+        margin-top: 4px;
+        background: var(--ink);
+        color: var(--paper);
+        padding: 11px 16px;
+        border: none;
+        border-radius: 8px;
+        font: inherit;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+      }
+
+      /* ============================================================
+         CHAPTER 02 — Annotated landing page
+         ============================================================ */
+      .anatomy {
+        display: grid;
+        grid-template-columns: 1fr 360px;
+        gap: 48px;
+        align-items: start;
+      }
+      @media (max-width: 1100px) {
+        .anatomy { grid-template-columns: 1fr; }
+      }
+      .anatomy-frame {
+        background: var(--ink);
+        border-radius: 24px;
+        padding: 14px;
+        position: sticky;
+        top: 96px;
+        box-shadow:
+          0 30px 60px -20px rgba(15, 14, 13, 0.3),
+          0 0 0 1px var(--ink) inset;
+      }
+      @media (max-width: 1100px) {
+        .anatomy-frame { position: static; }
+      }
+      .anatomy-screen {
+        background: #fff;
+        border-radius: 14px;
+        height: 640px;
+        overflow-y: auto;
+        scroll-behavior: smooth;
+        scrollbar-width: thin;
+      }
+      .anatomy-screen::-webkit-scrollbar { width: 6px; }
+      .anatomy-screen::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 999px; }
+
+      /* Mock landing page inside the screen */
+      .mock {
+        font-family: "Inter", sans-serif;
+        color: #1a1a1a;
+        font-size: 13px;
+        line-height: 1.5;
+      }
+      .mock-block {
+        scroll-margin-top: 0;
+        position: relative;
+        transition: background 0.4s ease;
+      }
+      .mock-block.flash::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: rgba(110, 231, 168, 0.18);
+        pointer-events: none;
+        animation: flash 0.9s ease-out;
+      }
+      @keyframes flash {
+        from { opacity: 1; }
+        to { opacity: 0; }
+      }
+      .mock-announce {
+        background: var(--ink);
+        color: var(--paper);
+        padding: 8px 14px;
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        text-align: center;
+        font-family: "JetBrains Mono", monospace;
+      }
+      .mock-announce strong { color: var(--d-accent); }
+      .mock-nav {
+        position: sticky;
+        top: 0;
+        background: rgba(255,255,255,0.94);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid #eee;
+        padding: 10px 14px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        z-index: 5;
+        font-size: 12.5px;
+        font-weight: 500;
+      }
+      .mock-nav .nav-r { display: flex; gap: 8px; align-items: center; }
+      .mock-nav .nav-price { font-family: "JetBrains Mono", monospace; font-size: 11px; color: #555; }
+      .mock-nav .nav-btn {
+        background: #1a1a1a; color: #fff;
+        font-size: 11px; padding: 6px 10px;
+        border-radius: 999px;
+      }
+      .mock-hero {
+        padding: 18px 14px;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 14px;
+      }
+      .mock-photo {
+        aspect-ratio: 1.2 / 1;
+        border-radius: 10px;
+        background:
+          radial-gradient(60% 60% at 35% 30%, #f6e0c1, transparent 60%),
+          linear-gradient(135deg, #c9a574, #8b6438);
+        position: relative;
+        overflow: hidden;
+      }
+      .mock-photo::before {
+        content: "";
+        position: absolute;
+        width: 65%;
+        aspect-ratio: 1 / 1.4;
+        left: 18%;
+        top: 14%;
+        background: linear-gradient(180deg, #f4d8a7, #c79560);
+        border-radius: 18px 18px 8px 8px;
+        box-shadow: 0 20px 30px -10px rgba(0,0,0,0.3);
+      }
+      .mock-photo::after {
+        content: "";
+        position: absolute;
+        width: 35%;
+        aspect-ratio: 1;
+        left: 33%;
+        top: 8%;
+        background: linear-gradient(180deg, #2a2a2a, #4a4a4a);
+        border-radius: 4px 4px 0 0;
+      }
+      .mock-meta-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 11px;
+        color: #777;
+      }
+      .mock-stars { color: #d68f00; font-size: 12px; }
+      .mock-recommended {
+        background: rgba(31, 90, 64, 0.1);
+        color: var(--accent);
+        padding: 3px 8px;
+        border-radius: 999px;
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        font-weight: 600;
+      }
+      .mock-h1 {
+        font-family: "Fraunces", serif;
+        font-weight: 500;
+        font-size: 22px;
+        line-height: 1.05;
+        letter-spacing: -0.02em;
+      }
+      .mock-sub { color: #555; font-size: 13px; }
+      .mock-bullets {
+        list-style: none;
+        padding: 0;
+        margin: 6px 0;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        font-size: 12.5px;
+      }
+      .mock-bullets li::before {
+        content: "✓ ";
+        color: var(--accent);
+        font-weight: 600;
+      }
+      .mock-cta {
+        background: #f6f3eb;
+        border: 1px solid #e6dfcc;
+        border-radius: 12px;
+        padding: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .mock-cta .price-row { display: flex; gap: 8px; align-items: baseline; }
+      .mock-cta .price { font-family: "Fraunces", serif; font-size: 26px; font-weight: 600; }
+      .mock-cta .compare-at { text-decoration: line-through; color: #999; font-size: 13px; }
+      .mock-cta .save {
+        font-size: 10px;
+        background: var(--accent-pop);
+        color: #fff;
+        padding: 2px 7px;
+        border-radius: 999px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-weight: 700;
+      }
+      .mock-variants {
+        display: flex; gap: 6px; flex-wrap: wrap;
+      }
+      .mock-variant {
+        font-size: 11px;
+        padding: 5px 10px;
+        border: 1px solid #d4d4d4;
+        border-radius: 999px;
+        background: #fff;
+        cursor: pointer;
+      }
+      .mock-variant.active { border-color: #1a1a1a; background: #1a1a1a; color: #fff; }
+      .mock-qty {
+        display: flex; align-items: center; gap: 8px; font-size: 12px;
+      }
+      .mock-qty button {
+        width: 26px; height: 26px;
+        border: 1px solid #d4d4d4;
+        background: #fff;
+        border-radius: 999px;
+        cursor: pointer;
+        font-size: 14px;
+      }
+      .mock-buy {
+        background: #1a1a1a;
+        color: #fff;
+        padding: 12px;
+        border-radius: 999px;
+        text-align: center;
+        font-weight: 600;
+        font-size: 14px;
+      }
+      .mock-trust {
+        display: flex;
+        justify-content: space-around;
+        gap: 8px;
+        font-size: 10.5px;
+        color: #666;
+        text-align: center;
+      }
+      .mock-trust span::before { content: "✓ "; color: var(--accent); }
+      .mock-bnpl {
+        background: #fff;
+        border: 1px dashed #d4d4d4;
+        padding: 6px 10px;
+        border-radius: 8px;
+        font-size: 11px;
+        color: #555;
+        text-align: center;
+      }
+      .mock-progress {
+        background: #fff;
+        border: 1px solid #e6dfcc;
+        border-radius: 8px;
+        padding: 8px 10px;
+        font-size: 11px;
+      }
+      .mock-progress .bar {
+        margin-top: 5px;
+        height: 4px;
+        background: #ebe1cb;
+        border-radius: 999px;
+        overflow: hidden;
+      }
+      .mock-progress .bar div {
+        height: 100%;
+        background: var(--accent);
+        width: 78%;
+      }
+
+      /* Gallery */
+      .mock-gallery {
+        padding: 18px 14px;
+        background: #fafafa;
+        border-top: 1px solid #eee;
+      }
+      .mock-gallery h3 { font-family: "Fraunces", serif; font-size: 18px; margin-bottom: 10px; font-weight: 500; }
+      .mock-gallery .grid {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+      }
+      .mock-gallery .tile {
+        aspect-ratio: 1;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #d6c9a8, #8b6438);
+        position: relative;
+        overflow: hidden;
+      }
+      .mock-gallery .tile:nth-child(2) { background: linear-gradient(180deg, #f6e0c1, #c79560); }
+      .mock-gallery .tile:nth-child(3) {
+        background:
+          radial-gradient(50% 50% at 50% 50%, #2a2a2a, transparent 60%),
+          linear-gradient(135deg, #d4d4d4, #888);
+      }
+      .mock-gallery .tile:nth-child(4) {
+        background: linear-gradient(135deg, var(--accent), #a3d9bf);
+      }
+      .mock-gallery .tile.video::after {
+        content: "▶";
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        color: #fff;
+        font-size: 22px;
+      }
+
+      /* Reviews */
+      .mock-reviews {
+        padding: 18px 14px;
+        border-top: 1px solid #eee;
+      }
+      .mock-reviews h3 { font-family: "Fraunces", serif; font-size: 18px; margin-bottom: 10px; font-weight: 500; }
+      .mock-reviews .summary {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 14px;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+      .mock-reviews .big-rating {
+        font-family: "Fraunces", serif;
+        font-size: 36px;
+        font-weight: 600;
+        line-height: 1;
+        letter-spacing: -0.02em;
+      }
+      .mock-reviews .histogram {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+        font-size: 10px;
+      }
+      .mock-reviews .histogram .h-row { display: grid; grid-template-columns: 14px 1fr 24px; gap: 6px; align-items: center; color: #666; }
+      .mock-reviews .histogram .h-bar { height: 5px; background: #eee; border-radius: 999px; overflow: hidden; }
+      .mock-reviews .histogram .h-bar div { height: 100%; background: #d68f00; }
+      .mock-review {
+        padding: 10px 0;
+        border-top: 1px solid #eee;
+        font-size: 12px;
+      }
+      .mock-review .who {
+        display: flex; gap: 8px; align-items: center; margin-bottom: 6px;
+        font-size: 11.5px;
+      }
+      .mock-review .who .av {
+        width: 24px; height: 24px; border-radius: 999px;
+        background: linear-gradient(135deg, #d4a574, #8b6438); color: #fff;
+        font-size: 10px; font-weight: 600; display: grid; place-items: center;
+      }
+      .mock-review .who .verified { color: var(--accent); font-size: 10px; }
+
+      /* AOV */
+      .mock-aov {
+        padding: 18px 14px;
+        background: var(--paper-3);
+        border-top: 1px solid #eee;
+        border-bottom: 1px solid #eee;
+      }
+      .mock-aov h3 { font-family: "Fraunces", serif; font-size: 18px; margin-bottom: 10px; font-weight: 500; }
+      .mock-aov-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 6px;
+      }
+      .mock-bundle {
+        border: 1px solid #d4d4d4;
+        border-radius: 10px;
+        padding: 10px 8px;
+        text-align: center;
+        background: #fff;
+        font-size: 11px;
+        position: relative;
+      }
+      .mock-bundle.featured { border-color: var(--accent); background: rgba(31, 90, 64, 0.04); }
+      .mock-bundle .qty { font-family: "Fraunces", serif; font-size: 22px; font-weight: 600; line-height: 1; }
+      .mock-bundle .lab { color: #666; margin: 4px 0; }
+      .mock-bundle .pr { font-weight: 700; }
+      .mock-bundle .save-pill {
+        position: absolute;
+        top: -8px; left: 50%; transform: translateX(-50%);
+        background: var(--accent); color: #fff;
+        font-size: 9px; padding: 2px 6px;
+        border-radius: 999px; letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      /* Description */
+      .mock-desc {
+        padding: 18px 14px;
+        font-size: 12.5px;
+        color: #444;
+      }
+      .mock-desc h3 { font-family: "Fraunces", serif; font-size: 18px; margin-bottom: 10px; font-weight: 500; color: #1a1a1a; }
+      .mock-desc p { margin-bottom: 8px; }
+      .mock-desc .tabs {
+        display: flex; gap: 6px;
+        font-size: 11px;
+        margin-bottom: 10px;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 8px;
+      }
+      .mock-desc .tabs span {
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: #f0eadb;
+        cursor: pointer;
+      }
+      .mock-desc .tabs span.active { background: #1a1a1a; color: #fff; }
+
+      /* Block legend (right column) */
+      .block-legend {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .legend-item {
+        padding: 18px 20px;
+        background: var(--paper-3);
+        border: 1px solid var(--rule);
+        border-radius: 12px;
+        cursor: pointer;
+        transition: transform 0.2s, border-color 0.2s, background 0.2s;
+      }
+      .legend-item:hover {
+        transform: translateX(-4px);
+        border-color: var(--accent);
+        background: #fff;
+      }
+      .legend-item .num {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        letter-spacing: 0.18em;
+        color: var(--accent);
+        margin-bottom: 6px;
+      }
+      .legend-item .nm {
+        font-family: "Fraunces", serif;
+        font-size: 19px;
+        font-weight: 500;
+        line-height: 1.05;
+        margin-bottom: 4px;
+        letter-spacing: -0.01em;
+      }
+      .legend-item .ds {
+        font-size: 13px;
+        color: var(--ink-2);
+        line-height: 1.45;
+        margin-bottom: 8px;
+      }
+      .legend-item .rules-tag {
+        display: inline-block;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      /* ============================================================
+         CHAPTER 03 — Same block, three niches
+         ============================================================ */
+      .niche-tabs {
+        display: flex;
+        gap: 4px;
+        flex-wrap: wrap;
+        margin-bottom: 24px;
+      }
+      .niche-tab {
+        padding: 10px 16px;
+        border: 1px solid var(--rule);
+        border-radius: 999px;
+        background: var(--paper-3);
+        font-family: "Inter", sans-serif;
+        font-size: 13px;
+        cursor: pointer;
+        transition: background 0.2s, color 0.2s, border-color 0.2s;
+        color: var(--ink-2);
+      }
+      .niche-tab.active {
+        background: var(--ink);
+        color: var(--paper);
+        border-color: var(--ink);
+      }
+      .niche-tab .nm { font-weight: 500; }
+      .niche-tab .br { font-style: italic; color: var(--muted); margin-left: 6px; font-size: 12px; }
+      .niche-tab.active .br { color: rgba(255,255,255,0.6); }
+
+      .niche-pane {
+        display: none;
+        padding: 32px;
+        background: var(--paper-3);
+        border: 1px solid var(--rule);
+        border-radius: 18px;
+      }
+      .niche-pane.active { display: grid; }
+      .niche-pane {
+        grid-template-columns: 380px 1fr;
+        gap: 32px;
+        align-items: start;
+      }
+      @media (max-width: 900px) { .niche-pane { grid-template-columns: 1fr; } }
+
+      /* The CTA-area mock embedded in each niche pane */
+      .cta-mock {
+        background: #fff;
+        border: 1px solid #e6dfcc;
+        border-radius: 14px;
+        padding: 20px;
+        font-family: "Inter", sans-serif;
+        color: #1a1a1a;
+      }
+      .cta-mock .crumb { font-size: 11px; text-transform: uppercase; letter-spacing: 0.16em; color: var(--accent); margin-bottom: 12px; }
+      .cta-mock h4 { font-family: "Fraunces", serif; font-size: 24px; font-weight: 500; line-height: 1.05; letter-spacing: -0.015em; margin-bottom: 6px; }
+      .cta-mock .sub { font-size: 13px; color: #555; margin-bottom: 14px; }
+      .cta-mock .price-row { display: flex; gap: 10px; align-items: baseline; margin-bottom: 12px; }
+      .cta-mock .price { font-family: "Fraunces", serif; font-size: 28px; font-weight: 600; }
+      .cta-mock .compare-at { text-decoration: line-through; color: #999; font-size: 13px; }
+      .cta-mock .save { font-size: 10px; background: var(--accent-pop); color: #fff; padding: 2px 7px; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; }
+      .cta-mock .variants { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+      .cta-mock .variant { font-size: 11px; padding: 5px 10px; border: 1px solid #d4d4d4; border-radius: 999px; background: #fff; cursor: pointer; }
+      .cta-mock .variant.active { border-color: #1a1a1a; background: #1a1a1a; color: #fff; }
+      .cta-mock .buy { background: #1a1a1a; color: #fff; padding: 12px; border-radius: 999px; text-align: center; font-weight: 600; font-size: 14px; margin-bottom: 10px; }
+      .cta-mock .micro { display: flex; justify-content: space-around; gap: 8px; font-size: 10.5px; color: #666; }
+      .cta-mock .micro span::before { content: "✓ "; color: var(--accent); }
+      .cta-mock .urgency {
+        background: rgba(245, 158, 11, 0.1);
+        color: #b45309;
+        font-size: 11.5px;
+        padding: 6px 10px;
+        border-radius: 8px;
+        margin: 8px 0;
+        text-align: center;
+      }
+
+      .niche-rules h4 {
+        font-family: "Fraunces", serif;
+        font-size: 24px;
+        font-weight: 500;
+        margin-bottom: 12px;
+        letter-spacing: -0.015em;
+      }
+      .niche-rules .lead {
+        color: var(--ink-2);
+        margin-bottom: 18px;
+        font-size: 15px;
+        max-width: 50ch;
+      }
+      .niche-rules .rule-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px 16px;
+      }
+      .niche-rules .rule-list li {
+        font-size: 13px;
+        color: var(--ink-2);
+        display: flex;
+        gap: 8px;
+        align-items: baseline;
+        padding: 6px 0;
+        border-bottom: 1px solid var(--rule);
+      }
+      .niche-rules .rule-list li::before {
+        content: "✓";
+        color: var(--accent);
+        font-weight: 600;
+        flex-shrink: 0;
+        font-size: 12px;
+      }
+
+      /* ============================================================
+         CHAPTER 04 — Niche presets gallery
+         ============================================================ */
+      .niche-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+      }
+      @media (max-width: 900px) { .niche-grid { grid-template-columns: 1fr 1fr; } }
+      @media (max-width: 600px) { .niche-grid { grid-template-columns: 1fr; } }
+      .niche-card {
+        position: relative;
+        border: 1px solid var(--rule);
+        border-radius: 18px;
+        overflow: hidden;
+        background: var(--paper-3);
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.3s ease, border-color 0.3s ease;
+        cursor: pointer;
+      }
+      .niche-card:hover { transform: translateY(-4px); border-color: var(--ink); }
+      .niche-card .preview {
+        height: 200px;
+        position: relative;
+        overflow: hidden;
+      }
+      .niche-card .preview .label {
+        position: absolute;
+        top: 14px; left: 14px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        background: rgba(0,0,0,0.7);
+        color: #fff;
+        padding: 4px 8px;
+        border-radius: 999px;
+        backdrop-filter: blur(6px);
+      }
+      .niche-card .preview .pr {
+        position: absolute;
+        bottom: 14px; right: 14px;
+        font-family: "Fraunces", serif;
+        font-weight: 600;
+        font-size: 22px;
+        background: rgba(255,255,255,0.95);
+        color: var(--ink);
+        padding: 4px 12px;
+        border-radius: 999px;
+        letter-spacing: -0.01em;
+      }
+      .niche-card .preview .obj {
+        position: absolute;
+        left: 50%;
+        bottom: -10%;
+        width: 50%;
+        aspect-ratio: 1 / 1.4;
+        transform: translateX(-50%);
+        border-radius: 14px 14px 6px 6px;
+        box-shadow: 0 30px 40px -15px rgba(0,0,0,0.4);
+      }
+      .niche-card .info {
+        padding: 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .niche-card .info h4 {
+        font-family: "Fraunces", serif;
+        font-size: 22px;
+        font-weight: 500;
+        line-height: 1.05;
+        letter-spacing: -0.015em;
+      }
+      .niche-card .info h4 em { font-style: italic; color: var(--accent); }
+      .niche-card .info p {
+        font-size: 14px;
+        color: var(--ink-2);
+        line-height: 1.5;
+      }
+      .niche-card .info .tag {
+        margin-top: 4px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      /* niche-card backgrounds */
+      .niche-skincare .preview {
+        background: linear-gradient(135deg, #f7e0d6, #d6a487);
+      }
+      .niche-skincare .preview .obj {
+        background: linear-gradient(180deg, #f1cdb5, #c98c64);
+      }
+      .niche-supplement .preview {
+        background: linear-gradient(135deg, #e6f5d9, #99c97f);
+      }
+      .niche-supplement .preview .obj {
+        background: linear-gradient(180deg, #f6f0d6, #c8b76f);
+        border-radius: 18px 18px 6px 6px;
+      }
+      .niche-coffee .preview {
+        background: linear-gradient(135deg, #efe2cf, #8b5a2b);
+      }
+      .niche-coffee .preview .obj {
+        background: linear-gradient(180deg, #d4a574, #5a3a1f);
+      }
+      .niche-candle .preview {
+        background: linear-gradient(135deg, #f6efe2, #ddc7a4);
+      }
+      .niche-candle .preview .obj {
+        background: linear-gradient(180deg, #fff7e6, #d4ba8c);
+        border-radius: 6px 6px 6px 6px;
+      }
+      .niche-gadget .preview {
+        background: linear-gradient(135deg, #e3edf6, #6d8ba8);
+      }
+      .niche-gadget .preview .obj {
+        background: linear-gradient(180deg, #2a2a2a, #6d6d6d);
+        border-radius: 12px 12px 12px 12px;
+      }
+      .niche-food .preview {
+        background: linear-gradient(135deg, #fce8c4, #e09b3d);
+      }
+      .niche-food .preview .obj {
+        background: linear-gradient(180deg, #f9d7a3, #b87a32);
+      }
+
+      /* ============================================================
+         CHAPTER 05 — Before / after
+         ============================================================ */
+      .ba-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+      }
+      @media (max-width: 900px) { .ba-grid { grid-template-columns: 1fr; } }
+      .ba-col {
+        background: var(--paper-3);
+        border: 1px solid var(--rule);
+        border-radius: 18px;
+        padding: 28px;
+      }
+      .ba-col.us {
+        background: var(--ink);
+        color: var(--d-ink);
+        border-color: var(--ink);
+      }
+      .ba-col.us .ba-mock { background: #1a1a1d; border-color: #2a2a2c; color: #f5f5f5; }
+      .ba-col.us .ba-mock .price-row .compare-at { color: #777; }
+      .ba-col.us .ba-mock .stars { color: #f4c674; }
+      .ba-col.us .ba-mock .pill-recommend { background: rgba(110, 231, 168, 0.15); color: var(--d-accent); }
+      .ba-col.us .ba-mock .buy { background: var(--d-accent); color: var(--ink); }
+
+      .ba-col h3 {
+        font-family: "Fraunces", serif;
+        font-size: 28px;
+        font-weight: 500;
+        line-height: 1.05;
+        letter-spacing: -0.02em;
+        margin-bottom: 6px;
+      }
+      .ba-col h3 em { font-style: italic; color: var(--accent); }
+      .ba-col.us h3 em { color: var(--d-accent); }
+      .ba-col .lab {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 12px;
+      }
+      .ba-col.us .lab { color: var(--d-accent); }
+      .ba-col p.l { font-size: 14px; color: var(--ink-2); margin-bottom: 18px; }
+      .ba-col.us p.l { color: var(--d-ink-2); }
+      .ba-mock {
+        background: #fff;
+        border: 1px solid #e6dfcc;
+        border-radius: 12px;
+        padding: 18px;
+        font-size: 13px;
+        margin-bottom: 18px;
+      }
+      .ba-mock .crumb { font-size: 11px; text-transform: uppercase; letter-spacing: 0.16em; color: #999; margin-bottom: 10px; }
+      .ba-mock h4 { font-family: "Fraunces", serif; font-size: 22px; font-weight: 500; margin-bottom: 8px; line-height: 1.05; }
+      .ba-mock .price-row { display: flex; gap: 10px; align-items: baseline; margin: 8px 0; }
+      .ba-mock .price { font-family: "Fraunces", serif; font-size: 24px; font-weight: 600; }
+      .ba-mock .compare-at { text-decoration: line-through; color: #999; font-size: 13px; }
+      .ba-mock .save { font-size: 10px; background: var(--accent-pop); color: #fff; padding: 2px 7px; border-radius: 999px; text-transform: uppercase; font-weight: 700; }
+      .ba-mock .stars { color: #d68f00; font-size: 12px; margin-bottom: 6px; }
+      .ba-mock .pill-recommend { display: inline-block; background: rgba(31, 90, 64, 0.1); color: var(--accent); font-size: 10px; padding: 3px 8px; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600; margin-bottom: 8px; }
+      .ba-mock .micro {
+        display: flex;
+        justify-content: space-between;
+        gap: 6px;
+        font-size: 10px;
+        color: #777;
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid #eee;
+      }
+      .ba-mock .urgency-line {
+        background: rgba(245, 158, 11, 0.1);
+        color: #b45309;
+        font-size: 11px;
+        padding: 4px 8px;
+        border-radius: 6px;
+        margin: 6px 0;
+      }
+      .ba-mock .buy { background: #1a1a1a; color: #fff; padding: 10px; border-radius: 999px; text-align: center; font-weight: 600; font-size: 13px; margin-top: 6px; }
+
+      .ba-checks {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        font-size: 13px;
+      }
+      .ba-checks li { padding: 6px 0; border-bottom: 1px solid var(--rule); }
+      .ba-col.us .ba-checks li { border-bottom-color: rgba(255,255,255,0.08); }
+      .ba-checks li.miss { color: var(--muted); }
+      .ba-checks li.miss::before { content: "✗ "; color: var(--accent-pop); font-weight: 700; }
+      .ba-checks li.has::before { content: "✓ "; color: var(--accent); font-weight: 700; }
+      .ba-col.us .ba-checks li.has::before { color: var(--d-accent); }
+
+      /* ============================================================
+         CHAPTER 06 — Compare table
+         ============================================================ */
+      .compare {
+        border: 1px solid var(--ink);
+        border-radius: 18px;
+        overflow: hidden;
+        background: var(--paper-3);
+      }
+      .compare table { width: 100%; border-collapse: collapse; }
+      .compare th, .compare td {
+        padding: 16px 20px;
+        text-align: left;
+        border-bottom: 1px solid var(--rule);
+      }
+      .compare th {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--muted);
+        font-weight: 500;
+        background: var(--paper-2);
+      }
+      .compare th.us {
+        color: var(--accent);
+        background: var(--ink);
+      }
+      .compare td.cell { text-align: center; }
+      .compare tbody tr:last-child td { border-bottom: none; }
+      .compare td.us-col { background: rgba(31, 90, 64, 0.04); font-weight: 500; }
+      .check, .dash {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        border-radius: 999px;
+      }
+      .check { background: var(--accent); color: var(--paper); font-size: 12px; }
+      .dash { background: var(--paper-2); color: var(--muted); border: 1px solid var(--rule); }
+
+      /* ============================================================
+         CHAPTER 07 — How it works (4 steps)
+         ============================================================ */
+      .steps {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+      }
+      @media (max-width: 900px) { .steps { grid-template-columns: 1fr 1fr; } }
+      @media (max-width: 600px) { .steps { grid-template-columns: 1fr; } }
+      .step {
+        position: relative;
+        padding: 24px 20px;
+        background: var(--paper-3);
+        border: 1px solid var(--rule);
+        border-radius: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        min-height: 240px;
+      }
+      .step .step-num {
+        font-family: "Fraunces", serif;
+        font-size: 56px;
+        font-weight: 400;
+        font-style: italic;
+        line-height: 1;
+        color: var(--accent);
+        font-variation-settings: "opsz" 144, "SOFT" 100;
+      }
+      .step h4 { font-family: "Fraunces", serif; font-size: 20px; font-weight: 500; line-height: 1.1; letter-spacing: -0.01em; }
+      .step p { font-size: 13.5px; color: var(--ink-2); line-height: 1.5; }
+      .step .vis {
+        margin-top: auto;
+        padding-top: 12px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        color: var(--muted);
+        background: var(--paper-2);
+        padding: 10px 12px;
+        border-radius: 8px;
+        border: 1px dashed var(--rule);
+      }
+      .step .vis strong { color: var(--ink); display: block; margin-bottom: 2px; font-family: "Inter", sans-serif; font-weight: 500; font-size: 12px; }
+
+      /* ============================================================
+         CHAPTER 08 — Pricing
+         ============================================================ */
+      .pricing {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+      }
+      @media (max-width: 1000px) { .pricing { grid-template-columns: 1fr; } }
+      .price {
+        position: relative;
+        padding: 32px 28px;
+        background: var(--paper-3);
+        border: 1px solid var(--rule);
+        border-radius: 20px;
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.3s ease;
+      }
+      .price:hover { transform: translateY(-4px); }
+      .price.feat {
+        background: var(--ink);
+        color: var(--d-ink);
+        border-color: var(--ink);
+      }
+      .price .lab {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 24px;
+      }
+      .price.feat .lab { color: var(--d-accent); }
+      .price h3 {
+        font-family: "Fraunces", serif;
+        font-size: 26px;
+        font-weight: 500;
+        margin-bottom: 8px;
+        letter-spacing: -0.015em;
+      }
+      .price .amt {
+        font-family: "Fraunces", serif;
+        font-size: 88px;
+        font-weight: 500;
+        letter-spacing: -0.04em;
+        line-height: 1;
+        margin-bottom: 8px;
+        font-variation-settings: "opsz" 144;
+      }
+      .price .amt em { font-style: italic; font-weight: 400; color: var(--accent); }
+      .price.feat .amt em { color: var(--d-accent); }
+      .price .cad { font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+      .price.feat .cad { color: var(--d-muted); }
+      .price ul {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 24px;
+        flex: 1;
+      }
+      .price ul li {
+        padding: 9px 0;
+        border-bottom: 1px solid var(--rule);
+        font-size: 14.5px;
+        color: var(--ink-2);
+        display: flex;
+        gap: 10px;
+        align-items: baseline;
+      }
+      .price.feat ul li {
+        color: var(--d-ink-2);
+        border-bottom-color: rgba(255,255,255,0.08);
+      }
+      .price ul li::before {
+        content: "→";
+        color: var(--accent);
+        font-family: "JetBrains Mono", monospace;
+      }
+      .price.feat ul li::before { color: var(--d-accent); }
+      .price .pop-tag {
+        position: absolute;
+        top: -14px;
+        right: 24px;
+        background: var(--accent);
+        color: var(--paper);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        padding: 5px 10px;
+        border-radius: 999px;
+        font-weight: 600;
+      }
+
+      .price-note {
+        margin-top: 32px;
+        text-align: center;
+        font-style: italic;
+        font-family: "Fraunces", serif;
+        color: var(--ink-2);
+        font-size: 17px;
+      }
+
+      /* ============================================================
+         CHAPTER 09 — FAQ
+         ============================================================ */
+      .faq {
+        border: 1px solid var(--rule);
+        border-radius: 18px;
+        overflow: hidden;
+        background: var(--paper-3);
+      }
+      .faq details {
+        border-bottom: 1px solid var(--rule);
+      }
+      .faq details:last-child { border-bottom: none; }
+      .faq summary {
+        list-style: none;
+        cursor: pointer;
+        padding: 22px 28px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 24px;
+        font-family: "Fraunces", serif;
+        font-size: 22px;
+        font-weight: 500;
+        letter-spacing: -0.01em;
+      }
+      .faq summary::-webkit-details-marker { display: none; }
+      .faq summary::after {
+        content: "+";
+        font-family: "Fraunces", serif;
+        font-style: italic;
+        color: var(--accent);
+        font-size: 28px;
+        font-weight: 400;
+        transition: transform 0.2s ease;
+      }
+      .faq details[open] summary::after { content: "—"; }
+      .faq details[open] { background: #fff; }
+      .faq .a {
+        padding: 0 28px 24px;
+        font-family: "Inter", sans-serif;
+        color: var(--ink-2);
+        font-size: 16px;
+        max-width: 70ch;
+      }
+
+      /* ============================================================
+         FINAL CTA
+         ============================================================ */
+      .final {
+        padding: 96px 0;
+      }
+      .final-card {
+        max-width: 1280px;
+        margin: 0 auto;
+        background: var(--ink);
+        color: var(--d-ink);
+        padding: 80px 48px;
+        border-radius: 24px;
+        position: relative;
+        overflow: hidden;
+        text-align: center;
+      }
+      .final-card::before {
+        content: "✦";
+        position: absolute;
+        font-family: "Fraunces", serif;
+        font-style: italic;
+        font-size: 220px;
+        line-height: 1;
+        color: rgba(110, 231, 168, 0.06);
+        bottom: -30px;
+        right: 24px;
+      }
+      .final-card h2 {
+        font-size: clamp(40px, 6vw, 88px);
+        max-width: 18ch;
+        margin: 0 auto 24px;
+        position: relative;
+      }
+      .final-card h2 em { color: var(--d-accent); }
+      .final-card p {
+        font-style: italic;
+        font-family: "Fraunces", serif;
+        font-size: 20px;
+        color: var(--d-ink-2);
+        max-width: 50ch;
+        margin: 0 auto 36px;
+        position: relative;
+      }
+      .final-form {
+        display: flex;
+        gap: 6px;
+        max-width: 520px;
+        margin: 0 auto;
+        background: var(--d-surface);
+        border: 1px solid var(--d-line);
+        border-radius: 999px;
+        padding: 6px;
+        position: relative;
+      }
+      .final-form input {
+        flex: 1;
+        background: transparent;
+        border: none;
+        outline: none;
+        color: var(--d-ink);
+        font: inherit;
+        font-family: "Fraunces", serif;
+        font-style: italic;
+        font-size: 17px;
+        padding: 12px 18px;
+      }
+      .final-form input::placeholder { color: var(--d-muted); }
+      .final-form button {
+        background: var(--d-accent);
+        color: var(--ink);
+        font: inherit;
+        font-family: "Inter", sans-serif;
+        font-weight: 600;
+        font-size: 14px;
+        border: none;
+        border-radius: 999px;
+        padding: 10px 24px;
+        cursor: pointer;
+      }
+      .final-form button:hover { background: #fff; }
+
+      /* ============================================================
+         FOOTER
+         ============================================================ */
+      footer.foot {
+        padding: 64px 0 32px;
+        border-top: 1px solid var(--rule);
+      }
+      .foot-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1fr;
+        gap: 48px;
+        padding-bottom: 32px;
+        border-bottom: 1px solid var(--rule);
+      }
+      @media (max-width: 800px) { .foot-grid { grid-template-columns: 1fr 1fr; } }
+      .foot h4 {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        font-weight: 500;
+        color: var(--muted);
+        margin-bottom: 14px;
+      }
+      .foot ul { list-style: none; padding: 0; margin: 0; }
+      .foot ul li { padding: 5px 0; font-size: 14.5px; }
+      .foot a:hover { color: var(--accent); }
+      .foot .signoff {
+        font-family: "Fraunces", serif;
+        font-style: italic;
+        font-size: 36px;
+        line-height: 1.05;
+        font-weight: 400;
+        max-width: 14ch;
+        font-variation-settings: "opsz" 144, "SOFT" 100;
+        margin-top: -6px;
+      }
+      .foot .signoff em { color: var(--accent); }
+      .foot-bottom {
+        padding-top: 24px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--muted);
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="cursor" aria-hidden></div>
+
+    <div class="progress" aria-hidden><div class="progress-bar" id="bar"></div></div>
+
+    <header class="rail">
+      <div class="rail-inner">
+        <a class="brand" href="/">
+          <span class="brand-mark"></span>
+          ShopLanding
+        </a>
+        <nav>
+          <a href="#hero">Overview</a>
+          <a href="#ch-01">What you get</a>
+          <a href="#ch-02">Anatomy</a>
+          <a href="#ch-04">Niches</a>
+          <a href="#ch-08">Pricing</a>
+        </nav>
+        <a class="rail-cta" href="#start">Join waitlist <span aria-hidden>→</span></a>
+      </div>
+    </header>
+
+    <a class="back" href="index.html">← All explorations</a>
+
+    <!-- ====================================================
+         HERO
+         ==================================================== -->
+    <section class="container hero" id="hero">
+      <div class="hero-eyebrow">
+        <span class="pill"><span class="dot">v1</span>Spring 2026 · Niche presets shipping soon</span>
+        <span class="meta">No. 01 — The blueprint</span>
+      </div>
+      <h1 class="display">Sell <em>one</em> product.<br />Convert like ten stores.</h1>
+      <p class="hero-deck deck">
+        ShopLanding is the block system for single-product landing pages. <strong>Buy once, get two theme zips</strong> — Shopify and WooCommerce — built from <strong>7 conversion blocks distilled from 69 public CRO rules</strong>, plus a portable system spec your agency can rebuild on any stack.
+      </p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="#start">Join the waitlist <span aria-hidden>→</span></a>
+        <a class="btn btn-ghost" href="#ch-02">See the anatomy</a>
+        <span class="meta-note">$99 single-store · $249 unlimited · lifetime updates</span>
+      </div>
+
+      <div class="box reveal">
+        <div class="label">
+          What you actually get
+          <strong>One purchase, four files.</strong>
+        </div>
+        <div class="box-grid">
+          <article class="file-card shopify">
+            <div class="icon" data-ext="ZIP" aria-hidden></div>
+            <div class="name">shoplanding-shopify.zip</div>
+            <div class="desc">Shopify 2.0 theme — drop into Online Store, install in 90 seconds.</div>
+            <div class="size">≈ 2.4 MB</div>
+          </article>
+          <article class="file-card woo">
+            <div class="icon" data-ext="ZIP" aria-hidden></div>
+            <div class="name">shoplanding-woo.zip</div>
+            <div class="desc">WooCommerce block theme — full-site editing, identical anatomy.</div>
+            <div class="size">≈ 2.1 MB</div>
+          </article>
+          <article class="file-card json">
+            <div class="icon" data-ext="JSON" aria-hidden></div>
+            <div class="name">system-spec.json</div>
+            <div class="desc">Portable JSON + Markdown — rebuild it on Hydrogen, Astro, anywhere.</div>
+            <div class="size">≈ 38 KB</div>
+          </article>
+          <article class="file-card app">
+            <div class="icon" data-ext="APP" aria-hidden></div>
+            <div class="name">tweaks-panel</div>
+            <div class="desc">Browser intake form — fill, preview live, then ship the zip.</div>
+            <div class="size">Hosted</div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================
+         STAT STRIP
+         ==================================================== -->
+    <div class="container">
+      <div class="stats reveal">
+        <div class="stat">
+          <div class="v"><span data-count="7">0</span></div>
+          <div class="l meta">Conversion blocks</div>
+        </div>
+        <div class="stat">
+          <div class="v"><span data-count="69">0</span></div>
+          <div class="l meta">Public CRO rules</div>
+        </div>
+        <div class="stat">
+          <div class="v"><span data-count="20">0</span></div>
+          <div class="l meta">Rendered components</div>
+        </div>
+        <div class="stat">
+          <div class="v"><em>2</em></div>
+          <div class="l meta">Platforms in the box</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====================================================
+         CHAPTER 01 — What you actually get
+         ==================================================== -->
+    <section class="chapter" id="ch-01">
+      <div class="layout">
+        <aside class="side-rail" id="rail">
+          <div class="lbl">Index</div>
+          <ol>
+            <li><a href="#ch-01">01 — What you get</a></li>
+            <li><a href="#ch-02">02 — Anatomy</a></li>
+            <li><a href="#ch-03">03 — One block, three niches</a></li>
+            <li><a href="#ch-04">04 — Niche presets</a></li>
+            <li><a href="#ch-05">05 — Before / after</a></li>
+            <li><a href="#ch-06">06 — vs. alternatives</a></li>
+            <li><a href="#ch-07">07 — How it works</a></li>
+            <li><a href="#ch-08">08 — Pricing</a></li>
+            <li><a href="#ch-09">09 — Questions</a></li>
+          </ol>
+        </aside>
+
+        <div>
+          <header class="chapter-head reveal">
+            <div class="num">Chapter<strong>01</strong></div>
+            <div>
+              <h2 class="display">What you <em>actually</em> get.</h2>
+              <p class="lead">Four artifacts in one purchase. Two theme zips for the platforms that already cover ~85% of DTC, a portable spec your team can rebuild on anything, and a hosted intake form your buyers fill once.</p>
+            </div>
+          </header>
+
+          <div class="artifacts">
+            <!-- Shopify -->
+            <article class="artifact reveal">
+              <div class="info">
+                <p class="num">01 · Shopify theme</p>
+                <h3>A <em>Shopify 2.0</em> theme that renders the system.</h3>
+                <p>Drop into Online Store → Themes → Add → Upload, publish. The product page is the landing page is the entire store — built around a fixed block sequence that satisfies the 69 public CRO rules.</p>
+                <ul>
+                  <li>Shopify 2.0 (Online Store 2.0) JSON templates</li>
+                  <li>All 7 blocks as theme sections you can reorder, but you shouldn't</li>
+                  <li>Tokens-driven palette + type from the tweaks panel</li>
+                  <li>Compatible with Shop Pay, BNPL, Subscriptions, Stamped, Klaviyo</li>
+                </ul>
+              </div>
+              <div class="demo">
+                <div class="demo-bar">
+                  <span class="d-dot"></span><span class="d-dot"></span><span class="d-dot"></span>
+                  <span class="path">shoplanding-shopify/</span>
+                </div>
+                <div class="demo-body">
+<span class="tree-ln"><span class="dim">├</span> <span class="accent">config/</span></span>
+<span class="tree-ln"><span class="dim">│  ├</span> settings_schema.json</span>
+<span class="tree-ln"><span class="dim">│  └</span> settings_data.json</span>
+<span class="tree-ln"><span class="dim">├</span> <span class="accent">layout/</span></span>
+<span class="tree-ln"><span class="dim">│  └</span> theme.liquid</span>
+<span class="tree-ln"><span class="dim">├</span> <span class="accent">templates/</span></span>
+<span class="tree-ln"><span class="dim">│  ├</span> product.json   <span class="dim">// 7 blocks</span></span>
+<span class="tree-ln"><span class="dim">│  └</span> index.json    <span class="dim">// → product</span></span>
+<span class="tree-ln"><span class="dim">├</span> <span class="accent">sections/</span></span>
+<span class="tree-ln"><span class="dim">│  ├</span> announcement.liquid</span>
+<span class="tree-ln"><span class="dim">│  ├</span> nav-sticky.liquid</span>
+<span class="tree-ln"><span class="dim">│  ├</span> product-overview.liquid</span>
+<span class="tree-ln"><span class="dim">│  ├</span> image-gallery.liquid</span>
+<span class="tree-ln"><span class="dim">│  ├</span> cta-area.liquid</span>
+<span class="tree-ln"><span class="dim">│  ├</span> social-proof.liquid</span>
+<span class="tree-ln"><span class="dim">│  ├</span> aov-boosters.liquid</span>
+<span class="tree-ln"><span class="dim">│  └</span> description.liquid</span>
+<span class="tree-ln"><span class="dim">├</span> <span class="accent">snippets/</span> <span class="dim">// 20 partials</span></span>
+<span class="tree-ln"><span class="dim">└</span> <span class="accent">assets/</span></span>
+                </div>
+              </div>
+            </article>
+
+            <!-- Woo -->
+            <article class="artifact reveal">
+              <div class="info">
+                <p class="num">02 · WooCommerce theme</p>
+                <h3>A <em>WooCommerce</em> block theme — same anatomy, same blocks.</h3>
+                <p>For founders on WordPress. Full-site editing means buyers tweak in the Site Editor without touching code. The block taxonomy maps 1:1 to the Shopify version so the rules stay rules, regardless of platform.</p>
+                <ul>
+                  <li>WooCommerce 9+ block theme (full-site editing)</li>
+                  <li>Same 7 blocks as core/template parts</li>
+                  <li>Patterns library so retailers copy/paste niche presets</li>
+                  <li>Compatible with Stripe, Klarna, Affirm, Mailchimp</li>
+                </ul>
+              </div>
+              <div class="demo">
+                <div class="demo-bar">
+                  <span class="d-dot"></span><span class="d-dot"></span><span class="d-dot"></span>
+                  <span class="path">shoplanding-woo/</span>
+                </div>
+                <div class="demo-body">
+<span class="tree-ln"><span class="dim">├</span> theme.json    <span class="dim">// tokens</span></span>
+<span class="tree-ln"><span class="dim">├</span> style.css</span>
+<span class="tree-ln"><span class="dim">├</span> functions.php</span>
+<span class="tree-ln"><span class="dim">├</span> <span class="accent">templates/</span></span>
+<span class="tree-ln"><span class="dim">│  ├</span> single-product.html</span>
+<span class="tree-ln"><span class="dim">│  └</span> front-page.html</span>
+<span class="tree-ln"><span class="dim">├</span> <span class="accent">parts/</span> <span class="dim">// 7 blocks</span></span>
+<span class="tree-ln"><span class="dim">│  ├</span> product-overview.html</span>
+<span class="tree-ln"><span class="dim">│  ├</span> image-gallery.html</span>
+<span class="tree-ln"><span class="dim">│  ├</span> cta-area.html</span>
+<span class="tree-ln"><span class="dim">│  ├</span> social-proof.html</span>
+<span class="tree-ln"><span class="dim">│  ├</span> aov-boosters.html</span>
+<span class="tree-ln"><span class="dim">│  └</span> description.html</span>
+<span class="tree-ln"><span class="dim">├</span> <span class="accent">patterns/</span> <span class="dim">// niche presets</span></span>
+<span class="tree-ln"><span class="dim">└</span> <span class="accent">assets/</span></span>
+                </div>
+              </div>
+            </article>
+
+            <!-- System spec -->
+            <article class="artifact reveal">
+              <div class="info">
+                <p class="num">03 · System spec</p>
+                <h3>A <em>portable</em> JSON + Markdown spec — rebuild it anywhere.</h3>
+                <p>The unlimited-stores license includes the system specification: every block, every rule, every recommended component, every niche preset, in machine-readable JSON with human-readable Markdown notes. Re-implement the anatomy on Hydrogen, Astro, Webflow, headless commerce, anywhere.</p>
+                <ul>
+                  <li>blocks.json — the 7-block taxonomy with rule references</li>
+                  <li>rules.json — all 69 rules, with rationale + sources</li>
+                  <li>presets/*.json — per-niche tokens + content defaults</li>
+                  <li>spec.md — long-form rationale your CTO can review</li>
+                </ul>
+              </div>
+              <div class="demo">
+                <div class="demo-bar">
+                  <span class="d-dot"></span><span class="d-dot"></span><span class="d-dot"></span>
+                  <span class="path">system-spec.json</span>
+                </div>
+                <div class="demo-body">
+<span class="tree-ln"><span class="dim">{</span></span>
+<span class="tree-ln">  <span class="key">"version"</span>: <span class="str">"1.0.0"</span>,</span>
+<span class="tree-ln">  <span class="key">"blocks"</span>: [</span>
+<span class="tree-ln">    {</span>
+<span class="tree-ln">      <span class="key">"slug"</span>: <span class="str">"cta-area"</span>,</span>
+<span class="tree-ln">      <span class="key">"rank"</span>: <span class="num">4</span>,</span>
+<span class="tree-ln">      <span class="key">"rules"</span>: <span class="num">23</span>,</span>
+<span class="tree-ln">      <span class="key">"components"</span>: [</span>
+<span class="tree-ln">        <span class="str">"VariantSelector"</span>,</span>
+<span class="tree-ln">        <span class="str">"QuantitySelector"</span>,</span>
+<span class="tree-ln">        <span class="str">"BNPLPills"</span>,</span>
+<span class="tree-ln">        <span class="str">"UrgencyTimer"</span>,</span>
+<span class="tree-ln">        <span class="str">"FreeShipProgress"</span>,</span>
+<span class="tree-ln">        <span class="dim">// ...</span></span>
+<span class="tree-ln">      ],</span>
+<span class="tree-ln">      <span class="key">"checklistRefs"</span>: [</span>
+<span class="tree-ln">        <span class="str">"RA-001"</span>, <span class="str">"RA-002"</span>, <span class="dim">/* …23 */</span></span>
+<span class="tree-ln">      ]</span>
+<span class="tree-ln">    }</span>
+<span class="tree-ln">  ]</span>
+<span class="tree-ln"><span class="dim">}</span></span>
+                </div>
+              </div>
+            </article>
+
+            <!-- Tweaks panel -->
+            <article class="artifact reveal">
+              <div class="info">
+                <p class="num">04 · Tweaks panel</p>
+                <h3>A hosted <em>intake form</em> — fill once, preview live, ship the zip.</h3>
+                <p>After purchase, your buyer is sent to a hosted form with the tokens that drive the theme: brand name, palette, typography, niche preset, headline, the buy box copy. Live preview at <code>/preview/&lt;slug&gt;</code> updates as they fill. When they hit ship, the customised zips download.</p>
+                <ul>
+                  <li>Live preview URL — share with stakeholders before launch</li>
+                  <li>Tokens-only changes (no theme editing required)</li>
+                  <li>Copy slot for every block, defaults from the niche preset</li>
+                  <li>Reusable for the lifetime of the license</li>
+                </ul>
+              </div>
+              <div class="panel-mock">
+                <div class="panel-bar">
+                  <span class="d-dot"></span><span class="d-dot"></span><span class="d-dot"></span>
+                  <span style="margin-left:8px;">/preview/daystick</span>
+                </div>
+                <div class="panel-body">
+                  <div class="field">
+                    <label>Brand name</label>
+                    <input type="text" value="Daystick" />
+                  </div>
+                  <div class="field">
+                    <label>Niche preset</label>
+                    <select>
+                      <option>Skincare / body care</option>
+                      <option>Supplement</option>
+                      <option>Coffee</option>
+                      <option>Candle</option>
+                      <option>Gadget</option>
+                      <option>Food / CPG</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label>Palette</label>
+                    <div class="swatches">
+                      <span class="swatch active" style="background: #c79560;"></span>
+                      <span class="swatch" style="background: #1f5a40;"></span>
+                      <span class="swatch" style="background: #b9261b;"></span>
+                      <span class="swatch" style="background: #6d8ba8;"></span>
+                      <span class="swatch" style="background: #2a2a2a;"></span>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="field">
+                      <label>Compare-at price</label>
+                      <input type="text" value="$48.00" />
+                    </div>
+                    <div class="field">
+                      <label>Sell price</label>
+                      <input type="text" value="$32.00" />
+                    </div>
+                  </div>
+                  <button class="panel-cta" type="button">Save & open live preview →</button>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================
+         CHAPTER 02 — Anatomy of a landing page
+         ==================================================== -->
+    <section class="chapter" id="ch-02">
+      <div class="container">
+        <header class="chapter-head reveal">
+          <div class="num">Chapter<strong>02</strong></div>
+          <div>
+            <h2 class="display">A real landing page, <em>annotated.</em></h2>
+            <p class="lead">Below is a one-product page rendered from the system, just like the one you'll ship. Hover or tap a block on the right — the page jumps and the block flashes. <strong>This is the actual anatomy you sell when you sell ShopLanding.</strong></p>
+          </div>
+        </header>
+
+        <div class="anatomy">
+          <div class="anatomy-frame">
+            <div class="anatomy-screen" id="screen">
+              <div class="mock">
+                <!-- 01 General -->
+                <div class="mock-block" id="b-1">
+                  <div class="mock-announce">
+                    Free shipping over <strong>$35</strong> · Ships in 24 hrs
+                  </div>
+                  <div class="mock-nav">
+                    <strong style="font-family:'Fraunces',serif;font-size:14px;">Pocket&nbsp;Butter</strong>
+                    <div class="nav-r">
+                      <span class="nav-price">$32</span>
+                      <span class="nav-btn">Add</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 02 Product overview -->
+                <div class="mock-block" id="b-2">
+                  <div class="mock-hero">
+                    <div class="mock-meta-row">
+                      <span class="mock-stars">★★★★★ <span style="color:#777">4.9 · 1,284</span></span>
+                      <span class="mock-recommended">Editor's pick</span>
+                    </div>
+                    <h1 class="mock-h1">The pocket-sized butter that <em style="font-style:italic;color:var(--accent)">actually</em> melts on you.</h1>
+                    <p class="mock-sub">A solid balm in a brass tin. Slip into a pocket, melt with skin contact, glides on dry knuckles, lips, ankles, anywhere.</p>
+                    <ul class="mock-bullets">
+                      <li>Body-temperature melt — no waxy drag</li>
+                      <li>Three ingredients. Period.</li>
+                      <li>Refillable brass tin — buy once</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <!-- 03 Image gallery (preceded by the photo since on mobile this is the visual anchor) -->
+                <div class="mock-block" id="b-3" style="padding: 0 14px 14px;">
+                  <div class="mock-photo"></div>
+                </div>
+                <div class="mock-block" id="b-3-grid">
+                  <div class="mock-gallery">
+                    <h3>Up close.</h3>
+                    <div class="grid">
+                      <div class="tile"></div>
+                      <div class="tile"></div>
+                      <div class="tile video"></div>
+                      <div class="tile"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 04 CTA area -->
+                <div class="mock-block" id="b-4">
+                  <div style="padding: 18px 14px;">
+                    <div class="mock-cta">
+                      <div class="price-row">
+                        <span class="price">$32</span>
+                        <span class="compare-at">$48</span>
+                        <span class="save">Save 33%</span>
+                      </div>
+                      <div class="mock-variants">
+                        <span class="mock-variant active">15g</span>
+                        <span class="mock-variant">30g</span>
+                        <span class="mock-variant">60g</span>
+                      </div>
+                      <div class="mock-bnpl">4× $8.00 with Klarna · 0% APR</div>
+                      <div class="mock-progress">
+                        Add <strong>$3</strong> for free shipping
+                        <div class="bar"><div></div></div>
+                      </div>
+                      <div class="mock-qty">
+                        Qty:
+                        <button>−</button>
+                        <span style="font-weight:600;">1</span>
+                        <button>+</button>
+                      </div>
+                      <div class="mock-buy">Add to cart — $32</div>
+                      <div class="mock-trust">
+                        <span>30-day returns</span>
+                        <span>Ships in 24h</span>
+                        <span>Secure checkout</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 05 Social proof -->
+                <div class="mock-block" id="b-5">
+                  <div class="mock-reviews">
+                    <h3>What buyers say.</h3>
+                    <div class="summary">
+                      <div class="big-rating">4.9</div>
+                      <div class="histogram">
+                        <div class="h-row"><span>5</span><div class="h-bar"><div style="width: 86%"></div></div><span>86%</span></div>
+                        <div class="h-row"><span>4</span><div class="h-bar"><div style="width: 11%"></div></div><span>11%</span></div>
+                        <div class="h-row"><span>3</span><div class="h-bar"><div style="width: 2%"></div></div><span>2%</span></div>
+                        <div class="h-row"><span>2</span><div class="h-bar"><div style="width: 0%"></div></div><span>0%</span></div>
+                        <div class="h-row"><span>1</span><div class="h-bar"><div style="width: 1%"></div></div><span>1%</span></div>
+                      </div>
+                    </div>
+                    <div class="mock-review">
+                      <div class="who">
+                        <span class="av">JL</span>
+                        <span><strong>Jenna L.</strong> · <span class="verified">Verified</span></span>
+                      </div>
+                      <div>"Lives in my coat pocket through winter. The brass tin is real."</div>
+                    </div>
+                    <div class="mock-review">
+                      <div class="who">
+                        <span class="av" style="background: linear-gradient(135deg, #d4a574, #5a3a1f);">MR</span>
+                        <span><strong>Marco R.</strong> · <span class="verified">Verified</span></span>
+                      </div>
+                      <div>"Refilled twice. Zero waste. My grandfather's would have approved."</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 06 AOV -->
+                <div class="mock-block" id="b-6">
+                  <div class="mock-aov">
+                    <h3>Stock up.</h3>
+                    <div class="mock-aov-grid">
+                      <div class="mock-bundle">
+                        <div class="qty">1</div>
+                        <div class="lab">Tin</div>
+                        <div class="pr">$32</div>
+                      </div>
+                      <div class="mock-bundle featured">
+                        <div class="save-pill">Save 15%</div>
+                        <div class="qty">2</div>
+                        <div class="lab">Tins</div>
+                        <div class="pr">$54</div>
+                      </div>
+                      <div class="mock-bundle">
+                        <div class="qty">3</div>
+                        <div class="lab">Tins</div>
+                        <div class="pr">$76 <span style="color:var(--accent);">−$20</span></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 07 Description -->
+                <div class="mock-block" id="b-7">
+                  <div class="mock-desc">
+                    <h3>What's inside.</h3>
+                    <div class="tabs">
+                      <span class="active">Story</span>
+                      <span>Ingredients</span>
+                      <span>How to use</span>
+                      <span>FAQ</span>
+                    </div>
+                    <p>Three ingredients: cocoa butter, beeswax, jojoba. Hand-poured in small batches into solid brass tins from a foundry in Vermont. The tin outlasts the contents — refill it forever.</p>
+                    <p>Made for the moment between meetings when your hands look like sandpaper. Slips out of a pocket, melts on contact, glides on. No alcohol, no fragrance, no rebrandable nothing.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="block-legend" id="legend">
+            <article class="legend-item" data-target="b-1">
+              <div class="num">01 — General</div>
+              <div class="nm">Persistent signals</div>
+              <div class="ds">Announcement bar, sticky nav with name + price + CTA. The promise the customer never loses sight of.</div>
+              <span class="rules-tag">4 rules</span>
+            </article>
+            <article class="legend-item" data-target="b-2">
+              <div class="num">02 — Product overview</div>
+              <div class="nm">The 5-second test</div>
+              <div class="ds">Headline, sub, value bullets, rating, recommendation pill. Above the fold, above the buy box.</div>
+              <span class="rules-tag">6 rules</span>
+            </article>
+            <article class="legend-item" data-target="b-3">
+              <div class="num">03 — Image gallery</div>
+              <div class="ds">Hero shot, lifestyle, scale, packaging, video, alt-angle. Nine answers before they ask.</div>
+              <div class="nm">Show, don't tell</div>
+              <span class="rules-tag">9 rules</span>
+            </article>
+            <article class="legend-item" data-target="b-4">
+              <div class="num">04 — CTA area</div>
+              <div class="nm">The buy box</div>
+              <div class="ds">Variants, qty, BNPL, urgency, free-ship progress, express pay, trust micro-icons. The widest set of rules in the system.</div>
+              <span class="rules-tag">23 rules · richest block</span>
+            </article>
+            <article class="legend-item" data-target="b-5">
+              <div class="num">05 — Social proof</div>
+              <div class="nm">Authority + crowd</div>
+              <div class="ds">Quantified rating, histogram, verified buyers, photo reviews, press logos. Press as authority, customers as proof.</div>
+              <span class="rules-tag">8 rules</span>
+            </article>
+            <article class="legend-item" data-target="b-6">
+              <div class="num">06 — AOV boosters</div>
+              <div class="nm">Lift the cart</div>
+              <div class="ds">Bundle pricing, quantity discounts, post-click cross-sell, charity tie-in. The block that pays for the next ad spend.</div>
+              <span class="rules-tag">9 rules</span>
+            </article>
+            <article class="legend-item" data-target="b-7">
+              <div class="num">07 — Description</div>
+              <div class="nm">Objection handling</div>
+              <div class="ds">Story, ingredients, comparison, FAQ. For the buyer who reads everything before they pay.</div>
+              <span class="rules-tag">10 rules</span>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================
+         CHAPTER 03 — Same block, three niches
+         ==================================================== -->
+    <section class="chapter" id="ch-03">
+      <div class="container">
+        <header class="chapter-head reveal">
+          <div class="num">Chapter<strong>03</strong></div>
+          <div>
+            <h2 class="display">Same block. <em>Three</em> niches.</h2>
+            <p class="lead">The CTA area carries 23 of the 69 rules. Below is the same block — same anatomy, same rules satisfied — rendered for three different niches. Click a tab to swap brand, palette, copy. The structure doesn't move.</p>
+          </div>
+        </header>
+
+        <div class="niche-tabs reveal" id="cta-tabs">
+          <button class="niche-tab active" data-pane="cta-skincare">
+            <span class="nm">Skincare</span><span class="br">— Daystick</span>
+          </button>
+          <button class="niche-tab" data-pane="cta-supp">
+            <span class="nm">Supplement</span><span class="br">— Daily Greens</span>
+          </button>
+          <button class="niche-tab" data-pane="cta-coffee">
+            <span class="nm">Coffee</span><span class="br">— Slow Roast</span>
+          </button>
+        </div>
+
+        <!-- Skincare -->
+        <div class="niche-pane active" id="cta-skincare">
+          <div class="cta-mock">
+            <div class="crumb">Skincare · Daystick</div>
+            <h4>Daily ritual butter — refillable tin.</h4>
+            <p class="sub">Three ingredients. Solid balm. Brass tin.</p>
+            <div class="price-row">
+              <span class="price">$32</span>
+              <span class="compare-at">$48</span>
+              <span class="save">Save 33%</span>
+            </div>
+            <div class="variants">
+              <span class="variant active">15g</span>
+              <span class="variant">30g</span>
+              <span class="variant">60g · refill</span>
+            </div>
+            <div class="urgency">⚡ 23 sold in the last 24h</div>
+            <div class="buy">Add to cart — $32</div>
+            <div class="micro"><span>30-day returns</span><span>Ships in 24h</span><span>Klarna 4×$8</span></div>
+          </div>
+          <div class="niche-rules">
+            <h4>What this <em style="font-style:italic;color:var(--accent)">block</em> satisfies.</h4>
+            <p class="lead">Same 23 rules in every niche. The block enforces them — the niche only changes the content.</p>
+            <ul class="rule-list">
+              <li>Variant selector visible</li>
+              <li>Compare-at + savings pill</li>
+              <li>Quantity stepper</li>
+              <li>Urgency / scarcity hint</li>
+              <li>BNPL eligibility line</li>
+              <li>Free-ship progress</li>
+              <li>Sticky add-to-cart on mobile</li>
+              <li>Express pay slot</li>
+              <li>Trust micro-icons</li>
+              <li>Returns policy line</li>
+              <li>Ship-by date</li>
+              <li>Stock indicator</li>
+              <li>Inventory threshold copy</li>
+              <li>Subscription option</li>
+              <li>Cart drawer slot</li>
+              <li>Variant unavailable state</li>
+              <li>Out-of-stock notify-me</li>
+              <li>Gift-wrapping toggle</li>
+              <li>Price formatting per locale</li>
+              <li>Currency switcher hook</li>
+              <li>BNPL provider switch</li>
+              <li>Trust badge slot</li>
+              <li>Live activity widget hook</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Supplement -->
+        <div class="niche-pane" id="cta-supp">
+          <div class="cta-mock">
+            <div class="crumb">Supplement · Daily Greens</div>
+            <h4>Daily greens powder — 30 servings.</h4>
+            <p class="sub">12 organic greens. Kosher. Sugar-free.</p>
+            <div class="price-row">
+              <span class="price">$45</span>
+              <span class="compare-at">$60</span>
+              <span class="save">Save 25%</span>
+            </div>
+            <div class="variants">
+              <span class="variant active">One-time</span>
+              <span class="variant">Subscribe · save 15%</span>
+            </div>
+            <div class="urgency">⚡ Restocked 3 days ago — running low</div>
+            <div class="buy">Add to cart — $45</div>
+            <div class="micro"><span>60-day returns</span><span>Free ship</span><span>Vegan certified</span></div>
+          </div>
+          <div class="niche-rules">
+            <h4>Same <em>23 rules.</em> Different content.</h4>
+            <p class="lead">Subscription becomes the primary variant. BNPL drops out (low ticket). Free-ship is the default, not a progress bar. The block flexes per niche but every rule is still enforced.</p>
+            <ul class="rule-list">
+              <li>Variant selector — subscription</li>
+              <li>Subscribe-and-save savings line</li>
+              <li>Quantity stepper</li>
+              <li>Restock urgency hint</li>
+              <li>Free-ship default badge</li>
+              <li>Express pay (Apple/Shop)</li>
+              <li>Sticky ATC on mobile</li>
+              <li>Trust micro-icons (cert)</li>
+              <li>60-day returns line</li>
+              <li>Ship-by date</li>
+              <li>Stock-level indicator</li>
+              <li>Subscription cadence picker</li>
+              <li>Cancel-anytime line</li>
+              <li>Notify-me out-of-stock</li>
+              <li>Gift toggle</li>
+              <li>Price formatting</li>
+              <li>Locale switcher hook</li>
+              <li>Trust badge slot</li>
+              <li>Live activity hook</li>
+              <li>Allergen disclosure</li>
+              <li>Cert/badge row</li>
+              <li>FDA-style disclaimer</li>
+              <li>Channel attribution slot</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Coffee -->
+        <div class="niche-pane" id="cta-coffee">
+          <div class="cta-mock">
+            <div class="crumb">Coffee · Slow Roast</div>
+            <h4>Single-origin · Ethiopia, Yirgacheffe.</h4>
+            <p class="sub">Roasted Mondays. Shipped Tuesdays. Brewed Wednesdays.</p>
+            <div class="price-row">
+              <span class="price">$22</span>
+              <span class="compare-at">—</span>
+              <span class="save">Fresh</span>
+            </div>
+            <div class="variants">
+              <span class="variant active">Whole bean</span>
+              <span class="variant">Ground · espresso</span>
+              <span class="variant">Ground · pour-over</span>
+            </div>
+            <div class="urgency">⚡ Roasted 2 days ago — peak window</div>
+            <div class="buy">Add to cart — $22</div>
+            <div class="micro"><span>30-day freshness guarantee</span><span>Ships next roast day</span><span>Sub. save 12%</span></div>
+          </div>
+          <div class="niche-rules">
+            <h4>Roast date <em>is</em> urgency.</h4>
+            <p class="lead">The urgency rule is satisfied by freshness, not stock count. The variant selector is grind, not weight. The block doesn't change — the rules each niche needs are different content under the same hooks.</p>
+            <ul class="rule-list">
+              <li>Variant — grind</li>
+              <li>Subscription — every 2 weeks</li>
+              <li>Roast-date urgency</li>
+              <li>Quantity stepper</li>
+              <li>Free-ship over $30</li>
+              <li>Express pay</li>
+              <li>Sticky ATC mobile</li>
+              <li>Origin micro-icons</li>
+              <li>Freshness guarantee</li>
+              <li>Ship-on roast day</li>
+              <li>Stock indicator (per roast)</li>
+              <li>Subscription cadence</li>
+              <li>Cancel-anytime line</li>
+              <li>Pause-subscription line</li>
+              <li>Gift toggle</li>
+              <li>Tasting-notes slot</li>
+              <li>Origin/farm badge</li>
+              <li>Roaster certification</li>
+              <li>Trace-to-farm hook</li>
+              <li>Locale switcher</li>
+              <li>Currency hook</li>
+              <li>Live activity hook</li>
+              <li>BNPL (gift bundle)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================
+         CHAPTER 04 — Niche presets gallery
+         ==================================================== -->
+    <section class="chapter" id="ch-04">
+      <div class="container">
+        <header class="chapter-head reveal">
+          <div class="num">Chapter<strong>04</strong></div>
+          <div>
+            <h2 class="display">Niche presets, <em>shipped.</em></h2>
+            <p class="lead">A preset is the system, opinionated for a niche — palette, typography, default copy, image treatment, the right urgency mechanic. Six in v1, more landing every quarter.</p>
+          </div>
+        </header>
+
+        <div class="niche-grid">
+          <article class="niche-card niche-skincare reveal">
+            <div class="preview">
+              <span class="label">Skincare</span>
+              <span class="pr">$32</span>
+              <span class="obj"></span>
+            </div>
+            <div class="info">
+              <h4>Daily <em>ritual</em> butter</h4>
+              <p>Solid balm in a refillable brass tin. Beeswax + cocoa + jojoba.</p>
+              <span class="tag">Daystick · skincare/body</span>
+            </div>
+          </article>
+          <article class="niche-card niche-supplement reveal">
+            <div class="preview">
+              <span class="label">Supplement</span>
+              <span class="pr">$45</span>
+              <span class="obj"></span>
+            </div>
+            <div class="info">
+              <h4>Daily <em>greens</em> powder</h4>
+              <p>12 organic greens. 30 servings. Subscribe and save 15%.</p>
+              <span class="tag">Daily Greens · supplement</span>
+            </div>
+          </article>
+          <article class="niche-card niche-coffee reveal">
+            <div class="preview">
+              <span class="label">Coffee</span>
+              <span class="pr">$22</span>
+              <span class="obj"></span>
+            </div>
+            <div class="info">
+              <h4>Single-<em>origin</em> Yirgacheffe</h4>
+              <p>Roasted Monday. Shipped Tuesday. Brewed Wednesday.</p>
+              <span class="tag">Slow Roast · coffee</span>
+            </div>
+          </article>
+          <article class="niche-card niche-candle reveal">
+            <div class="preview">
+              <span class="label">Candle</span>
+              <span class="pr">$38</span>
+              <span class="obj"></span>
+            </div>
+            <div class="info">
+              <h4>Quiet <em>ember</em> candle</h4>
+              <p>60-hour burn. Single wick. Cedar, smoked oak, vanilla.</p>
+              <span class="tag">Quiet Candle · home/scent</span>
+            </div>
+          </article>
+          <article class="niche-card niche-gadget reveal">
+            <div class="preview">
+              <span class="label">Gadget</span>
+              <span class="pr">$120</span>
+              <span class="obj"></span>
+            </div>
+            <div class="info">
+              <h4>The <em>Pen</em></h4>
+              <p>Refillable. Brass. Outlasts its ink. One.</p>
+              <span class="tag">The Pen · everyday gadget</span>
+            </div>
+          </article>
+          <article class="niche-card niche-food reveal">
+            <div class="preview">
+              <span class="label">Food / CPG</span>
+              <span class="pr">$14</span>
+              <span class="obj"></span>
+            </div>
+            <div class="info">
+              <h4>Cold-pressed <em>ginger</em> shot</h4>
+              <p>12-pack. Refrigerated ship. 7-day stable.</p>
+              <span class="tag">Bright Shots · food/CPG</span>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================
+         CHAPTER 05 — Before / after
+         ==================================================== -->
+    <section class="chapter" id="ch-05">
+      <div class="container">
+        <header class="chapter-head reveal">
+          <div class="num">Chapter<strong>05</strong></div>
+          <div>
+            <h2 class="display">Generic theme. Versus <em>this.</em></h2>
+            <p class="lead">Same product, two pages. The left is what a generic Theme Store theme renders out of the box — pretty, anaemic, missing half the rules. The right is the same product through ShopLanding's CTA-area block.</p>
+          </div>
+        </header>
+
+        <div class="ba-grid">
+          <article class="ba-col">
+            <p class="lab">Generic theme</p>
+            <h3>What you ship without a system.</h3>
+            <p class="l">Looks fine in a screenshot. Underweight where it counts.</p>
+            <div class="ba-mock">
+              <div class="crumb">Daystick</div>
+              <h4>Daily ritual butter</h4>
+              <div class="price-row">
+                <span class="price">$32</span>
+              </div>
+              <div class="buy">Add to cart</div>
+            </div>
+            <ul class="ba-checks">
+              <li class="has">Hero photo + price</li>
+              <li class="has">Add to cart button</li>
+              <li class="miss">No compare-at, no savings pill</li>
+              <li class="miss">No rating + recommendation pill</li>
+              <li class="miss">No urgency / scarcity hint</li>
+              <li class="miss">No free-ship progress</li>
+              <li class="miss">No BNPL eligibility</li>
+              <li class="miss">No trust micro-icons</li>
+              <li class="miss">No express pay</li>
+            </ul>
+          </article>
+          <article class="ba-col us">
+            <p class="lab">ShopLanding · CTA-area block</p>
+            <h3>What you ship <em>with</em> the system.</h3>
+            <p class="l">Every rule in the block is satisfied by default — no buyer can forget one.</p>
+            <div class="ba-mock">
+              <div class="crumb" style="color:#999;">Daystick · skincare</div>
+              <span class="pill-recommend">Editor's pick</span>
+              <h4>Daily ritual butter — refillable tin.</h4>
+              <div class="stars">★★★★★ <span style="color:#777">4.9 · 1,284</span></div>
+              <div class="price-row">
+                <span class="price">$32</span>
+                <span class="compare-at">$48</span>
+                <span class="save">Save 33%</span>
+              </div>
+              <div class="urgency-line">⚡ 23 sold in last 24h · ships today if ordered before 3pm</div>
+              <div class="buy">Add to cart — $32</div>
+              <div class="micro">
+                <span>4× $8 with Klarna</span>
+                <span>Free ship over $35</span>
+                <span>30-day returns</span>
+              </div>
+            </div>
+            <ul class="ba-checks">
+              <li class="has">Hero + price</li>
+              <li class="has">Compare-at + savings pill</li>
+              <li class="has">Rating + recommendation pill</li>
+              <li class="has">Urgency + scarcity hint</li>
+              <li class="has">Free-ship progress + threshold</li>
+              <li class="has">BNPL eligibility line</li>
+              <li class="has">Trust micro-icons (returns / ship / pay)</li>
+              <li class="has">Express pay slot</li>
+              <li class="has">Stock indicator + ship-by date</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================
+         CHAPTER 06 — Compare table
+         ==================================================== -->
+    <section class="chapter" id="ch-06">
+      <div class="container">
+        <header class="chapter-head reveal">
+          <div class="num">Chapter<strong>06</strong></div>
+          <div>
+            <h2 class="display">vs. the alternatives, <em>cell by cell.</em></h2>
+            <p class="lead">A page that converts has to be defendable, not just pretty. Here's how ShopLanding compares to a Theme Store theme and to building it yourself.</p>
+          </div>
+        </header>
+
+        <div class="compare reveal">
+          <table>
+            <thead>
+              <tr>
+                <th>Capability</th>
+                <th class="us" style="text-align:center">ShopLanding</th>
+                <th style="text-align:center">Theme Store theme</th>
+                <th style="text-align:center">Build it yourself</th>
+              </tr>
+            </thead>
+            <tbody id="cmp"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================
+         CHAPTER 07 — How it works
+         ==================================================== -->
+    <section class="chapter" id="ch-07">
+      <div class="container">
+        <header class="chapter-head reveal">
+          <div class="num">Chapter<strong>07</strong></div>
+          <div>
+            <h2 class="display">From <em>buy</em> to live, in four steps.</h2>
+            <p class="lead">No setup call required. No engineer required. The intake form is the install.</p>
+          </div>
+        </header>
+        <div class="steps">
+          <article class="step reveal">
+            <div class="step-num">01</div>
+            <h4>Buy a license.</h4>
+            <p>Pick single-store ($99) or unlimited ($249). One-time. Lifetime updates.</p>
+            <div class="vis">
+              <strong>What you receive</strong>
+              ✓ Email with download links<br>
+              ✓ Tweaks panel URL
+            </div>
+          </article>
+          <article class="step reveal">
+            <div class="step-num">02</div>
+            <h4>Fill the tweaks panel.</h4>
+            <p>Brand name, palette, niche preset, headline, the buy box copy. Live preview as you type.</p>
+            <div class="vis">
+              <strong>~ 8 minutes</strong>
+              brand · palette · niche · copy · variants
+            </div>
+          </article>
+          <article class="step reveal">
+            <div class="step-num">03</div>
+            <h4>Preview & approve.</h4>
+            <p>Share <code style="font-family:'JetBrains Mono',monospace;background:var(--paper-2);padding:1px 4px;border-radius:3px;">/preview/&lt;slug&gt;</code> with stakeholders. Approve, edit, re-approve.</p>
+            <div class="vis">
+              <strong>shoplanding.com/preview/<span style="color:var(--accent)">daystick</span></strong>
+              shareable preview link
+            </div>
+          </article>
+          <article class="step reveal">
+            <div class="step-num">04</div>
+            <h4>Ship the zip.</h4>
+            <p>Click ship. Two zips download. Drop into Shopify or Woo, publish. Done.</p>
+            <div class="vis">
+              <strong>Install time</strong>
+              ≈ 90 seconds per platform
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================
+         CHAPTER 08 — Pricing
+         ==================================================== -->
+    <section class="chapter" id="ch-08">
+      <div class="container">
+        <header class="chapter-head reveal">
+          <div class="num">Chapter<strong>08</strong></div>
+          <div>
+            <h2 class="display">One purchase. <em>Lifetime</em> updates.</h2>
+            <p class="lead">No subscription. No discount theatre. No urgency timers we'd be embarrassed to use on our own page.</p>
+          </div>
+        </header>
+
+        <div class="pricing">
+          <article class="price reveal">
+            <div class="lab">For founders</div>
+            <h3>Single store</h3>
+            <div class="amt">$<em>99</em></div>
+            <div class="cad">one-time · lifetime updates</div>
+            <ul>
+              <li>One Shopify or WooCommerce store</li>
+              <li>Both .zip artifacts</li>
+              <li>Tweaks panel + preview URL</li>
+              <li>Lifetime updates for that store</li>
+              <li>Niche preset of your choice</li>
+            </ul>
+            <a class="btn btn-ghost" href="#start">Join waitlist <span aria-hidden>→</span></a>
+          </article>
+          <article class="price feat reveal">
+            <span class="pop-tag">Best value</span>
+            <div class="lab">For operators &amp; agencies</div>
+            <h3>Unlimited stores</h3>
+            <div class="amt">$<em>249</em></div>
+            <div class="cad">one-time · lifetime updates</div>
+            <ul>
+              <li>Everything in single-store</li>
+              <li>Unlimited stores you operate</li>
+              <li>Resell client builds — no relicense</li>
+              <li>Portable system spec (JSON + MD)</li>
+              <li>Priority on niche-preset releases</li>
+            </ul>
+            <a class="btn btn-accent" href="#start">Join waitlist <span aria-hidden>→</span></a>
+          </article>
+          <article class="price reveal">
+            <div class="lab">Optional add-on</div>
+            <h3>Done-for-you setup</h3>
+            <div class="amt">+$<em>199</em></div>
+            <div class="cad">one-time add-on</div>
+            <ul>
+              <li>We install on your store</li>
+              <li>Wire payments + shipping + inventory</li>
+              <li>Five sections of brand copy from brief</li>
+              <li>One round of revisions</li>
+              <li>Goes live in 5 business days</li>
+            </ul>
+            <a class="btn btn-ghost" href="#start">Request setup <span aria-hidden>→</span></a>
+          </article>
+        </div>
+
+        <p class="price-note">A defensibly good baseline you can buy <em style="color:var(--accent)">once</em>, not rent forever.</p>
+      </div>
+    </section>
+
+    <!-- ====================================================
+         CHAPTER 09 — FAQ
+         ==================================================== -->
+    <section class="chapter" id="ch-09">
+      <div class="container">
+        <header class="chapter-head reveal">
+          <div class="num">Chapter<strong>09</strong></div>
+          <div>
+            <h2 class="display">The <em>questions</em><br />buyers ask before paying.</h2>
+          </div>
+        </header>
+
+        <div class="faq" id="faq-list"></div>
+      </div>
+    </section>
+
+    <!-- ====================================================
+         FINAL CTA
+         ==================================================== -->
+    <section class="final" id="start">
+      <div class="container">
+        <div class="final-card">
+          <h2 class="display">Be <em>first</em> when the themes ship.</h2>
+          <p>One email when the first niche preset is purchasable. No drip. No upsell. No marketing automation theatre.</p>
+          <form class="final-form" onsubmit="event.preventDefault(); this.querySelector('button').textContent='✓ On the list'; this.querySelector('input').disabled=true;">
+            <input type="email" required placeholder="you@studio.com" />
+            <button type="submit">Join</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================
+         FOOTER
+         ==================================================== -->
+    <footer class="foot">
+      <div class="container">
+        <div class="foot-grid">
+          <div>
+            <a class="brand" href="/" style="margin-bottom: 16px; display: inline-flex;">
+              <span class="brand-mark"></span>
+              ShopLanding
+            </a>
+            <p class="signoff">One <em>product</em>.<br>One <em>page</em>.<br>One <em>decision</em>.</p>
+          </div>
+          <div>
+            <h4>System</h4>
+            <ul><li><a href="#">Playbook</a></li><li><a href="#">Showcase</a></li><li><a href="#">Themes</a></li><li><a href="#">Niche presets</a></li></ul>
+          </div>
+          <div>
+            <h4>Company</h4>
+            <ul><li><a href="#">About</a></li><li><a href="#">Contact</a></li><li><a href="#">Brief</a></li></ul>
+          </div>
+          <div>
+            <h4>Legal</h4>
+            <ul><li><a href="#">License</a></li><li><a href="#">Terms</a></li><li><a href="#">Privacy</a></li></ul>
+          </div>
+        </div>
+        <div class="foot-bottom">
+          <span>© 2026 ShopLanding</span>
+          <span>Blueprint v0 · Editorial × SaaS</span>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      /* ============================================================
+         Behaviours
+         ============================================================ */
+
+      // Cursor (subtle)
+      const cursor = document.querySelector(".cursor");
+      window.addEventListener("mousemove", (e) => {
+        cursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px) translate(-50%, -50%)`;
+      });
+      document.querySelectorAll("a, button, .legend-item, .niche-tab, .file-card, .niche-card, .price, .step").forEach((el) => {
+        el.addEventListener("mouseenter", () => cursor.classList.add("hover"));
+        el.addEventListener("mouseleave", () => cursor.classList.remove("hover"));
+      });
+
+      // Reading progress
+      const bar = document.getElementById("bar");
+      function onScroll() {
+        const h = document.documentElement;
+        const max = h.scrollHeight - h.clientHeight;
+        const p = Math.max(0, Math.min(1, h.scrollTop / max));
+        bar.style.width = (p * 100).toFixed(2) + "%";
+      }
+      document.addEventListener("scroll", onScroll, { passive: true });
+      onScroll();
+
+      // Counters
+      function tick(el, target) {
+        let start = performance.now();
+        const dur = 1500;
+        function step(t) {
+          const p = Math.min((t - start) / dur, 1);
+          const eased = 1 - Math.pow(1 - p, 3);
+          el.textContent = Math.round(target * eased);
+          if (p < 1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+      }
+      const co = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              tick(e.target, parseInt(e.target.dataset.count, 10));
+              co.unobserve(e.target);
+            }
+          });
+        },
+        { threshold: 0.4 },
+      );
+      document.querySelectorAll("[data-count]").forEach((c) => co.observe(c));
+
+      // Reveal on scroll
+      const ro = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              e.target.classList.add("in");
+              ro.unobserve(e.target);
+            }
+          });
+        },
+        { threshold: 0.12 },
+      );
+      document.querySelectorAll(".reveal").forEach((el) => ro.observe(el));
+
+      // Side rail active section
+      const rail = document.getElementById("rail");
+      const sects = ["ch-01","ch-02","ch-03","ch-04","ch-05","ch-06","ch-07","ch-08","ch-09"];
+      const sw = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              rail.querySelectorAll("a").forEach((a) => a.classList.remove("active"));
+              const a = rail.querySelector(`a[href="#${e.target.id}"]`);
+              if (a) a.classList.add("active");
+            }
+          });
+        },
+        { rootMargin: "-30% 0px -60% 0px" },
+      );
+      sects.forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) sw.observe(el);
+      });
+
+      // Anatomy: legend → screen scroll + flash
+      const screen = document.getElementById("screen");
+      document.querySelectorAll(".legend-item").forEach((el) => {
+        const target = el.getAttribute("data-target");
+        function go() {
+          const t = document.getElementById(target);
+          if (!t || !screen) return;
+          const top = t.offsetTop;
+          screen.scrollTo({ top: Math.max(0, top - 8), behavior: "smooth" });
+          t.classList.remove("flash");
+          // re-trigger anim
+          // eslint-disable-next-line no-unused-expressions
+          void t.offsetWidth;
+          t.classList.add("flash");
+        }
+        el.addEventListener("mouseenter", go);
+        el.addEventListener("click", (e) => { e.preventDefault(); go(); });
+      });
+
+      // Niche tabs
+      const tabs = document.querySelectorAll(".niche-tab");
+      tabs.forEach((t) => {
+        t.addEventListener("click", () => {
+          tabs.forEach((x) => x.classList.remove("active"));
+          t.classList.add("active");
+          document.querySelectorAll(".niche-pane").forEach((p) => p.classList.remove("active"));
+          const pane = document.getElementById(t.getAttribute("data-pane"));
+          if (pane) pane.classList.add("active");
+        });
+      });
+
+      // Compare table data
+      const COMPARE = [
+        ["Every block traceable to a CRO rule", true, false, false],
+        ["Opinionated, fixed block order", true, false, false],
+        ["Single-product scope (no homepage to design)", true, false, true],
+        ["Shopify + WooCommerce in one purchase", true, false, false],
+        ["Buyer tweaks panel + shareable preview URL", true, false, false],
+        ["Portable system spec (JSON + Markdown)", true, false, false],
+        ["Niche presets per category", true, false, false],
+        ["Lifetime updates, no subscription", true, false, true],
+        ["Time to first launch", "≈ 8 min", "1–3 days", "2–6 weeks"],
+        ["Total cost for one store", "$99 + ~$0", "$200–$400", "$5k–$30k"],
+      ];
+      const cmp = document.getElementById("cmp");
+      COMPARE.forEach((row) => {
+        const tr = document.createElement("tr");
+        const renderCell = (v, isUs) => {
+          if (typeof v === "boolean") {
+            return `<td class="cell ${isUs ? "us-col" : ""}">${v ? '<span class="check">✓</span>' : '<span class="dash">—</span>'}</td>`;
+          }
+          return `<td class="cell ${isUs ? "us-col" : ""}" style="font-family: 'JetBrains Mono', monospace; font-size: 13px;">${v}</td>`;
+        };
+        tr.innerHTML = `
+          <td>${row[0]}</td>
+          ${renderCell(row[1], true)}
+          ${renderCell(row[2], false)}
+          ${renderCell(row[3], false)}
+        `;
+        cmp.appendChild(tr);
+      });
+
+      // FAQ
+      const FAQ = [
+        ["Is this a page builder?", "No. The block order is opinionated and fixed — only content and visual tokens change between themes. The reason is conversion: every block exists for a documented reason. A page builder is a tool. ShopLanding is a system."],
+        ["Will this work for my niche?", "Yes for any single-product launch where the customer is making one decision: skincare, supplements, food/CPG, candles, gadgets, fashion accessories. We ship niche presets so the defaults match the category — palette, typography, default copy, the right urgency mechanic. Six in v1, more every quarter."],
+        ["What exactly do I download after I buy?", "Two .zip files (Shopify + WooCommerce themes), a system-spec.json (with the unlimited license), and a permanent URL to your tweaks panel + live preview. Total install time per platform is about 90 seconds — drop the zip in, publish, done."],
+        ["Can my agency rebuild it on a different stack?", "Yes — the unlimited-stores license includes the portable JSON + Markdown system spec so any team can re-implement the same anatomy in Hydrogen, Astro, Webflow, headless commerce, anywhere. The conversion baseline is a spec, not a framework."],
+        ["Do I get updates after I buy?", "Lifetime updates for the stores covered by your license. No subscription. When a new niche preset lands you get the relevant ones for free. We email when there's something to download."],
+        ["What about my existing Shopify theme?", "ShopLanding replaces it. The single-product landing page is the entire customer-facing store, so the storefront, the product page, and the landing page collapse into one block-driven page. Your existing theme can remain unpublished as a fallback."],
+        ["Is there a money-back guarantee?", "30 days. If you don't ship a page that you'd defend in front of a CRO consultant, we refund."],
+        ["When does it launch?", "Soon. The system, the renderer, and the playbook are already live. We're finishing niche presets, Stripe checkout, and the buyer tweaks intake before opening sales. Join the waitlist below for the launch email."],
+      ];
+      const faqEl = document.getElementById("faq-list");
+      FAQ.forEach((row) => {
+        const d = document.createElement("details");
+        d.innerHTML = `
+          <summary><span>${row[0]}</span></summary>
+          <div class="a">${row[1]}</div>
+        `;
+        faqEl.appendChild(d);
+      });
+    </script>
+  </body>
+</html>

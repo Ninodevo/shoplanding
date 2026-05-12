@@ -1,21 +1,59 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
+  variable: "--font-sans",
   subsets: ["latin"],
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const jetBrainsMono = JetBrains_Mono({
+  variable: "--font-mono",
   subsets: ["latin"],
+  display: "swap",
 });
+
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
+  "http://localhost:3000";
+
+const TITLE = "ShopLanding — The system for converting one-product landing pages";
+const DESCRIPTION =
+  "Seven CRO blocks. Sixty-nine rules. Twenty rendered components. Shipped as Shopify and WooCommerce themes plus a portable system spec. From $99 one-time.";
 
 export const metadata: Metadata = {
-  title: "ShopLanding — Optimized single-product landing pages",
-  description:
-    "The block system, CRO playbook, and Shopify + WooCommerce themes for high-converting one-product landing pages.",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: TITLE,
+    template: "%s · ShopLanding",
+  },
+  description: DESCRIPTION,
+  applicationName: "ShopLanding",
+  keywords: [
+    "Shopify theme",
+    "WooCommerce theme",
+    "single product landing page",
+    "CRO playbook",
+    "Conversion optimization",
+    "DTC",
+  ],
+  authors: [{ name: "ShopLanding" }],
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    siteName: "ShopLanding",
+    url: SITE_URL,
+    title: TITLE,
+    description: DESCRIPTION,
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: DESCRIPTION,
+  },
+  icons: { icon: "/favicon.ico" },
 };
 
 export default function RootLayout({
@@ -26,9 +64,11 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${inter.variable} ${jetBrainsMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col bg-[var(--bg)] text-[var(--ink)]">
+        {children}
+      </body>
     </html>
   );
 }

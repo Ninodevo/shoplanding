@@ -1,0 +1,305 @@
+/**
+ * Static marketing copy. Hand-written per AGENTS.md (no AI-generated copy on
+ * marketing surfaces). Keep tone: confident, not theatrical. Match the brand
+ * voice in docs/product.md and docs/pricing.md.
+ */
+
+export const HERO = {
+  eyebrow: "The system, not just a theme",
+  headline: "Sell one product. Convert like ten stores.",
+  sub: "ShopLanding is the block system for single-product landing pages — 7 CRO blocks distilled from 69 conversion rules, shipped as Shopify and WooCommerce themes plus a portable system spec.",
+  ctaPrimary: "See pricing",
+  ctaPrimaryHref: "#pricing",
+  ctaSecondary: "Read the playbook",
+  trustLine: "Seven blocks · sixty-nine rules · twenty components",
+} as const;
+
+export const ANNOUNCEMENT = [
+  "7 CRO blocks · 69 rules · 20 components",
+  "Shopify + WooCommerce, lifetime updates",
+  "One product. One page. One decision.",
+  "One-time license. No subscription.",
+] as const;
+
+/* Anchor hrefs are absolute (`/#…`) so the nav works from any route — clicking
+   "Pricing" on /showcase navigates home and then scrolls to #pricing. */
+export const NAV_LINKS = [
+  { href: "/#themes", label: "Themes" },
+  { href: "/#proof", label: "How it works" },
+  { href: "/#compare", label: "Compare" },
+  { href: "/#pricing", label: "Pricing" },
+  { href: "/#faq", label: "FAQ" },
+] as const;
+
+/* ============================================================
+   Theme catalog — Option A.
+   Each preset gets a card with hover-swap mock screenshots, a CRO
+   coverage chip, and an explicit price + demo link. When the
+   real LayoutPreset rows ship in Phase 3, this static list moves
+   to the DB; copy/positioning stays here.
+   ============================================================ */
+export type ThemeCatalogEntry = {
+  slug: string;
+  name: string;
+  /** Niche label for the heading badge ("Skincare", "Supplement", "Gadget"). */
+  niche: string;
+  /** One-line positioning under the name. */
+  positioning: string;
+  /** Tag pills shown under the positioning. */
+  badges: string[];
+  /** CSS class on the inner mock to switch palette ("preset-skincare" etc). */
+  presetClass: "preset-skincare" | "preset-supplement" | "preset-gadget";
+  /** URL bar text on the chrome. */
+  url: string;
+  /** Front-mock announcement text. */
+  annText: string;
+  /** Front-mock CTA copy. */
+  ctaText: string;
+  /** Sale tag in the front buy box. */
+  pillText: string;
+  /** Visible price + strikethrough on the front. */
+  price: number;
+  was?: number;
+  /** Single-store license price (in cents). */
+  priceSingleCents: number;
+};
+
+export const THEME_CATALOG: ThemeCatalogEntry[] = [
+  {
+    slug: "skincare",
+    name: "Orelle",
+    niche: "Skincare",
+    positioning: "Pocketable solid lotion. Cream paper, sage accent.",
+    badges: ["Skincare", "Shopify", "Woo", "Subscription"],
+    presetClass: "preset-skincare",
+    url: "orelle.com",
+    annText: "FREE SHIPPING $35+",
+    ctaText: "+ Add to bag",
+    pillText: "Daily Essentials",
+    price: 39,
+    was: 49,
+    priceSingleCents: 9900,
+  },
+  {
+    slug: "supplement",
+    name: "VitalStack",
+    niche: "Supplement",
+    positioning: "Daily greens stick. Dark-mode default, neon-green CTAs.",
+    badges: ["Supplement", "Shopify", "Woo", "Bundle"],
+    presetClass: "preset-supplement",
+    url: "vitalstack.io",
+    annText: "SUBSCRIBE · SAVE 20%",
+    ctaText: "START SUBSCRIPTION",
+    pillText: "DAILY · 30 SERVINGS",
+    price: 48,
+    was: 60,
+    priceSingleCents: 9900,
+  },
+  {
+    slug: "gadget",
+    name: "Aurabud",
+    niche: "Gadget",
+    positioning: "Single-SKU earbud. Steel-grey, electric-blue, spec-table heavy.",
+    badges: ["Gadget", "Shopify", "Woo", "Spec table"],
+    presetClass: "preset-gadget",
+    url: "aurabud.co",
+    annText: "FREE 2-DAY SHIPPING",
+    ctaText: "Add to cart",
+    pillText: "Gen 2 · 2026",
+    price: 129,
+    priceSingleCents: 9900,
+  },
+];
+
+/* Annotated proof — the rule list shown by the side panel when a pin is active. */
+export type ProofPin = {
+  n: number;
+  title: string;
+  blockLabel: string;
+  summary: string;
+  rules: { num: number; text: string }[];
+};
+
+export const PROOF_PINS: ProofPin[] = [
+  {
+    n: 1,
+    title: "Hero buy box.",
+    blockLabel: "Block 4 / 7 · CTA area",
+    summary:
+      "The block doing the most work on the page. 23 of the 69 CRO rules apply here. We hit the high-impact ones by default.",
+    rules: [
+      { num: 25, text: "The main CTA is the most visible element on the product page and contains the cart icon." },
+      { num: 29, text: "Interactive variant selectors — gallery image and price update without page reload." },
+      { num: 35, text: "Price prominent — especially when discounted." },
+      { num: 40, text: "Free shipping highlighted near the main CTA." },
+      { num: 59, text: "Quantity discounts with 'Recommended' / 'Best value' badges." },
+    ],
+  },
+  {
+    n: 2,
+    title: "Press / As-seen-in.",
+    blockLabel: "Block 6 / 7 · Social proof",
+    summary:
+      "Logo strip of publications that featured the product or brand — the first social-proof block on the page.",
+    rules: [
+      { num: 49, text: "Press exposure logos — Vogue, goop, Forbes, etc." },
+    ],
+  },
+  {
+    n: 3,
+    title: "Benefits grid.",
+    blockLabel: "Block 7 / 7 · Product description",
+    summary:
+      "Four cards translating features into customer benefits. Section titles must lead with benefits, not specs.",
+    rules: [
+      { num: 68, text: "Easy to read — single column, ≤75 chars per line, line-height 1.5." },
+      { num: 71, text: "Section titles explain benefits, not features." },
+      { num: 72, text: "Show all things included with photos." },
+    ],
+  },
+  {
+    n: 4,
+    title: "Reviews.",
+    blockLabel: "Block 6 / 7 · Social proof",
+    summary:
+      "All 8 social-proof rules trigger here — star distribution, photo evidence, verified badges, occupation.",
+    rules: [
+      { num: 50, text: "Reviews show photos, ratings, name, occupation, age, verified badge." },
+      { num: 51, text: "Reviews stand out visually — slightly tinted background." },
+      { num: 53, text: "Star ratings filterable." },
+      { num: 52, text: "Customer photos with the product." },
+    ],
+  },
+];
+
+export type PricingTier = {
+  id: "single" | "unlimited" | "setup";
+  eyebrow: string;
+  name: string;
+  priceCents: number;
+  cadence: string;
+  highlight?: boolean;
+  bullets: string[];
+  ctaLabel: string;
+};
+
+export const PRICING_TIERS: PricingTier[] = [
+  {
+    id: "single",
+    eyebrow: "For founders",
+    name: "Single-store license",
+    priceCents: 9900,
+    cadence: "one-time · lifetime updates",
+    bullets: [
+      "One Shopify or WooCommerce store",
+      "Both .zip artifacts + system spec",
+      "Tweaks panel + personalized preview",
+      "Lifetime updates for that store",
+    ],
+    ctaLabel: "Buy single-store",
+  },
+  {
+    id: "unlimited",
+    eyebrow: "For operators & agencies",
+    name: "Unlimited-stores license",
+    priceCents: 24900,
+    cadence: "one-time · lifetime updates",
+    highlight: true,
+    bullets: [
+      "Everything in single-store",
+      "Use across unlimited stores you operate",
+      "Resell client builds without a re-license",
+      "Priority on niche-preset releases",
+    ],
+    ctaLabel: "Buy unlimited",
+  },
+  {
+    id: "setup",
+    eyebrow: "Add-on",
+    name: "Done-for-you setup",
+    priceCents: 19900,
+    cadence: "one-time add-on",
+    bullets: [
+      "We install the theme on your store",
+      "Wire payments + shipping + inventory",
+      "Five sections of copy from your brief",
+      "One round of revisions",
+    ],
+    ctaLabel: "Request setup",
+  },
+];
+
+export type Faq = {
+  q: string;
+  a: string;
+};
+
+export const FAQS: Faq[] = [
+  {
+    q: "Is this a page builder?",
+    a: "No. The block order is opinionated and fixed — only content and visual tokens change between themes. The reason is conversion: every block exists for a documented reason, and rearranging them silently breaks the rule coverage.",
+  },
+  {
+    q: "Will this work for my niche?",
+    a: "Yes for any single-product launch where the customer is making one decision: skincare, supplements, food and CPG, candles, single-SKU gadgets. We ship niche presets so the defaults match the category.",
+  },
+  {
+    q: "How is this different from a Theme Store theme?",
+    a: "Theme Store themes position on visuals. ShopLanding positions on conversion logic. The marketing site you're reading is the proof — every section is one of the blocks we sell, traceable to a documented conversion rule.",
+  },
+  {
+    q: "Can my agency rebuild the system on a different stack?",
+    a: "Yes. The unlimited-stores license includes a portable system spec (JSON + Markdown) so a competent team can reimplement the same anatomy in Hydrogen, Astro, Webflow, or anywhere else.",
+  },
+  {
+    q: "Do I get updates after I buy?",
+    a: "Lifetime updates for the stores covered by your license. No subscription, no upgrade cycle, no scarcity timers. When a new niche preset lands you get the relevant ones for free.",
+  },
+  {
+    q: "What's the refund policy?",
+    a: "14-day refund on the digital license, no questions. The done-for-you setup add-on is refundable until work begins.",
+  },
+];
+
+export const FINAL_CTA = {
+  eyebrow: "Ready when you are",
+  headline: "Ship a landing page that's defensibly good.",
+  sub: "$99 single-store. $249 unlimited. One-time, lifetime updates, refundable for 14 days.",
+  ctaPrimary: "See pricing",
+  ctaPrimaryHref: "#pricing",
+  ctaSecondary: "Read the playbook",
+} as const;
+
+export const FOOTER = {
+  cols: [
+    {
+      heading: "System",
+      links: [
+        { label: "Playbook", href: "/playbook" },
+        { label: "Showcase", href: "/showcase" },
+        { label: "Themes", href: "/themes" },
+      ],
+    },
+    {
+      heading: "Company",
+      links: [
+        { label: "About", href: "/about" },
+        { label: "Contact", href: "mailto:hello@shoplanding.com" },
+      ],
+    },
+    {
+      heading: "Legal",
+      links: [
+        { label: "Terms", href: "/terms" },
+        { label: "Privacy", href: "/privacy" },
+        { label: "License", href: "/license" },
+      ],
+    },
+  ],
+} as const;
+
+/** Cents to display string. */
+export function priceLabel(cents: number): string {
+  const dollars = cents / 100;
+  return `$${dollars.toFixed(0)}`;
+}

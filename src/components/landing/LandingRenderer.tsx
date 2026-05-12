@@ -32,6 +32,8 @@ export default function LandingRenderer({
     "--muted": merged.muted,
     "--line": merged.line,
     "--surface": merged.surface,
+    "--surface-2": merged.surface2,
+    "--card": merged.card,
     "--bg": merged.bg,
     "--font-display": merged.fontDisplay,
     "--font-body": merged.fontBody,
@@ -520,7 +522,7 @@ function ProductInfo({
       </div>
 
       <div className="pay-divider">
-        <span style={{ background: "white", padding: "0 12px" }}>or pay with</span>
+        <span style={{ background: "var(--card)", padding: "0 12px" }}>or pay with</span>
       </div>
       <div className="express-pay">
         <button className="pay-btn paypal">PayPal</button>

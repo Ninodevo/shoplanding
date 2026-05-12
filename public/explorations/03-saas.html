@@ -1,0 +1,1251 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ShopLanding · 03 Modern SaaS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #08080b;
+        --bg-2: #0f0f12;
+        --surface: #131318;
+        --surface-2: #1a1a20;
+        --ink: #fafafa;
+        --ink-2: #c8c8d0;
+        --muted: #6e6e76;
+        --line: rgba(255, 255, 255, 0.08);
+        --line-2: rgba(255, 255, 255, 0.04);
+        --accent: #6ee7a8;
+        --accent-2: #8b5cf6;
+        --accent-3: #06b6d4;
+      }
+      @property --rot {
+        syntax: "<angle>";
+        inherits: false;
+        initial-value: 0deg;
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html { scroll-behavior: smooth; scroll-padding-top: 96px; }
+      body {
+        background: var(--bg);
+        color: var(--ink);
+        font-family: "Inter", system-ui, sans-serif;
+        font-size: 16px;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        overflow-x: hidden;
+      }
+      a { color: inherit; text-decoration: none; }
+      ::selection { background: var(--accent); color: var(--bg); }
+
+      /* Star/grid backdrop */
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background:
+          radial-gradient(900px 500px at 80% -10%, rgba(110,231,168,0.10), transparent 60%),
+          radial-gradient(700px 400px at 0% 80%, rgba(139,92,246,0.08), transparent 70%);
+        z-index: -2;
+        pointer-events: none;
+      }
+      body::after {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background-image:
+          radial-gradient(circle at center, rgba(255,255,255,0.5) 1px, transparent 1px);
+        background-size: 32px 32px;
+        opacity: 0.04;
+        z-index: -1;
+        pointer-events: none;
+      }
+
+      /* Nav */
+      .nav {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        backdrop-filter: blur(18px) saturate(160%);
+        -webkit-backdrop-filter: blur(18px) saturate(160%);
+        background: rgba(8, 8, 11, 0.65);
+        border-bottom: 1px solid var(--line);
+      }
+      .nav-inner {
+        max-width: 1280px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 24px;
+      }
+      .logo {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+      }
+      .logo-mark {
+        width: 26px;
+        height: 26px;
+        border-radius: 7px;
+        background: linear-gradient(180deg, #fff, #d6d6dc);
+        position: relative;
+        box-shadow:
+          0 0 0 1px rgba(255,255,255,0.06),
+          0 4px 12px rgba(110,231,168,0.4);
+      }
+      .logo-mark::after {
+        content: "";
+        position: absolute;
+        inset: 8px;
+        background: var(--accent);
+        border-radius: 2px;
+      }
+      .nav-links {
+        display: flex;
+        gap: 28px;
+        font-size: 14px;
+        color: var(--ink-2);
+      }
+      .nav-links a:hover { color: var(--ink); }
+      @media (max-width: 800px) { .nav-links { display: none; } }
+      .nav-cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 9px 16px;
+        font-size: 13px;
+        font-weight: 500;
+        background: var(--ink);
+        color: var(--bg);
+        border-radius: 999px;
+        transition: transform 0.18s ease, background 0.18s ease;
+      }
+      .nav-cta:hover { transform: translateY(-1px); background: var(--accent); }
+
+      .back {
+        position: fixed;
+        bottom: 16px;
+        left: 16px;
+        z-index: 60;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--ink-2);
+        background: var(--surface);
+        padding: 10px 14px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+      }
+      .back:hover { color: var(--accent); border-color: var(--accent); }
+
+      /* Hero */
+      .hero {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 120px 24px 100px;
+        text-align: center;
+        position: relative;
+      }
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 6px 14px 6px 6px;
+        background: rgba(110,231,168,0.06);
+        border: 1px solid rgba(110,231,168,0.2);
+        border-radius: 999px;
+        font-size: 12px;
+        color: var(--ink-2);
+        margin-bottom: 32px;
+      }
+      .badge .pill {
+        background: var(--accent);
+        color: var(--bg);
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        padding: 4px 8px;
+        border-radius: 999px;
+      }
+      .badge .arr { color: var(--accent); }
+
+      .hero h1 {
+        font-size: clamp(48px, 8vw, 104px);
+        line-height: 0.98;
+        letter-spacing: -0.04em;
+        font-weight: 700;
+        max-width: 18ch;
+        margin: 0 auto 24px;
+        background: linear-gradient(180deg, #fff 0%, #c5c5cc 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .hero h1 .accent {
+        background: linear-gradient(180deg, var(--accent) 0%, #2dd4bf 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .hero p.lead {
+        font-size: 19px;
+        color: var(--ink-2);
+        max-width: 56ch;
+        margin: 0 auto 40px;
+      }
+      .cta-row {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 13px 22px;
+        border-radius: 999px;
+        font-size: 14px;
+        font-weight: 500;
+        transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+      }
+      .btn-primary {
+        background: var(--accent);
+        color: var(--bg);
+      }
+      .btn-primary:hover {
+        background: #fff;
+        transform: translateY(-1px);
+      }
+      .btn-ghost {
+        background: var(--surface);
+        color: var(--ink-2);
+        border: 1px solid var(--line);
+      }
+      .btn-ghost:hover { color: var(--ink); border-color: rgba(255,255,255,0.18); }
+
+      /* Hero product card */
+      .product {
+        margin: 80px auto 0;
+        max-width: 1100px;
+        position: relative;
+      }
+      .product-glow {
+        position: absolute;
+        inset: -40px;
+        background:
+          radial-gradient(60% 60% at 50% 50%, rgba(110,231,168,0.32), transparent 70%);
+        filter: blur(40px);
+        z-index: -1;
+      }
+      .product-frame {
+        position: relative;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: var(--surface);
+        overflow: hidden;
+        box-shadow:
+          0 0 0 1px rgba(255,255,255,0.04) inset,
+          0 30px 60px -20px rgba(0,0,0,0.6);
+      }
+      .product-frame::before {
+        content: "";
+        position: absolute;
+        inset: -1px;
+        border-radius: 18px;
+        background: conic-gradient(
+          from var(--rot, 0deg),
+          transparent 0deg,
+          rgba(110, 231, 168, 0.5) 60deg,
+          transparent 120deg,
+          rgba(139, 92, 246, 0.4) 200deg,
+          transparent 260deg
+        );
+        z-index: -1;
+        animation: rotate 8s linear infinite;
+      }
+      @keyframes rotate { to { --rot: 360deg; } }
+      .product-bar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 18px;
+        border-bottom: 1px solid var(--line);
+        background: rgba(255,255,255,0.02);
+      }
+      .product-bar .dot { width: 10px; height: 10px; border-radius: 999px; background: var(--surface-2); }
+      .product-bar .url {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        color: var(--muted);
+        margin-left: 14px;
+        flex: 1;
+        text-align: center;
+      }
+      .product-body {
+        padding: 32px;
+        text-align: left;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 32px;
+        min-height: 380px;
+      }
+      @media (max-width: 800px) { .product-body { grid-template-columns: 1fr; } }
+      .product-img {
+        background:
+          radial-gradient(60% 60% at 50% 50%, rgba(110,231,168,0.25), transparent),
+          linear-gradient(135deg, #1a1a20, #0f0f14);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        position: relative;
+        overflow: hidden;
+        min-height: 280px;
+      }
+      .product-img::before, .product-img::after {
+        content: "";
+        position: absolute;
+        border-radius: 999px;
+      }
+      .product-img::before {
+        width: 60%; aspect-ratio: 1;
+        left: 20%; top: 20%;
+        background: radial-gradient(circle, var(--accent), transparent 70%);
+        filter: blur(20px);
+        opacity: 0.7;
+      }
+      .product-img::after {
+        width: 50%; aspect-ratio: 1;
+        left: 25%; top: 25%;
+        background: linear-gradient(135deg, #d6f5e2, #a7e0c1);
+        box-shadow: 0 30px 60px -10px rgba(0,0,0,0.5);
+      }
+      .product-meta .crumb {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 12px;
+      }
+      .product-meta h3 {
+        font-size: 28px;
+        line-height: 1.1;
+        font-weight: 600;
+        letter-spacing: -0.015em;
+        margin-bottom: 8px;
+      }
+      .product-meta .sub { color: var(--ink-2); font-size: 14px; margin-bottom: 24px; }
+      .product-meta .price-row {
+        display: flex;
+        gap: 12px;
+        align-items: baseline;
+        margin-bottom: 20px;
+      }
+      .product-meta .price-row .price {
+        font-size: 32px;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+      }
+      .product-meta .price-row .compare {
+        text-decoration: line-through;
+        color: var(--muted);
+        font-size: 16px;
+      }
+      .product-meta .save {
+        background: var(--accent);
+        color: var(--bg);
+        font-size: 11px;
+        font-weight: 600;
+        padding: 3px 8px;
+        border-radius: 999px;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+      .product-meta .bullets {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 20px;
+        font-size: 14px;
+      }
+      .product-meta .bullets li {
+        padding: 8px 0;
+        border-bottom: 1px solid var(--line);
+        color: var(--ink-2);
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .product-meta .bullets li::before {
+        content: "✓";
+        color: var(--accent);
+        font-weight: 600;
+        flex-shrink: 0;
+      }
+      .product-meta .atc {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .product-meta .atc-btn {
+        flex: 1;
+        padding: 14px 20px;
+        background: var(--ink);
+        color: var(--bg);
+        border-radius: 999px;
+        text-align: center;
+        font-weight: 600;
+        font-size: 14px;
+        transition: background 0.18s, transform 0.18s;
+      }
+      .product-meta .atc-btn:hover { background: var(--accent); transform: translateY(-1px); }
+
+      /* Stat strip */
+      .stats {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 64px 24px;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0;
+        border-top: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+      }
+      @media (max-width: 800px) { .stats { grid-template-columns: 1fr 1fr; } }
+      .stat { padding: 0 24px; border-right: 1px solid var(--line); }
+      .stat:last-child { border-right: none; }
+      .stat .v {
+        font-size: 56px;
+        font-weight: 600;
+        letter-spacing: -0.03em;
+        line-height: 1;
+        margin-bottom: 12px;
+        background: linear-gradient(180deg, #fff, #c5c5cc);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .stat .l {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      /* Sections with side rail */
+      .layout {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 96px 24px;
+        display: grid;
+        grid-template-columns: 200px 1fr;
+        gap: 64px;
+      }
+      @media (max-width: 1000px) {
+        .layout { grid-template-columns: 1fr; gap: 32px; }
+        .side-rail { display: none; }
+      }
+      .side-rail {
+        position: sticky;
+        top: 96px;
+        align-self: start;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+      }
+      .side-rail .lbl {
+        color: var(--muted);
+        margin-bottom: 16px;
+      }
+      .side-rail ol {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .side-rail ol a {
+        display: block;
+        padding: 8px 12px;
+        border-left: 2px solid var(--line);
+        color: var(--muted);
+        transition: color 0.2s, border-color 0.2s;
+      }
+      .side-rail ol a.active {
+        color: var(--accent);
+        border-color: var(--accent);
+      }
+
+      .sect h2 {
+        font-size: clamp(32px, 5vw, 56px);
+        line-height: 1.05;
+        letter-spacing: -0.025em;
+        font-weight: 700;
+        margin-bottom: 18px;
+        max-width: 18ch;
+      }
+      .sect h2 .accent {
+        background: linear-gradient(135deg, var(--accent), #2dd4bf);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .sect .lead {
+        max-width: 56ch;
+        color: var(--ink-2);
+        font-size: 18px;
+        margin-bottom: 48px;
+      }
+      .sect-block {
+        margin-bottom: 96px;
+      }
+      .sect-block:last-child { margin-bottom: 0; }
+
+      /* Feature grid w/ gradient borders */
+      .features {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+      }
+      @media (max-width: 800px) { .features { grid-template-columns: 1fr; } }
+      .feat {
+        position: relative;
+        padding: 28px;
+        border-radius: 14px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        overflow: hidden;
+        transition: transform 0.3s ease, border-color 0.3s ease;
+      }
+      .feat:hover { transform: translateY(-2px); border-color: rgba(255,255,255,0.18); }
+      .feat::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: 14px;
+        padding: 1px;
+        background: linear-gradient(135deg, transparent 30%, rgba(110,231,168,0.5), transparent 80%);
+        -webkit-mask: linear-gradient(#000, #000) content-box, linear-gradient(#000, #000);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        pointer-events: none;
+      }
+      .feat:hover::before { opacity: 1; }
+      .feat .icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: rgba(110,231,168,0.1);
+        color: var(--accent);
+        margin-bottom: 18px;
+      }
+      .feat h3 {
+        font-size: 18px;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+        margin-bottom: 6px;
+      }
+      .feat p {
+        color: var(--ink-2);
+        font-size: 14.5px;
+        line-height: 1.6;
+      }
+
+      /* Block list */
+      .block-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .block-row {
+        display: grid;
+        grid-template-columns: 64px 1fr auto auto;
+        gap: 20px;
+        align-items: center;
+        padding: 18px 22px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        transition: border-color 0.2s, transform 0.2s, background 0.2s;
+        cursor: pointer;
+      }
+      .block-row:hover {
+        border-color: rgba(110,231,168,0.4);
+        background: linear-gradient(180deg, rgba(110,231,168,0.04), var(--surface));
+        transform: translateX(4px);
+      }
+      .block-row .num {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12px;
+        color: var(--accent);
+        letter-spacing: 0.1em;
+      }
+      .block-row .info { display: flex; flex-direction: column; gap: 4px; }
+      .block-row h4 {
+        font-size: 17px;
+        font-weight: 600;
+        letter-spacing: -0.005em;
+      }
+      .block-row p { font-size: 13.5px; color: var(--muted); }
+      .block-row .pill {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        padding: 5px 10px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        color: var(--accent);
+      }
+      .block-row .arrow {
+        opacity: 0.4;
+        transition: opacity 0.2s, transform 0.2s;
+      }
+      .block-row:hover .arrow { opacity: 1; transform: translateX(4px); color: var(--accent); }
+
+      /* Compare */
+      .compare {
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        overflow: hidden;
+        background: var(--surface);
+      }
+      .compare table { width: 100%; border-collapse: collapse; }
+      .compare th, .compare td {
+        padding: 14px 18px;
+        text-align: left;
+        border-bottom: 1px solid var(--line);
+      }
+      .compare th {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--muted);
+        font-weight: 500;
+        background: rgba(255,255,255,0.02);
+      }
+      .compare th.us { color: var(--accent); }
+      .compare td.cell { text-align: center; }
+      .compare tbody tr:last-child td { border-bottom: none; }
+      .check {
+        display: inline-flex;
+        width: 22px;
+        height: 22px;
+        background: rgba(110,231,168,0.15);
+        color: var(--accent);
+        border-radius: 999px;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+      }
+      .dash {
+        display: inline-flex;
+        width: 22px;
+        height: 22px;
+        background: rgba(255,255,255,0.03);
+        color: var(--muted);
+        border-radius: 999px;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+      }
+
+      /* Pricing */
+      .pricing {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+      }
+      @media (max-width: 1000px) { .pricing { grid-template-columns: 1fr; } }
+      .price {
+        position: relative;
+        padding: 32px 28px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.3s ease, border-color 0.3s ease;
+      }
+      .price:hover { transform: translateY(-4px); }
+      .price.featured {
+        background:
+          radial-gradient(50% 60% at 50% 0%, rgba(110,231,168,0.18), transparent 70%),
+          var(--surface);
+        border-color: rgba(110,231,168,0.35);
+      }
+      .price .label {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 24px;
+      }
+      .price.featured .label { color: var(--accent); }
+      .price h3 {
+        font-size: 22px;
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+      .price .amt {
+        font-size: 56px;
+        font-weight: 700;
+        letter-spacing: -0.03em;
+        line-height: 1;
+        margin-bottom: 12px;
+      }
+      .price .cad {
+        font-size: 13px;
+        color: var(--muted);
+        margin-bottom: 28px;
+      }
+      .price ul { list-style: none; padding: 0; margin: 0 0 28px; flex: 1; }
+      .price ul li {
+        padding: 9px 0;
+        border-bottom: 1px solid var(--line);
+        font-size: 14px;
+        color: var(--ink-2);
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .price ul li::before {
+        content: "✓";
+        color: var(--accent);
+        font-weight: 600;
+        flex-shrink: 0;
+      }
+      .price .btn { justify-content: center; }
+      .price .pop {
+        position: absolute;
+        top: -12px;
+        right: 24px;
+        background: var(--accent);
+        color: var(--bg);
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        padding: 5px 10px;
+        border-radius: 999px;
+      }
+
+      /* CTA band */
+      .cta-band {
+        max-width: 1280px;
+        margin: 0 auto 96px;
+        padding: 64px 48px;
+        background:
+          radial-gradient(60% 80% at 50% 0%, rgba(110,231,168,0.18), transparent 80%),
+          linear-gradient(180deg, var(--surface), var(--bg-2));
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .cta-band::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(circle at 80% 40%, rgba(110,231,168,0.2), transparent 30%),
+          radial-gradient(circle at 20% 70%, rgba(139,92,246,0.15), transparent 30%);
+        pointer-events: none;
+      }
+      .cta-band > * { position: relative; }
+      .cta-band h2 {
+        font-size: clamp(28px, 4vw, 56px);
+        font-weight: 700;
+        letter-spacing: -0.025em;
+        line-height: 1.05;
+        margin-bottom: 16px;
+        max-width: 18ch;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .cta-band p { color: var(--ink-2); margin-bottom: 32px; max-width: 50ch; margin-left: auto; margin-right: auto; }
+      .form {
+        display: flex;
+        gap: 8px;
+        max-width: 460px;
+        margin: 0 auto;
+        background: var(--surface-2);
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 6px;
+      }
+      .form input {
+        flex: 1;
+        background: transparent;
+        border: none;
+        outline: none;
+        color: var(--ink);
+        padding: 10px 16px;
+        font: inherit;
+        font-size: 14.5px;
+      }
+      .form input::placeholder { color: var(--muted); }
+      .form button {
+        background: var(--accent);
+        color: var(--bg);
+        font: inherit;
+        font-weight: 600;
+        font-size: 14px;
+        border: none;
+        border-radius: 999px;
+        padding: 10px 20px;
+        cursor: pointer;
+      }
+      .form button:hover { background: #fff; }
+
+      /* Footer */
+      footer {
+        border-top: 1px solid var(--line);
+        padding: 56px 24px 32px;
+      }
+      .foot-inner {
+        max-width: 1280px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1fr;
+        gap: 48px;
+      }
+      @media (max-width: 800px) { .foot-inner { grid-template-columns: 1fr 1fr; } }
+      .foot-inner p { color: var(--muted); font-size: 14px; max-width: 36ch; }
+      .foot-inner h4 {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 14px;
+        font-weight: 500;
+      }
+      .foot-inner ul { list-style: none; padding: 0; margin: 0; }
+      .foot-inner ul li { padding: 5px 0; }
+      .foot-inner a:hover { color: var(--accent); }
+      .foot-bottom {
+        max-width: 1280px;
+        margin: 48px auto 0;
+        padding-top: 24px;
+        border-top: 1px solid var(--line);
+        font-size: 12px;
+        color: var(--muted);
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      /* Reveal */
+      .reveal {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+      }
+      .reveal.in { opacity: 1; transform: none; }
+      @media (prefers-reduced-motion: reduce) {
+        .reveal, .product-frame::before {
+          animation: none !important;
+          opacity: 1 !important;
+          transform: none !important;
+          transition: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="nav">
+      <div class="nav-inner">
+        <a class="logo" href="/">
+          <span class="logo-mark"></span>
+          <span>ShopLanding</span>
+        </a>
+        <nav class="nav-links">
+          <a href="#why">Why</a>
+          <a href="#system">System</a>
+          <a href="#compare">Compare</a>
+          <a href="#pricing">Pricing</a>
+        </nav>
+        <a class="nav-cta" href="#start">
+          Join waitlist
+          <span aria-hidden>→</span>
+        </a>
+      </div>
+    </header>
+
+    <a class="back" href="index.html">← All</a>
+
+    <section class="hero">
+      <div class="badge">
+        <span class="pill">New</span>
+        Niche presets ship in v1
+        <span class="arr">→</span>
+      </div>
+      <h1>
+        Sell one product.<br />
+        Convert <span class="accent">like ten stores.</span>
+      </h1>
+      <p class="lead">
+        ShopLanding is the block system for single-product landing pages — 7 CRO blocks distilled from 69 conversion rules, shipped as Shopify and WooCommerce themes plus a portable system spec.
+      </p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="#start">Join the waitlist <span aria-hidden>→</span></a>
+        <a class="btn btn-ghost" href="#system">Read the playbook</a>
+      </div>
+
+      <div class="product">
+        <div class="product-glow" aria-hidden></div>
+        <div class="product-frame">
+          <div class="product-bar">
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="url">shoplanding.com/showcase/skincare</span>
+          </div>
+          <div class="product-body">
+            <div class="product-img" aria-hidden></div>
+            <div class="product-meta">
+              <p class="crumb">Skincare · Niche preset</p>
+              <h3>Daily ritual serum</h3>
+              <p class="sub">Hyaluronic + niacinamide. 30ml.</p>
+              <div class="price-row">
+                <span class="price">$32</span>
+                <span class="compare">$48</span>
+                <span class="save">Save 33%</span>
+              </div>
+              <ul class="bullets">
+                <li>Visibly plumped skin in 7 days</li>
+                <li>Vegan, fragrance-free, dermatologist-tested</li>
+                <li>Free shipping over $35</li>
+              </ul>
+              <div class="atc">
+                <a class="atc-btn" href="#">Add to cart — $32</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="v" data-count="7">0</div>
+        <div class="l">CRO blocks</div>
+      </div>
+      <div class="stat">
+        <div class="v" data-count="69">0</div>
+        <div class="l">Conversion rules</div>
+      </div>
+      <div class="stat">
+        <div class="v" data-count="20">0</div>
+        <div class="l">Components</div>
+      </div>
+      <div class="stat">
+        <div class="v" data-count="2">0</div>
+        <div class="l">Platforms shipped</div>
+      </div>
+    </div>
+
+    <div class="layout">
+      <aside class="side-rail" id="rail">
+        <div class="lbl">Index</div>
+        <ol>
+          <li><a href="#why">01 — Why</a></li>
+          <li><a href="#system">02 — System</a></li>
+          <li><a href="#compare">03 — Compare</a></li>
+          <li><a href="#pricing">04 — Pricing</a></li>
+        </ol>
+      </aside>
+
+      <div>
+        <div class="sect sect-block reveal" id="why">
+          <h2>Conversion logic, not <span class="accent">pretty pixels.</span></h2>
+          <p class="lead">Marketplaces position on visuals. ShopLanding positions on what every block must contain. The marketing site is the proof — every section is a block we sell.</p>
+          <div class="features">
+            <article class="feat">
+              <div class="icon" aria-hidden>
+                <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6">
+                  <path d="M3 10l4 4 10-10" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </div>
+              <h3>Defensibly good baseline</h3>
+              <p>Skip the section-order debate. The block sequence is opinionated, fixed, and grounded in 69 documented conversion rules.</p>
+            </article>
+            <article class="feat">
+              <div class="icon" aria-hidden>
+                <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6">
+                  <circle cx="10" cy="10" r="6" />
+                  <path d="M10 4v6l4 2" stroke-linecap="round" />
+                </svg>
+              </div>
+              <h3>Traceable to 69 rules</h3>
+              <p>Every block points back to the exact CRO requirements it satisfies. Open the playbook, audit yourself.</p>
+            </article>
+            <article class="feat">
+              <div class="icon" aria-hidden>
+                <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6">
+                  <rect x="3" y="4" width="14" height="12" rx="2" />
+                  <path d="M3 8h14" />
+                </svg>
+              </div>
+              <h3>Same renderer we ship</h3>
+              <p>Demos, your preview, and the theme zip render through the same component tree. What you see is what you ship.</p>
+            </article>
+            <article class="feat">
+              <div class="icon" aria-hidden>
+                <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6">
+                  <path d="M3 10c2-4 5-6 7-6s5 2 7 6c-2 4-5 6-7 6s-5-2-7-6z" />
+                  <circle cx="10" cy="10" r="2.5" />
+                </svg>
+              </div>
+              <h3>One product, one page</h3>
+              <p>No homepage, category, or wishlist. Built for the launch where the customer is choosing buy or don't.</p>
+            </article>
+          </div>
+        </div>
+
+        <div class="sect sect-block reveal" id="system">
+          <h2>Seven blocks. <span class="accent">In order.</span></h2>
+          <p class="lead">Each block bundles a set of CRO rules. Click any to see what the playbook says it must contain.</p>
+          <div class="block-list" id="block-list"></div>
+        </div>
+
+        <div class="sect sect-block reveal" id="compare">
+          <h2>Why this beats a <span class="accent">Theme Store</span> theme.</h2>
+          <p class="lead">A page that converts has to be defendable, not just pretty.</p>
+          <div class="compare">
+            <table>
+              <thead>
+                <tr>
+                  <th>Capability</th>
+                  <th class="us" style="text-align:center">ShopLanding</th>
+                  <th style="text-align:center">Theme Store</th>
+                  <th style="text-align:center">DIY</th>
+                </tr>
+              </thead>
+              <tbody id="compare-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="sect sect-block reveal" id="pricing">
+          <h2>One purchase. <span class="accent">Lifetime updates.</span></h2>
+          <p class="lead">No subscription. No discount theatre. Pay once, ship one product, keep the updates as we add niches.</p>
+          <div class="pricing">
+            <article class="price">
+              <div class="label">For founders</div>
+              <h3>Single store</h3>
+              <div class="amt">$99</div>
+              <div class="cad">one-time · lifetime updates</div>
+              <ul>
+                <li>One Shopify or WooCommerce store</li>
+                <li>Both .zip artifacts + system spec</li>
+                <li>Tweaks panel + personalized preview</li>
+                <li>Lifetime updates for that store</li>
+              </ul>
+              <a class="btn btn-ghost" href="#start">Join waitlist <span aria-hidden>→</span></a>
+            </article>
+            <article class="price featured">
+              <span class="pop">Best value</span>
+              <div class="label">For operators &amp; agencies</div>
+              <h3>Unlimited stores</h3>
+              <div class="amt">$249</div>
+              <div class="cad">one-time · lifetime updates</div>
+              <ul>
+                <li>Everything in single-store</li>
+                <li>Use across unlimited stores you operate</li>
+                <li>Resell client builds without re-licensing</li>
+                <li>Priority on niche-preset releases</li>
+              </ul>
+              <a class="btn btn-primary" href="#start">Join waitlist <span aria-hidden>→</span></a>
+            </article>
+            <article class="price">
+              <div class="label">Add-on</div>
+              <h3>Done-for-you setup</h3>
+              <div class="amt">+$199</div>
+              <div class="cad">one-time add-on</div>
+              <ul>
+                <li>We install on your store</li>
+                <li>Wire payments + shipping + inventory</li>
+                <li>Five sections of brand copy</li>
+                <li>One round of revisions</li>
+              </ul>
+              <a class="btn btn-ghost" href="#start">Request setup <span aria-hidden>→</span></a>
+            </article>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cta-band" id="start">
+      <h2>Be first when the themes ship.</h2>
+      <p>One email when the first niche preset is purchasable. No drip, no upsells.</p>
+      <form class="form" onsubmit="event.preventDefault(); this.querySelector('button').textContent='On the list ✓'; this.querySelector('input').disabled=true;">
+        <input type="email" required placeholder="you@studio.com" />
+        <button type="submit">Join</button>
+      </form>
+    </div>
+
+    <footer>
+      <div class="foot-inner">
+        <div>
+          <a class="logo" href="/" style="margin-bottom:16px;">
+            <span class="logo-mark"></span>
+            <span>ShopLanding</span>
+          </a>
+          <p style="margin-top: 16px;">The block system, CRO playbook, and Shopify + WooCommerce themes for high-converting one-product landing pages.</p>
+        </div>
+        <div>
+          <h4>System</h4>
+          <ul><li><a href="#">Playbook</a></li><li><a href="#">Showcase</a></li><li><a href="#">Themes</a></li></ul>
+        </div>
+        <div>
+          <h4>Company</h4>
+          <ul><li><a href="#">About</a></li><li><a href="#">Contact</a></li></ul>
+        </div>
+        <div>
+          <h4>Legal</h4>
+          <ul><li><a href="#">License</a></li><li><a href="#">Terms</a></li><li><a href="#">Privacy</a></li></ul>
+        </div>
+      </div>
+      <div class="foot-bottom">
+        <span>© 2026 ShopLanding</span>
+        <span>One product. One page. One decision.</span>
+      </div>
+    </footer>
+
+    <script>
+      // Counters
+      function tick(el, target) {
+        let start = performance.now();
+        const dur = 1500;
+        function step(t) {
+          const p = Math.min((t - start) / dur, 1);
+          const eased = 1 - Math.pow(1 - p, 3);
+          el.textContent = Math.round(target * eased);
+          if (p < 1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+      }
+      const co = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              tick(e.target, parseInt(e.target.dataset.count, 10));
+              co.unobserve(e.target);
+            }
+          });
+        },
+        { threshold: 0.5 },
+      );
+      document.querySelectorAll("[data-count]").forEach((c) => co.observe(c));
+
+      // Reveal
+      const ro = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              e.target.classList.add("in");
+              ro.unobserve(e.target);
+            }
+          });
+        },
+        { threshold: 0.15 },
+      );
+      document.querySelectorAll(".reveal").forEach((el) => ro.observe(el));
+
+      // Side-rail active section
+      const rail = document.getElementById("rail");
+      const sects = ["why", "system", "compare", "pricing"];
+      const sw = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              rail.querySelectorAll("a").forEach((a) => a.classList.remove("active"));
+              const a = rail.querySelector(`a[href="#${e.target.id}"]`);
+              if (a) a.classList.add("active");
+            }
+          });
+        },
+        { rootMargin: "-30% 0px -60% 0px" },
+      );
+      sects.forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) sw.observe(el);
+      });
+
+      // Block list
+      const BLOCKS = [
+        { name: "General", desc: "Persistent signals: announcement, sticky nav, support reachable.", rules: 4 },
+        { name: "Product overview", desc: "Headline, sub, value bullets, rating, recommendation pill.", rules: 6 },
+        { name: "Image gallery", desc: "Hero, lifestyle, scale, packaging, video, badges, zoom.", rules: 9 },
+        { name: "CTA area", desc: "Variants, qty, BNPL, urgency, scarcity, express pay, trust.", rules: 23 },
+        { name: "Social proof", desc: "Rating + histogram + verified buyers + photo reviews + press.", rules: 8 },
+        { name: "AOV boosters", desc: "Quantity discounts, bundles, post-click cross-sell, charity.", rules: 9 },
+        { name: "Description", desc: "Ingredients, comparison, founder story, specs, FAQ.", rules: 10 },
+      ];
+      const bl = document.getElementById("block-list");
+      BLOCKS.forEach((b, i) => {
+        const el = document.createElement("a");
+        el.href = "#";
+        el.className = "block-row";
+        el.innerHTML = `
+          <span class="num">0${i + 1}</span>
+          <span class="info">
+            <h4>${b.name}</h4>
+            <p>${b.desc}</p>
+          </span>
+          <span class="pill">${b.rules} rules</span>
+          <span class="arrow">→</span>
+        `;
+        el.addEventListener("click", (ev) => ev.preventDefault());
+        bl.appendChild(el);
+      });
+
+      // Compare
+      const COMPARE = [
+        ["Every block traceable to a CRO rule", true, false, false],
+        ["Opinionated, fixed block order", true, false, false],
+        ["Single-product scope (no homepage)", true, false, true],
+        ["Shopify + WooCommerce in one purchase", true, false, false],
+        ["Buyer tweaks panel + preview URL", true, false, false],
+        ["Portable system spec", true, false, false],
+        ["Lifetime updates, no subscription", true, false, true],
+      ];
+      const cb = document.getElementById("compare-body");
+      COMPARE.forEach((row) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${row[0]}</td>
+          <td class="cell">${row[1] ? '<span class="check">✓</span>' : '<span class="dash">—</span>'}</td>
+          <td class="cell">${row[2] ? '<span class="check">✓</span>' : '<span class="dash">—</span>'}</td>
+          <td class="cell">${row[3] ? '<span class="check">✓</span>' : '<span class="dash">—</span>'}</td>
+        `;
+        cb.appendChild(tr);
+      });
+    </script>
+  </body>
+</html>

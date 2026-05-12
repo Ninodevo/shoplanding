@@ -14,7 +14,7 @@ Top-level project guidance lives in [`AGENTS.md`](../AGENTS.md) (loaded automati
 
 ## One-paragraph pitch
 
-ShopLanding sells a *system* — not just themes — for high-converting single-product landing pages. The system is **7 CRO blocks** distilled from the Conversion.design landing-page checklist (69 rules), implemented as **20 rendered React components**, and shipped as **Shopify + WooCommerce theme zips** plus a portable system spec. Buyers personalize via a tweaks panel at checkout (brand, palette, copy, fonts, hero image) and receive zips pre-baked with their content.
+ShopLanding sells a *system* — not just themes — for high-converting single-product landing pages. The system is **7 CRO blocks** with **69 documented conversion rules**, implemented as **20 rendered React components**, and shipped as **Shopify + WooCommerce theme zips** plus a portable system spec. Buyers personalize via a tweaks panel at checkout (brand, palette, copy, fonts, hero image) and receive zips pre-baked with their content.
 
 ## Status snapshot
 

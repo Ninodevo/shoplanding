@@ -8,12 +8,12 @@
 handoff/
 ├── README.md                              # original design-tool handoff notes
 └── project/
-    ├── Kerrimi Pocket Butter.html         # concrete branded example
-    ├── components.jsx                     # React components for the Kerrimi page
-    ├── styles.css                         # Kerrimi page styles
+    ├── Orelle Daystick.html               # concrete branded example
+    ├── components.jsx                     # React components for the branded example
+    ├── styles.css                         # branded example styles
     ├── tweaks-panel.jsx                   # runtime tweak primitive
     ├── assets/
-    │   └── pocket-butter.png              # demo product photography
+    │   └── daystick.png                   # demo product photography
     ├── template/
     │   ├── Landing Template.html          # generic single-product landing template
     │   ├── components.jsx                 # template's component set
@@ -21,7 +21,7 @@ handoff/
     ├── templates/                         # earlier iteration; ignore
     │   └── ...
     └── uploads/
-        └── checklist.xlsx                 # Conversion.design CRO checklist
+        └── checklist.xlsx                 # source CRO ruleset (legacy filename)
 ```
 
 ## How we use each piece
@@ -37,9 +37,9 @@ Notable things to preserve when porting:
 - Sticky-on-scroll behavior for `StickyAtcBar` and `StickyProductBar` — these are the two real client islands. Everything else is server-renderable.
 - Free-shipping progress bar math — keep it dumb client-side; recompute from cart total.
 
-### `project/Kerrimi Pocket Butter.html` + `components.jsx` + `styles.css`
+### `project/Orelle Daystick.html` + `components.jsx` + `styles.css`
 
-A concrete branded example using the same anatomy. **This becomes the skincare `LayoutPreset`** in Phase 3 — the palette, type, scent variants, bundle picker, and subscription frequency are all defaults we can lift verbatim.
+A concrete branded example using the same anatomy. The live skincare `LayoutPreset` (Orelle · Daystick) is seeded from `scripts/seed-presets.ts`; this file is anatomy-reference only.
 
 ### `project/tweaks-panel.jsx`
 
@@ -51,7 +51,7 @@ The runtime tweak primitive — a floating panel with sections, radios, selects,
 
 ### `project/uploads/checklist.xlsx`
 
-The Conversion.design landing-page CRO checklist. Sheet `🛬  Landing page` (note the double space) is the one we parse — 69 rules across 7 sections, already seeded into `Block.mustInclude` by `scripts/seed-blocks.ts`. Other sheets (Home page, Cart page, Checkout page) are out of scope for v1.
+The source CRO ruleset that seeded our 69 documented rules. Sheet `🛬  Landing page` (note the double space) is the one we parse — 69 rules across 7 sections, already seeded into `Block.mustInclude` by `scripts/seed-blocks.ts`. Other sheets (Home page, Cart page, Checkout page) are out of scope for v1. ShopLanding owns and ships its own playbook downstream of this seeding step.
 
 ## Don't
 

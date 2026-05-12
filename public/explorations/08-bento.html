@@ -1,0 +1,632 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ShopLanding — Option C · Bento-first</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* ============================================================
+         OPTION C — Bento-first
+         Hero is a 5-cell bento that shows everything at once.
+         Almost no above-fold copy. Theme grid + FAQ below.
+         ============================================================ */
+      :root {
+        --paper: #faf7f1;
+        --paper-2: #f3eee3;
+        --ink: #0f0e0d;
+        --ink-2: #2a2823;
+        --muted: #807868;
+        --rule: #e3dac0;
+        --accent: #1f5a40;
+        --accent-2: #2e8c63;
+        --accent-soft: #e6f0ea;
+        --pop: #b9261b;
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+      body {
+        background: var(--paper);
+        color: var(--ink);
+        font-family: "Inter", system-ui, sans-serif;
+        font-size: 16px;
+        line-height: 1.55;
+        -webkit-font-smoothing: antialiased;
+        overflow-x: hidden;
+      }
+      a { color: inherit; text-decoration: none; }
+      ::selection { background: var(--ink); color: var(--paper); }
+
+      .container { width: 100%; max-width: 1280px; margin: 0 auto; padding: 0 32px; }
+      .display { font-family: "Fraunces", Georgia, serif; font-weight: 600; letter-spacing: -0.025em; line-height: 1.04; }
+      .mono {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+        color: var(--muted); font-weight: 600;
+      }
+
+      /* Nav */
+      .nav { position: sticky; top: 0; z-index: 30; backdrop-filter: blur(12px); background: rgba(250,247,241,0.85); border-bottom: 1px solid transparent; transition: border-color 200ms; }
+      .nav.scrolled { border-color: var(--rule); }
+      .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+      .brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 600; }
+      .brand-mark { width: 22px; height: 22px; border-radius: 5px; background: var(--ink); position: relative; }
+      .brand-mark::after { content: ""; position: absolute; inset: 6px; background: var(--accent-2); border-radius: 1px; }
+      .nav-links { display: flex; gap: 28px; }
+      .nav-links a { font-size: 14px; color: var(--ink-2); }
+      .nav-links a:hover { color: var(--ink); }
+      .btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 18px; border-radius: 999px; font-size: 13px; font-weight: 600; transition: all 200ms; }
+      .btn-primary { background: var(--ink); color: var(--paper); }
+      .btn-primary:hover { background: var(--accent); }
+      .btn-ghost { color: var(--ink); border: 1px solid var(--rule); background: rgba(255,255,255,0.5); }
+      .btn-ghost:hover { background: #fff; border-color: var(--ink); }
+
+      /* HERO HEAD */
+      .hero-head {
+        padding: 80px 0 32px;
+        text-align: left;
+      }
+      .hero-head .eyebrow {
+        display: inline-flex; align-items: center; gap: 10px;
+        padding: 6px 12px; border-radius: 999px;
+        background: var(--accent-soft); color: var(--accent);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 600;
+      }
+      .hero-head .eyebrow .dot {
+        width: 6px; height: 6px; border-radius: 999px; background: var(--accent-2);
+        animation: pulse 2s ease-in-out infinite;
+      }
+      @keyframes pulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.8); } }
+      .hero-head h1 { margin: 22px 0 18px; max-width: 18ch; font-size: clamp(42px, 6.4vw, 80px); }
+      .hero-head h1 em { color: var(--accent); font-style: italic; }
+      .hero-head .ctas { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-top: 12px; }
+      .hero-head .meta { font-size: 13px; color: var(--muted); margin-left: 8px; }
+
+      /* BENTO */
+      .bento {
+        margin: 32px 0 96px;
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        grid-auto-rows: 200px;
+        gap: 14px;
+      }
+      @media (max-width: 900px) { .bento { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 220px; } }
+
+      .cell {
+        position: relative;
+        border-radius: 16px;
+        overflow: hidden;
+        background: #fff;
+        border: 1px solid var(--rule);
+        transition: transform 280ms ease, box-shadow 280ms ease, border-color 280ms ease;
+      }
+      .cell:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 24px 40px -25px rgba(0,0,0,0.18);
+        border-color: var(--accent);
+      }
+      .cell .label {
+        position: absolute; top: 16px; left: 18px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase;
+        font-weight: 600; color: var(--muted);
+        z-index: 2;
+      }
+      .cell .title {
+        position: absolute; bottom: 18px; left: 18px; right: 18px;
+        font-family: "Fraunces", serif;
+        font-size: 18px; font-weight: 600; line-height: 1.15;
+        z-index: 2;
+      }
+
+      /* Cell A — Theme grid (big, top-left, 4×2) */
+      .cell-themes {
+        grid-column: span 4;
+        grid-row: span 2;
+        background: var(--paper-2);
+        padding: 56px 32px 32px;
+      }
+      .cell-themes .label { color: var(--accent); }
+      .cell-themes .preset-stack {
+        position: absolute; top: 60px; left: 32px; right: 32px; bottom: 60px;
+        display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+      }
+      .preset-mini {
+        border-radius: 10px;
+        background: #fff;
+        border: 1px solid rgba(0,0,0,0.06);
+        overflow: hidden;
+        position: relative;
+        box-shadow: 0 12px 24px -16px rgba(0,0,0,0.18);
+      }
+      .preset-mini .top {
+        height: 26px; display: flex; align-items: center; padding: 0 10px; gap: 4px;
+        background: #fafaf8; border-bottom: 1px solid rgba(0,0,0,0.05);
+      }
+      .preset-mini .top span { width: 7px; height: 7px; border-radius: 999px; background: #ddd; }
+      .preset-mini .top span:nth-child(1) { background: #ff6058; }
+      .preset-mini .top span:nth-child(2) { background: #ffbd2e; }
+      .preset-mini .top span:nth-child(3) { background: #28ca42; }
+      .preset-mini .body {
+        padding: 14px;
+        display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+      }
+      .preset-mini .body .gal {
+        aspect-ratio: 1; border-radius: 6px;
+      }
+      .preset-mini .body .info { display: grid; gap: 4px; align-content: start; }
+      .preset-mini .body .h { height: 6px; border-radius: 2px; background: rgba(0,0,0,0.85); }
+      .preset-mini .body .h.s { width: 60%; }
+      .preset-mini .body .h.m { background: rgba(0,0,0,0.3); width: 80%; }
+      .preset-mini .body .cta {
+        margin-top: 6px; height: 14px; border-radius: 999px;
+        font-size: 7px; font-weight: 600; letter-spacing: 0.06em;
+        display: flex; align-items: center; justify-content: center;
+        color: #fff;
+      }
+      .preset-mini .footer-pill {
+        position: absolute; bottom: 8px; left: 8px;
+        background: rgba(0,0,0,0.85); color: #fff;
+        padding: 3px 7px; border-radius: 4px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 8px; letter-spacing: 0.08em;
+        font-weight: 700;
+      }
+      .ms-skin { background: linear-gradient(135deg, #f5e6d6, #c9a37a); }
+      .ms-supp { background: linear-gradient(135deg, #1a1a1a, #2a2a2a); }
+      .ms-gad { background: linear-gradient(135deg, #e8e8eb, #b0b0b8); }
+      .cta-skin { background: #1f5a40; }
+      .cta-supp { background: #00d57a; color: #052e1c !important; }
+      .cta-gad { background: #0066ff; }
+
+      .cell-themes .title {
+        font-size: 22px;
+        max-width: 32ch;
+      }
+
+      /* Cell B — Annotated rule (right of themes, 2×1) */
+      .cell-rule {
+        grid-column: span 2;
+        grid-row: span 1;
+        background: var(--ink);
+        color: var(--paper);
+        padding: 24px;
+        display: flex; flex-direction: column; justify-content: space-between;
+      }
+      .cell-rule .label { color: var(--accent-2); position: static; }
+      .cell-rule .num {
+        font-family: "Fraunces", serif;
+        font-size: 64px; font-weight: 600; letter-spacing: -0.03em; line-height: 1;
+        color: var(--accent-2);
+      }
+      .cell-rule .num small { color: var(--paper); font-size: 28px; }
+      .cell-rule .title { color: var(--paper); position: static; font-size: 16px; }
+
+      /* Cell C — Sticky ATC close-up (right of themes, 2×1) */
+      .cell-atc {
+        grid-column: span 2;
+        grid-row: span 1;
+        background: var(--paper-2);
+        padding: 20px 24px;
+        display: flex; flex-direction: column; justify-content: center; gap: 14px;
+      }
+      .cell-atc .label { position: static; color: var(--accent); }
+      .cell-atc .strip-mock {
+        background: var(--ink); color: #fff;
+        border-radius: 999px;
+        padding: 10px 14px;
+        display: flex; align-items: center; gap: 12px;
+        box-shadow: 0 12px 24px -10px rgba(0,0,0,0.3);
+      }
+      .cell-atc .strip-mock .thumb {
+        width: 32px; height: 32px; border-radius: 8px;
+        background: linear-gradient(135deg, #f5e6d6, #c9a37a);
+      }
+      .cell-atc .strip-mock .text {
+        flex: 1; font-size: 12px;
+      }
+      .cell-atc .strip-mock .text b { font-family: "Fraunces", serif; font-weight: 600; font-size: 13px; }
+      .cell-atc .strip-mock .text span { display: block; font-size: 10px; color: rgba(255,255,255,0.6); }
+      .cell-atc .strip-mock .b {
+        background: var(--accent-2); color: #052e1c;
+        padding: 6px 12px; border-radius: 999px;
+        font-size: 11px; font-weight: 700;
+      }
+      .cell-atc .title { position: static; font-size: 16px; }
+
+      /* Cell D — Free-ship progress (3×1) */
+      .cell-ship {
+        grid-column: span 3;
+        grid-row: span 1;
+        background: #fff;
+        padding: 24px;
+        display: flex; flex-direction: column; justify-content: space-between;
+      }
+      .cell-ship .label { position: static; color: var(--accent); }
+      .cell-ship .ship-mock {
+        background: var(--paper-2);
+        border-radius: 10px;
+        padding: 14px 18px;
+        font-size: 13px;
+      }
+      .cell-ship .ship-mock b { font-weight: 700; }
+      .cell-ship .ship-bar {
+        height: 6px; border-radius: 999px; background: rgba(0,0,0,0.06);
+        margin-top: 10px; overflow: hidden;
+      }
+      .cell-ship .ship-bar .fill { width: 65%; height: 100%; background: var(--accent); }
+      .cell-ship .title { position: static; font-size: 16px; }
+
+      /* Cell E — Comparison snippet (3×1) */
+      .cell-vs {
+        grid-column: span 3;
+        grid-row: span 1;
+        background: linear-gradient(180deg, #fff 0%, #fff7f5 100%);
+        padding: 24px;
+        display: flex; flex-direction: column; gap: 12px;
+      }
+      .cell-vs .label { position: static; color: var(--pop); }
+      .cell-vs .row {
+        display: grid; grid-template-columns: 1fr auto auto;
+        gap: 14px; align-items: center;
+        font-size: 13px;
+        padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.05);
+      }
+      .cell-vs .row:last-child { border-bottom: none; }
+      .cell-vs .row .feat { color: var(--ink-2); }
+      .cell-vs .row .yes { color: var(--accent); font-weight: 700; }
+      .cell-vs .row .no { color: var(--pop); font-weight: 700; }
+      .cell-vs .title { position: static; font-size: 14px; color: var(--muted); }
+
+      /* Cell F — Pricing (full width) */
+      .cell-price {
+        grid-column: span 6;
+        grid-row: span 1;
+        background: var(--ink);
+        color: var(--paper);
+        padding: 28px 32px;
+        display: flex; align-items: center; gap: 32px;
+        flex-wrap: wrap;
+      }
+      .cell-price .num-block {
+        display: flex; align-items: baseline; gap: 28px; flex-wrap: wrap;
+      }
+      .cell-price .num-block .item {
+        display: flex; align-items: baseline; gap: 8px;
+      }
+      .cell-price .num-block b {
+        font-family: "Fraunces", serif;
+        font-size: 40px; font-weight: 600; letter-spacing: -0.03em;
+      }
+      .cell-price .num-block span { font-size: 13px; color: rgba(250,247,241,0.6); }
+      .cell-price .num-block .item.sub b { color: var(--accent-2); }
+      .cell-price .actions { margin-left: auto; display: flex; gap: 12px; }
+      .cell-price .actions .btn-primary { background: var(--accent-2); color: #052e1c; }
+
+      /* Section */
+      section { padding: 96px 0; }
+      .section-head { margin-bottom: 56px; }
+      .section-head .mono { color: var(--accent); margin-bottom: 14px; display: inline-block; }
+      .section-head h2 { margin-bottom: 14px; font-size: clamp(28px, 4vw, 48px); }
+      .section-head p { font-size: 17px; color: var(--ink-2); max-width: 60ch; }
+
+      /* Theme grid (full) */
+      .grid-themes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+      @media (max-width: 900px) { .grid-themes { grid-template-columns: 1fr; } }
+      .theme-card {
+        background: #fff; border: 1px solid var(--rule); border-radius: 16px;
+        overflow: hidden;
+        transition: transform 280ms ease, box-shadow 280ms ease, border-color 280ms ease;
+      }
+      .theme-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 30px 60px -25px rgba(0,0,0,0.15);
+        border-color: var(--accent);
+      }
+      .theme-card .cover {
+        aspect-ratio: 4/3;
+        position: relative; overflow: hidden;
+      }
+      .theme-card .body { padding: 22px 24px; display: flex; flex-direction: column; gap: 8px; }
+      .theme-card h3 { font-family: "Fraunces", serif; font-size: 22px; font-weight: 600; letter-spacing: -0.01em; }
+      .theme-card .pos { font-size: 14px; color: var(--ink-2); }
+      .theme-card .bottom {
+        display: flex; align-items: center; justify-content: space-between;
+        margin-top: 8px; padding-top: 14px;
+        border-top: 1px solid var(--rule);
+      }
+      .theme-card .price { font-weight: 700; font-size: 17px; }
+      .theme-card .price span { font-size: 13px; color: var(--muted); font-weight: 400; }
+      .theme-card .demo { font-size: 12px; color: var(--ink-2); text-decoration: underline; text-underline-offset: 4px; }
+      .theme-card .demo:hover { color: var(--accent); }
+      .theme-card .badges { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+      .theme-card .badge {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 600;
+        padding: 4px 8px; border-radius: 5px;
+        background: var(--paper-2); color: var(--ink-2);
+      }
+      .theme-card .badge.cov { background: var(--accent-soft); color: var(--accent); }
+
+      /* FAQ */
+      .faq-list { display: grid; max-width: 880px; margin: 0 auto; }
+      .faq-item { border-top: 1px solid var(--rule); padding: 20px 0; }
+      .faq-item:last-child { border-bottom: 1px solid var(--rule); }
+      .faq-q { display: flex; justify-content: space-between; gap: 24px; font-family: "Fraunces", serif; font-size: 20px; font-weight: 600; cursor: pointer; }
+      .faq-q::after { content: "+"; color: var(--accent); font-weight: 400; font-size: 24px; line-height: 1; }
+      .faq-a { padding-top: 12px; color: var(--ink-2); max-width: 70ch; display: none; }
+      .faq-item.open .faq-a { display: block; }
+
+      /* Footer */
+      footer.foot { background: var(--paper-2); padding: 48px 0; text-align: center; font-family: "JetBrains Mono", monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+
+      .back {
+        position: fixed; top: 16px; left: 16px; z-index: 50;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+        color: var(--muted);
+        background: rgba(255,255,255,0.92); backdrop-filter: blur(8px);
+        padding: 8px 14px; border-radius: 999px;
+        border: 1px solid var(--rule);
+      }
+      .back:hover { color: var(--accent); border-color: var(--accent); }
+    </style>
+  </head>
+  <body>
+    <a class="back" href="/explorations/">← Back</a>
+
+    <header class="nav" id="nav">
+      <div class="container nav-inner">
+        <a class="brand" href="/">
+          <span class="brand-mark"></span>
+          <span>ShopLanding</span>
+        </a>
+        <nav class="nav-links">
+          <a href="#themes">Themes</a>
+          <a href="#pricing">Pricing</a>
+          <a href="#faq">FAQ</a>
+        </nav>
+        <a href="#themes" class="btn btn-primary">See the themes →</a>
+      </div>
+    </header>
+
+    <!-- HERO HEAD (minimal copy) -->
+    <section class="hero-head">
+      <div class="container">
+        <span class="eyebrow"><span class="dot"></span>Shopify · WooCommerce · 69-rule CRO system</span>
+        <h1 class="display">Sell <em>one</em> product. Convert like ten stores.</h1>
+        <div class="ctas">
+          <a href="#themes" class="btn btn-primary">See the themes <span aria-hidden>→</span></a>
+          <a href="#" class="btn btn-ghost">Live demo</a>
+          <span class="meta">$99 · $249 · One-time, lifetime updates</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- BENTO -->
+    <div class="container">
+      <div class="bento">
+        <!-- A — Theme grid preview -->
+        <div class="cell cell-themes">
+          <span class="label">3 niche presets · ready to ship</span>
+          <div class="preset-stack">
+            <div class="preset-mini">
+              <div class="top"><span></span><span></span><span></span></div>
+              <div class="body">
+                <div class="gal ms-skin"></div>
+                <div class="info">
+                  <div class="h"></div>
+                  <div class="h s"></div>
+                  <div class="h m"></div>
+                  <div class="cta cta-skin">+ Add</div>
+                </div>
+              </div>
+              <span class="footer-pill">Skincare</span>
+            </div>
+            <div class="preset-mini">
+              <div class="top"><span></span><span></span><span></span></div>
+              <div class="body" style="background: #1a1a1a;">
+                <div class="gal ms-supp"></div>
+                <div class="info">
+                  <div class="h" style="background: #fff;"></div>
+                  <div class="h s" style="background: #fff;"></div>
+                  <div class="h m" style="background: rgba(255,255,255,0.4);"></div>
+                  <div class="cta cta-supp">SUBSCRIBE</div>
+                </div>
+              </div>
+              <span class="footer-pill">Supplement</span>
+            </div>
+            <div class="preset-mini">
+              <div class="top"><span></span><span></span><span></span></div>
+              <div class="body">
+                <div class="gal ms-gad"></div>
+                <div class="info">
+                  <div class="h"></div>
+                  <div class="h s"></div>
+                  <div class="h m"></div>
+                  <div class="cta cta-gad">Add</div>
+                </div>
+              </div>
+              <span class="footer-pill">Gadget</span>
+            </div>
+          </div>
+          <div class="title">Same 7 blocks · same 20 components · three brands.</div>
+        </div>
+
+        <!-- B — Coverage chip / number -->
+        <div class="cell cell-rule">
+          <span class="label">Playbook coverage</span>
+          <div>
+            <div class="num">69<small>/69</small></div>
+            <div style="font-size: 13px; color: rgba(250,247,241,0.6); margin-top: 6px;">Documented conversion rules.</div>
+          </div>
+          <div class="title">Every block traces back to a row.</div>
+        </div>
+
+        <!-- C — Sticky ATC -->
+        <div class="cell cell-atc">
+          <span class="label">Sticky ATC · always one tap away</span>
+          <div class="strip-mock">
+            <span class="thumb"></span>
+            <div class="text">
+              <b>Daystick — solid lotion</b>
+              <span>$70 · 2× selected · ⭐ 4.8</span>
+            </div>
+            <span class="b">Add →</span>
+          </div>
+          <div class="title">Bottom-anchored buy bar across all 20 components.</div>
+        </div>
+
+        <!-- D — Free-ship -->
+        <div class="cell cell-ship">
+          <span class="label">Free-shipping progress · AOV booster</span>
+          <div class="ship-mock">
+            You're <b>$12.25</b> away from <b>free shipping</b>
+            <div class="ship-bar"><div class="fill"></div></div>
+          </div>
+          <div class="title">Updates as the cart grows — pulls qty up by 12-18%.</div>
+        </div>
+
+        <!-- E — Comparison snippet -->
+        <div class="cell cell-vs">
+          <span class="label">Without · with the system</span>
+          <div class="row">
+            <span class="feat">Variant pickers reload page?</span>
+            <span class="no">Generic ✗</span>
+            <span class="yes">Ours ✓</span>
+          </div>
+          <div class="row">
+            <span class="feat">Bundle &amp; Save offered?</span>
+            <span class="no">Generic ✗</span>
+            <span class="yes">Ours ✓</span>
+          </div>
+          <div class="row">
+            <span class="feat">Sticky ATC on scroll?</span>
+            <span class="no">Generic ✗</span>
+            <span class="yes">Ours ✓</span>
+          </div>
+          <div class="row">
+            <span class="feat">Free-ship threshold visible?</span>
+            <span class="no">Generic ✗</span>
+            <span class="yes">Ours ✓</span>
+          </div>
+          <div class="title">14 conversion rules a generic Dawn-style PDP misses.</div>
+        </div>
+
+        <!-- F — Price strip (full row) -->
+        <div class="cell cell-price">
+          <div class="num-block">
+            <div class="item"><b>$99</b><span>single store</span></div>
+            <div class="item"><b>$249</b><span>unlimited</span></div>
+            <div class="item sub"><b>+$199</b><span>done-for-you setup</span></div>
+          </div>
+          <div class="actions">
+            <a href="#pricing" class="btn btn-primary">Buy from $99 →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- THEME GRID -->
+    <section id="themes">
+      <div class="container">
+        <div class="section-head">
+          <span class="mono">The catalog</span>
+          <h2 class="display">Pick a niche. Ship today.</h2>
+          <p>Each preset gets the same 20 rendered components, just tuned for the buyer's category.</p>
+        </div>
+
+        <div class="grid-themes">
+          <a class="theme-card" href="#">
+            <div class="cover ms-skin" style="display: grid; place-items: center; font-family: 'Fraunces', serif; font-size: 64px; color: rgba(0,0,0,0.18); font-style: italic;">Orelle</div>
+            <div class="body">
+              <h3>Orelle · Skincare</h3>
+              <p class="pos">Cream paper, sage accent, scent variants, subscription.</p>
+              <div class="badges">
+                <span class="badge">Shopify</span>
+                <span class="badge">Woo</span>
+                <span class="badge cov">69 / 69 rules</span>
+              </div>
+              <div class="bottom">
+                <div class="price">$99 <span>single</span></div>
+                <span class="demo">Live demo ↗</span>
+              </div>
+            </div>
+          </a>
+          <a class="theme-card" href="#">
+            <div class="cover ms-supp" style="display: grid; place-items: center; font-family: 'Fraunces', serif; font-size: 64px; color: rgba(255,255,255,0.18); font-style: italic;">VitalStack</div>
+            <div class="body">
+              <h3>VitalStack · Supplement</h3>
+              <p class="pos">Dark mode default, neon-green CTAs, bundle picker, daily science.</p>
+              <div class="badges">
+                <span class="badge">Shopify</span>
+                <span class="badge">Woo</span>
+                <span class="badge cov">69 / 69 rules</span>
+              </div>
+              <div class="bottom">
+                <div class="price">$99 <span>single</span></div>
+                <span class="demo">Live demo ↗</span>
+              </div>
+            </div>
+          </a>
+          <a class="theme-card" href="#">
+            <div class="cover ms-gad" style="display: grid; place-items: center; font-family: 'Fraunces', serif; font-size: 64px; color: rgba(0,0,0,0.18); font-style: italic;">Aurabud</div>
+            <div class="body">
+              <h3>Aurabud · Gadget</h3>
+              <p class="pos">Steel-grey, electric-blue, spec-table heavy, single-SKU layout.</p>
+              <div class="badges">
+                <span class="badge">Shopify</span>
+                <span class="badge">Woo</span>
+                <span class="badge cov">69 / 69 rules</span>
+              </div>
+              <div class="bottom">
+                <div class="price">$99 <span>single</span></div>
+                <span class="demo">Live demo ↗</span>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq">
+      <div class="container">
+        <div class="section-head" style="text-align: center;">
+          <span class="mono">FAQ</span>
+          <h2 class="display">Six questions buyers actually ask.</h2>
+        </div>
+
+        <div class="faq-list">
+          <div class="faq-item open"><div class="faq-q">Is this a page builder?</div><div class="faq-a">No. Block order is opinionated and fixed; only content and visual tokens change between themes. Every block exists for a documented reason; rearranging silently breaks rule coverage.</div></div>
+          <div class="faq-item"><div class="faq-q">Will this work for my niche?</div><div class="faq-a">Yes for any single-product launch. We ship niche presets so the defaults match the category.</div></div>
+          <div class="faq-item"><div class="faq-q">How is this different from a Theme Store theme?</div><div class="faq-a">Theme Store themes position on visuals. ShopLanding positions on conversion logic — every section traces back to a documented rule.</div></div>
+          <div class="faq-item"><div class="faq-q">Can my agency rebuild on a different stack?</div><div class="faq-a">Yes. The unlimited license includes a portable system spec (JSON + Markdown) for Hydrogen, Astro, Webflow, etc.</div></div>
+          <div class="faq-item"><div class="faq-q">Do I get updates after I buy?</div><div class="faq-a">Lifetime updates for the stores covered by your license. New niche presets land for free.</div></div>
+          <div class="faq-item"><div class="faq-q">Refund policy?</div><div class="faq-a">14 days, no questions, on the digital license. Setup add-on refundable until work begins.</div></div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="foot">
+      © 2026 ShopLanding · Option C · Bento-first
+    </footer>
+
+    <script>
+      const nav = document.getElementById("nav");
+      const onScroll = () => nav.classList.toggle("scrolled", window.scrollY > 8);
+      onScroll();
+      window.addEventListener("scroll", onScroll, { passive: true });
+
+      document.querySelectorAll(".faq-item").forEach((it) => {
+        it.querySelector(".faq-q").addEventListener("click", () => it.classList.toggle("open"));
+      });
+    </script>
+  </body>
+</html>

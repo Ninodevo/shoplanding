@@ -57,7 +57,7 @@ const PRESS = [
 ];
 
 const FAQ = [
-  { q: 'Will it melt in my bag?', a: 'Nope. Pocket Butter is solid up to 95°F (35°C). It\'ll soften in extreme heat — like a closed car in summer — but it firms right back up. The paperboard tube is sturdy, the cap clicks shut, and there\'s zero liquid to spill.' },
+  { q: 'Will it melt in my bag?', a: 'Nope. Daystick is solid up to 95°F (35°C). It\'ll soften in extreme heat — like a closed car in summer — but it firms right back up. The paperboard tube is sturdy, the cap clicks shut, and there\'s zero liquid to spill.' },
   { q: 'How long does one tube last?', a: 'About 2–3 months of daily use for most people. The 70g format is intentionally generous — we wanted it to outlast a long trip without being too bulky for your pocket.' },
   { q: 'Is it safe for sensitive skin?', a: 'Yes. We\'re fragrance-led but the scent comes from real essential oils, not synthetic perfume. No parabens, sulfates, silicones, or PEGs. That said, if you\'re reactive to nut oils, double-check the ingredient list — we use sweet almond.' },
   { q: 'How does Subscribe & Save work?', a: 'Pick a frequency, save 15% on every order, free shipping always, skip or cancel anytime in one click. No weird hoops. We\'ll email you 3 days before each shipment so you can swap scents or pause.' },
@@ -90,7 +90,7 @@ function Nav({ cartCount }) {
   return (
     <nav className="nav">
       <div className="container nav-inner">
-        <div className="logo">kerrimi</div>
+        <div className="logo">orelle</div>
         <div className="nav-links">
           <a href="#bundle">Shop</a>
           <a href="#how">How it works</a>
@@ -118,7 +118,7 @@ function Hero({ ctaCopy, onShop }) {
             Lotion that lives in your <span className="squiggle">pocket</span>.
           </h1>
           <p className="lede">
-            Pocket Butter is a solid-state body lotion. Leak-proof, TSA-approved, ridiculously moisturizing — and it smells like a daydream.
+            Daystick is a solid-state body lotion. Leak-proof, TSA-approved, ridiculously moisturizing — and it smells like a daydream.
           </p>
           <div className="hero-stars">
             <span className="stars">★★★★★</span>
@@ -140,7 +140,7 @@ function Hero({ ctaCopy, onShop }) {
           <div className="hero-badge b1">No spills, ever ✨</div>
           <div className="hero-badge b3">3.8 oz · 70 g</div>
           <div className="hero-badge b2">Smells unreal</div>
-          <img src="assets/pocket-butter.png" alt="Kerrimi Pocket Butter" />
+          <img src="assets/daystick.png" alt="Orelle Daystick" />
           <svg className="hero-spinner" viewBox="0 0 100 100">
             <defs>
               <path id="circle" d="M 50,50 m -36,0 a 36,36 0 1,1 72,0 a 36,36 0 1,1 -72,0" fill="none" />
@@ -158,7 +158,7 @@ function Hero({ ctaCopy, onShop }) {
 }
 
 function MarqueeDivider() {
-  const items = ['Pocket Butter', 'Solid Lotion', 'No Mess', 'TSA Approved', 'Plant-Based', 'Pocket Butter', 'Solid Lotion', 'No Mess', 'TSA Approved', 'Plant-Based'];
+  const items = ['Daystick', 'Solid Lotion', 'No Mess', 'TSA Approved', 'Plant-Based', 'Daystick', 'Solid Lotion', 'No Mess', 'TSA Approved', 'Plant-Based'];
   return (
     <div className="marquee-divider">
       <div className="marquee-track">
@@ -273,7 +273,7 @@ function Benefits() {
     <section className="section" style={{paddingTop: 48}}>
       <div className="container">
         <div style={{textAlign: 'center', marginBottom: 48}}>
-          <div className="section-eyebrow">// Why pocket butter</div>
+          <div className="section-eyebrow">// Why daystick</div>
           <h2 className="display">Lotion, but make it portable</h2>
         </div>
         <div className="benefits-grid">
@@ -323,7 +323,7 @@ function Comparison() {
           <p className="subtitle">Liquid lotion is a 1990s problem. We solved it.</p>
           <div className="compare-table">
             <div className="compare-cell compare-head"></div>
-            <div className="compare-cell compare-head us">Pocket Butter</div>
+            <div className="compare-cell compare-head us">Daystick</div>
             <div className="compare-cell compare-head">Liquid lotion</div>
 
             <div className="compare-cell compare-feature">Carry-on safe</div>
@@ -568,7 +568,7 @@ function Founder() {
           </div>
           <div>
             <div className="section-eyebrow">// the why</div>
-            <p className="founder-quote">"I leaked $80 of moisturizer in my carry-on at JFK. By the time I landed in Lisbon, I'd sketched Pocket Butter on a napkin."</p>
+            <p className="founder-quote">"I leaked $80 of moisturizer in my carry-on at JFK. By the time I landed in Lisbon, I'd sketched Daystick on a napkin."</p>
             <div className="founder-sig">— Kerri</div>
             <div className="founder-name">Kerri Mimoun</div>
             <div className="founder-title">Founder, ex-cosmetic chemist at a brand you've heard of</div>
@@ -624,13 +624,13 @@ function Footer() {
       <div className="container">
         <div className="footer-grid">
           <div className="footer-brand">
-            <div className="logo">kerrimi</div>
+            <div className="logo">orelle</div>
             <p>Solid-state skincare for people who actually leave the house. Plant-based, plastic-free, made in California.</p>
           </div>
           <div>
             <h4>Shop</h4>
             <ul>
-              <li><a href="#">Pocket Butter</a></li>
+              <li><a href="#">Daystick</a></li>
               <li><a href="#">Bundles</a></li>
               <li><a href="#">Subscriptions</a></li>
               <li><a href="#">Gift cards</a></li>
@@ -656,7 +656,7 @@ function Footer() {
           </div>
         </div>
         <div className="footer-bottom">
-          <span>© 2026 Kerrimi · Made in Oakland, CA</span>
+          <span>© 2026 Orelle · Made in Oakland, CA</span>
           <span>Instagram · TikTok · Email</span>
         </div>
       </div>
@@ -668,10 +668,10 @@ function StickyATC({ visible, onShop, ctaCopy, total }) {
   return (
     <div className={`sticky-atc ${visible ? 'visible' : ''}`}>
       <div className="sticky-atc-thumb">
-        <img src="assets/pocket-butter.png" alt="" />
+        <img src="assets/daystick.png" alt="" />
       </div>
       <div className="sticky-atc-info">
-        <span className="t">Pocket Butter</span>
+        <span className="t">Daystick</span>
         <span className="s">${total} · free shipping $35+</span>
       </div>
       <button className="btn btn-primary" onClick={onShop}>
