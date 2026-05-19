@@ -30,6 +30,32 @@ model Block {
   @@map("blocks")
 }
 
+/// One run of the public PDP audit tool at /audit.
+///
+/// We persist every audit so the buyer can come back to it via a stable URL
+/// and so we have raw data for product improvements + remarketing. `email`
+/// is optional (anonymous first audit; captured before the report unlocks
+/// in v1.1). `score` is the 0–100 aggregate; `rawResult` is the full
+/// per-rule breakdown that the report page renders from.
+model Audit {
+  id        String   @id @default(cuid())
+  url       String
+  email     String?
+  /// Full audit output: extracted page data + per-rule pass/fail + per-block aggregate.
+  rawResult Json     @map("raw_result")
+  /// Aggregate 0–100 score.
+  score     Int
+  /// Where this audit came from — "free" / "embed" / "api".
+  source    String   @default("free")
+  /// SHA-256 of the requester IP for rate-limiting + abuse signal.
+  ipHash    String?  @map("ip_hash")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([createdAt(sort: Desc)])
+  @@index([url])
+  @@map("audits")
+}
+
 /// A concrete component in the rendered landing page (e.g. Hero, Gallery, FAQ).
 /// The 7 playbook `Block`s are coarse CRO sections; `RenderedBlock`s are the actual
 /// React components we ship. `satisfies` maps each component back to the playbook

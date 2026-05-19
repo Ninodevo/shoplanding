@@ -142,6 +142,46 @@ Picked from three explorations (`public/explorations/06-catalog.html`, `07-annot
 
 **Exit criterion met:** the catalog grid + annotated proof + without/with comparison answer "what am I buying" within the first scroll. Real product photography to swap in for the CSS gradient placeholders when shoots happen.
 
+## ⚙️ Phase 9 — PDP Audit tool (v1 shipped · adds the marketing flywheel)
+
+After the strategic review, we pivoted from "build then sell themes" to **dogfooding via a digital product that builds the future-buyer audience on autopilot**. The audit tool is that product.
+
+- [x] [`prisma/schema.prisma`](../prisma/schema.prisma) — new `Audit` model: `url`, `email?`, `rawResult` (full scored breakdown JSON), `score` 0–100, `source`, `ipHash`, indexed by `createdAt` desc. Migration `add_audits` applied.
+- [x] [`src/lib/audit/fetch.ts`](../src/lib/audit/fetch.ts) — safe URL fetcher. SSRF guard (private CIDR block), 5 MB cap, 15 s deadline, http/https-only, content-type sniffing, descriptive `FetchError` codes.
+- [x] [`src/lib/audit/extract.ts`](../src/lib/audit/extract.ts) — cheerio-based parser → structured `ExtractedPage`. Extracts Schema.org Product JSON-LD (the gold standard), DOM section presence (reviews / FAQ / comparison / specs / gallery thumbs / press), 18+ keyword presence flags (free shipping / klarna / urgency / scarcity / live activity / etc.), counts (outgoing links, product images, videos), and numeric signals (rating, review count, price text, compare-at-price).
+- [x] [`src/lib/audit/rules.ts`](../src/lib/audit/rules.ts) — 30 detectable rules across all 7 playbook blocks. Each returns `pass` / `fail` / `unknown` with a short note. Weighted 1–3 by impact. Honest "unknown" for judgment-call rules instead of guessing — surfaces as "manual review" in the report.
+- [x] [`src/lib/audit/score.ts`](../src/lib/audit/score.ts) — aggregates per-block scores (excluding `unknown` from denominator), computes weighted overall, picks top 5 highest-weight fails.
+- [x] [`src/app/audit/actions.ts`](../src/app/audit/actions.ts) — `runAudit` server action. URL normalization (auto-https), IP-hash rate limit (5 audits / 15 min), persists to DB, redirects to result page.
+- [x] [`src/app/audit/page.tsx`](../src/app/audit/page.tsx) — landing page with URL input form, "what we check" 7-card block summary, honest "what we can/can't detect" section. SEO copy: "Audit any product page. Get a 0–100 score in 15 seconds."
+- [x] [`src/app/audit/[id]/page.tsx`](../src/app/audit/[id]/page.tsx) — result page with animated SVG score dial (color-coded green/amber/red), "Top fixes ranked" section, full block-by-block per-rule list (pass / fail / manual icons + weight chips), and a closing CTA back to /#themes and /playbook.
+- [x] Marketing nav now shows "Audit" link.
+
+**Verified end-to-end against a real DTC store:** `drinkolipop.com/products/strawberry-vanilla` scored 61/100. Real findings surfaced — missing rating near title, no press logos detected, only 1 express-pay option mentioned, too many outgoing links. The audit row persists to Neon and renders at `/audit/[id]`.
+
+### v1.1.a — Email gate (shipped)
+
+- [x] [`src/app/audit/[id]/actions.ts`](../src/app/audit/[id]/actions.ts) — `unlockAuditWithEmail` server action. Validates email, persists to `Audit.email`, redirects back to the result page anchored at `#top-fixes`.
+- [x] [`src/app/audit/[id]/page.tsx`](../src/app/audit/[id]/page.tsx) — refactored: score dial + product schema + per-block scoreboard are always public (proof of substance). Top fixes + per-rule breakdown are gated. Locked state shows three blurred preview rows + an email capture form. Once unlocked, the share link stays unlocked for every subsequent viewer — the marketing prize is the original auditor's email.
+
+### v1.1.b — LLM pass (shipped)
+
+- [x] [`src/lib/anthropic.ts`](../src/lib/anthropic.ts) — lazy Anthropic client wrapper. Won't throw at module load if the key is missing; mirrors the Stripe wrapper.
+- [x] [`src/lib/audit/llm.ts`](../src/lib/audit/llm.ts) — `llmScoreUnknowns(page, rules)`. Single batched Anthropic call (Haiku by default) for every rule heuristics flagged `unknown`. Returns the rules array with verdicts merged in and `aiAssisted: true` on rewritten rows. Graceful no-op when `ANTHROPIC_API_KEY` is absent or the call fails — the audit still ships heuristic-only.
+- [x] [`src/lib/audit/extract.ts`](../src/lib/audit/extract.ts) — extracts a cleaned 8 KB body-text snippet for the LLM.
+- [x] [`src/lib/audit/rules.ts`](../src/lib/audit/rules.ts) — `RuleResult` carries an optional `aiAssisted` flag.
+- [x] [`src/lib/audit/score.ts`](../src/lib/audit/score.ts) — `scoreAudit` accepts an optional pre-computed `rules` array so the action can splice in LLM-augmented verdicts.
+- [x] [`src/app/audit/actions.ts`](../src/app/audit/actions.ts) — runs heuristics → LLM pass → score, in sequence. LLM step adds ~1 s when key is set, 1 ms when not.
+- [x] [`src/app/audit/[id]/page.tsx`](../src/app/audit/[id]/page.tsx) — `<AiChip>` badge on LLM-scored rules. Explainer copy updated to surface the AI-vs-manual distinction honestly.
+- [x] [`.env.example`](../.env.example) — `ANTHROPIC_API_KEY` + optional `ANTHROPIC_MODEL` documented.
+
+**Known limit — rule coverage:** `rules.ts` currently defines 29 of the 69 playbook rules. Of those, the LLM pass picks up the ones that return `unknown` from heuristics (≈3 on a typical Shopify PDP). The framework scales straight to 69 — the next milestone is filling in the missing ~40 rule definitions (mostly `detect: () => unknown(...)` stubs the LLM then judges).
+
+Deferred to v1.2:
+- [ ] Expand `rules.ts` to cover all 69 playbook rules.
+- [ ] Lemon Squeezy paid tier (€19–29/mo for unlimited audits + monthly tracking).
+- [ ] Competitor-comparison feature (audit your store + 3 competitors side-by-side).
+- [ ] Embeddable "scored" widget for buyers to share their audit on Twitter.
+
 ## Backlog (post-launch)
 
 - 5th and 6th niche presets (apparel? candles? books?).

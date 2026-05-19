@@ -75,6 +75,12 @@ export default function Nav() {
 
         <div className="flex items-center gap-2">
           <Link
+            href="/audit"
+            className="hidden text-[14px] text-[var(--ink-2)] transition-colors hover:text-[var(--ink)] sm:block"
+          >
+            Audit
+          </Link>
+          <Link
             href="/playbook"
             className="hidden text-[14px] text-[var(--ink-2)] transition-colors hover:text-[var(--ink)] sm:block"
           >
