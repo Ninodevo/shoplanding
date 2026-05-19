@@ -2,6 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getPrisma } from "@/lib/db";
 import { Footer, Nav } from "@/components/marketing";
+import ThemeLivePreview from "@/components/marketing/ThemeLivePreview";
+import RuleCoverage from "@/components/marketing/RuleCoverage";
 import { isStripeConfigured } from "@/lib/stripe";
 import { createCheckoutSession } from "@/app/buy/actions";
 import type {
@@ -126,16 +128,16 @@ export default async function ThemePage({
                 </p>
 
                 <div className="mt-8 flex flex-wrap gap-3">
+                  <a href="#pricing" className="mk-btn mk-btn-primary">
+                    See pricing →
+                  </a>
                   <Link
                     href={`/showcase/${theme.preset.slug}`}
                     className="mk-btn mk-btn-ghost"
                     target="_blank"
                   >
-                    View live demo ↗
+                    Customize colors + copy ↗
                   </Link>
-                  <a href="#pricing" className="mk-btn mk-btn-primary">
-                    See pricing →
-                  </a>
                 </div>
 
                 <ul className="mt-12 grid grid-cols-2 gap-x-6 gap-y-3 text-sm text-[var(--ink-2)] sm:grid-cols-3">
@@ -203,6 +205,16 @@ export default async function ThemePage({
             </div>
           </div>
         </section>
+
+        {/* Live preview — embedded showcase, no leaving the page */}
+        <ThemeLivePreview
+          presetSlug={theme.preset.slug}
+          hostname="example.shop"
+          brandName={seed.brand.name}
+        />
+
+        {/* Proof: every playbook rule, shipped */}
+        <RuleCoverage />
 
         {/* Pricing tiers — buy buttons */}
         <section id="pricing" className="mk-section bg-[var(--surface)]">

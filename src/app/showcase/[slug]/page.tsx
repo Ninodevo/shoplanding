@@ -35,16 +35,26 @@ export async function generateMetadata({
 
 export default async function ShowcaseSlugPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ embed?: string }>;
 }) {
   const { slug } = await params;
+  const sp = await searchParams;
+  const embedded = sp.embed === "1";
   const prisma = getPrisma();
   const preset = await prisma.layoutPreset.findUnique({ where: { slug } });
   if (!preset) notFound();
 
   const tokens = preset.tokens as unknown as LandingTokens;
   const content = preset.demoSeed as unknown as LandingContent;
+
+  // Embed mode strips the ribbon + tweaks panel so the page can live inside
+  // an iframe on /themes/[slug] as a "look at what you're buying" preview.
+  if (embedded) {
+    return <LandingRenderer content={content} tokens={tokens} />;
+  }
 
   return (
     <>

@@ -204,6 +204,19 @@ The audit tool was capturing emails and dropping them in a drawer — no follow-
 
 Without those envs, the audit still works heuristic + LLM-only with no email flow, exactly as before.
 
+## ✅ Phase 11 — Theme detail conversion + 69-rule audit coverage (shipped)
+
+The audit funnel could now send people to `/themes/[slug]`, but that page made the buyer guess what they were getting (palette swatches + a brand tagline). Phase 11 puts the actual product on the page and proves the 69-rule claim with real data.
+
+- [x] [`src/app/showcase/[slug]/page.tsx`](../src/app/showcase/[slug]/page.tsx) — `?embed=1` mode strips the Ribbon + TweaksPanel so the route can live inside an iframe.
+- [x] [`src/components/marketing/ThemeLivePreview.tsx`](../src/components/marketing/ThemeLivePreview.tsx) — embedded live preview with browser chrome (faux URL bar) and desktop/mobile device toggle. Mobile mode renders the iframe inside a CSS phone bezel.
+- [x] [`src/components/marketing/RuleCoverage.tsx`](../src/components/marketing/RuleCoverage.tsx) — server component that reads the 7 `Block` rows from Postgres and renders all 69 rules as expandable checklist cards. Backs the "69 / 69" badge with actual data instead of asking the buyer to trust it.
+- [x] [`src/app/themes/[slug]/page.tsx`](../src/app/themes/[slug]/page.tsx) — drops in `<ThemeLivePreview>` + `<RuleCoverage>` between the header and pricing. Buy-page now contains: header → live preview → 69-rule proof → pricing. Header CTA flipped: primary = "See pricing", secondary = "Customize colors + copy ↗" (opens the standalone showcase with the tweaks panel).
+- [x] [`src/lib/audit/rules.ts`](../src/lib/audit/rules.ts) — expanded from 29 to **all 69** playbook rules. ~30 keep meaningful heuristics; ~40 declare `unknown` with a one-line rationale and let the LLM pass judge them. Olipop now produces ~42 unknowns per audit instead of 3 — the LLM finally earns its keep.
+- [x] [`src/lib/audit/llm.ts`](../src/lib/audit/llm.ts) — `max_tokens` raised 1500 → 4000 to safely hold the larger verdict batch.
+
+**Verified:** `npx tsx scripts/smoke-rules.ts` shows 69 rules total (4/6/9/23/8/9/10 per block, exactly matching the playbook), and a fresh heuristic run on `drinkolipop.com/products/strawberry-vanilla` returns 15 pass / 12 fail / 42 unknown — the 42 unknowns feed directly into the LLM pass.
+
 ## Backlog (post-launch)
 
 - 5th and 6th niche presets (apparel? candles? books?).

@@ -112,9 +112,12 @@ Respond with a single JSON object — no prose, no markdown fences:
 
 Include exactly one entry per rule, preserving the original blockSlug + ruleIndex. The note must be specific to what you saw (or didn't see), not generic.`;
 
+  // ~50 tokens per verdict × up to 60 verdicts = 3000-token safety budget.
+  // Haiku stays well under this on actual responses (we ask for terse notes)
+  // but truncation would corrupt the JSON parse and force a fallback.
   const resp = await client.messages.create({
     model: ANTHROPIC_MODEL,
-    max_tokens: 1500,
+    max_tokens: 4000,
     temperature: 0,
     system:
       "You are a precise e-commerce conversion auditor. You return strict JSON, never prose. You prefer 'unknown' over guessing.",
