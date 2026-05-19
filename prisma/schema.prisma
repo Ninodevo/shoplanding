@@ -49,10 +49,18 @@ model Audit {
   source    String   @default("free")
   /// SHA-256 of the requester IP for rate-limiting + abuse signal.
   ipHash    String?  @map("ip_hash")
+  /// When the email gate was unlocked. Drives the nurture cadence.
+  unlockedAt          DateTime? @map("unlocked_at")
+  /// Email-send watermarks — null means "not sent yet". The cron route uses
+  /// these to avoid duplicates without needing a separate jobs table.
+  unlockEmailSentAt   DateTime? @map("unlock_email_sent_at")
+  nurtureDay3SentAt   DateTime? @map("nurture_day3_sent_at")
+  nurtureDay7SentAt   DateTime? @map("nurture_day7_sent_at")
   createdAt DateTime @default(now()) @map("created_at")
 
   @@index([createdAt(sort: Desc)])
   @@index([url])
+  @@index([unlockedAt])
   @@map("audits")
 }
 

@@ -37,13 +37,19 @@ export default function Hero() {
               See the themes
               <span aria-hidden>→</span>
             </a>
-            <Link href="/playbook" className="mk-btn mk-btn-ghost-on-dark">
+            <Link href="/audit" className="mk-btn mk-btn-ghost-on-dark">
+              Audit your store — free
+            </Link>
+            <Link
+              href="/playbook"
+              className="text-[14px] text-zinc-400 underline-offset-4 hover:text-zinc-200 hover:underline"
+            >
               {HERO.ctaSecondary}
             </Link>
-            <span className="ml-2 text-[12px] text-zinc-500">
-              $99 single · $249 unlimited · One-time, lifetime updates
-            </span>
           </div>
+          <p className="mt-4 text-[12px] text-zinc-500">
+            $99 single · $249 unlimited · one-time, lifetime updates
+          </p>
         </div>
 
         {/* 3-up tilted preset stack */}

@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { Footer, Nav } from "@/components/marketing";
 import { getPrisma } from "@/lib/db";
 import type { AuditResult } from "@/lib/audit/score";
+import { recommendThemeFor } from "@/lib/audit/niche";
 import { unlockAuditWithEmail } from "./actions";
 
 export const dynamic = "force-dynamic";
@@ -55,6 +56,7 @@ export default async function AuditResultPage({
   const hostname = safeHost(audit.url);
   const fetched = new Date(r.fetchedAt);
   const unlocked = Boolean(audit.email);
+  const recommendation = recommendThemeFor({ url: audit.url, result: r });
 
   // Top-level counts for the public summary card
   const totals = r.blocks.reduce(
@@ -353,30 +355,67 @@ export default async function AuditResultPage({
           </>
         )}
 
-        {/* CTA — always public */}
-        <section className="mk-section bg-[var(--surface)]">
-          <div className="mk-container max-w-3xl text-center">
-            <p className="mk-eyebrow">The system that satisfies all 69</p>
-            <h2 className="mk-h2 mt-3">
-              Want a theme that ships these by default?
-            </h2>
-            <p className="mt-4 text-[var(--ink-2)]">
-              Every ShopLanding niche preset is built to score 69 / 69 out of
-              the box. Same audit, but the page is the one you&apos;re running.
-            </p>
-            <div className="mt-8 flex flex-wrap justify-center gap-3">
-              <Link href="/#themes" className="mk-btn mk-btn-primary">
-                See the themes →
-              </Link>
-              <Link href="/playbook" className="mk-btn mk-btn-ghost">
-                Read the full playbook
-              </Link>
+        {/* CTA — niche-aware when we can match, generic otherwise */}
+        {recommendation && unlocked ? (
+          <section className="mk-section bg-[var(--surface)]">
+            <div className="mk-container max-w-3xl">
+              <div className="rounded-2xl border border-[var(--accent-soft)] bg-white p-8 shadow-sm">
+                <p className="mk-eyebrow text-[var(--accent-deep)]">
+                  Recommended for {hostname}
+                </p>
+                <h2 className="mk-h2 mt-3">
+                  {recommendation.label} — scores 69/69 out of the box.
+                </h2>
+                <p className="mt-4 text-[var(--ink-2)]">
+                  {recommendation.reason} Same audit, but the page is the
+                  one you&apos;re running — and every block ships in the zip.
+                </p>
+                <div className="mt-8 flex flex-wrap gap-3">
+                  <Link
+                    href={recommendation.href}
+                    className="mk-btn mk-btn-primary"
+                  >
+                    Get the {recommendation.label.split(" · ")[1] ?? recommendation.label} theme · $99 →
+                  </Link>
+                  <Link
+                    href={`/showcase/${recommendation.niche}`}
+                    className="mk-btn mk-btn-ghost"
+                  >
+                    See it live
+                  </Link>
+                </div>
+                <p className="mt-6 text-xs text-[var(--muted)]">
+                  Don&apos;t see your niche? <Link href="/#themes" className="underline-offset-4 hover:underline">Browse all themes</Link> · share this audit:{" "}
+                  <code className="font-mono">/audit/{id}</code>
+                </p>
+              </div>
             </div>
-            <p className="mt-6 text-sm text-[var(--muted)]">
-              Want to share this audit? Send <code className="font-mono">/audit/{id}</code>.
-            </p>
-          </div>
-        </section>
+          </section>
+        ) : (
+          <section className="mk-section bg-[var(--surface)]">
+            <div className="mk-container max-w-3xl text-center">
+              <p className="mk-eyebrow">The system that satisfies all 69</p>
+              <h2 className="mk-h2 mt-3">
+                Want a theme that ships these by default?
+              </h2>
+              <p className="mt-4 text-[var(--ink-2)]">
+                Every ShopLanding niche preset is built to score 69 / 69 out of
+                the box. Same audit, but the page is the one you&apos;re running.
+              </p>
+              <div className="mt-8 flex flex-wrap justify-center gap-3">
+                <Link href="/#themes" className="mk-btn mk-btn-primary">
+                  See the themes →
+                </Link>
+                <Link href="/playbook" className="mk-btn mk-btn-ghost">
+                  Read the full playbook
+                </Link>
+              </div>
+              <p className="mt-6 text-sm text-[var(--muted)]">
+                Want to share this audit? Send <code className="font-mono">/audit/{id}</code>.
+              </p>
+            </div>
+          </section>
+        )}
       </main>
       <Footer />
     </>

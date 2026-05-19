@@ -176,11 +176,33 @@ After the strategic review, we pivoted from "build then sell themes" to **dogfoo
 
 **Known limit — rule coverage:** `rules.ts` currently defines 29 of the 69 playbook rules. Of those, the LLM pass picks up the ones that return `unknown` from heuristics (≈3 on a typical Shopify PDP). The framework scales straight to 69 — the next milestone is filling in the missing ~40 rule definitions (mostly `detect: () => unknown(...)` stubs the LLM then judges).
 
-Deferred to v1.2:
+Deferred to v1.2 (Phase 11+):
 - [ ] Expand `rules.ts` to cover all 69 playbook rules.
-- [ ] Lemon Squeezy paid tier (€19–29/mo for unlimited audits + monthly tracking).
+- [ ] Lemon Squeezy / Stripe paid tier on the audit ($19/mo unlimited).
 - [ ] Competitor-comparison feature (audit your store + 3 competitors side-by-side).
 - [ ] Embeddable "scored" widget for buyers to share their audit on Twitter.
+
+## ✅ Phase 10 — Email nurture flywheel (shipped)
+
+The audit tool was capturing emails and dropping them in a drawer — no follow-up, no theme upsell, dead-end after unlock. Phase 10 closes that loop: every unlock now fires a personalised email + a 3-step nurture sequence ending in a discount code on the niche-matched theme.
+
+- [x] [`prisma/schema.prisma`](../prisma/schema.prisma) — Audit gets `unlockedAt`, `unlockEmailSentAt`, `nurtureDay3SentAt`, `nurtureDay7SentAt`. Migration `add_nurture_fields` applied.
+- [x] [`src/lib/email.ts`](../src/lib/email.ts) — lazy Resend wrapper, same shape as Stripe/Anthropic clients. `sendEmail` returns `{ok}` and never throws — email failures must never break the action that triggered them.
+- [x] [`src/lib/email/templates.ts`](../src/lib/email/templates.ts) — three single-CTA templates (`unlockEmail`, `nurtureDay3Email`, `nurtureDay7Email`) with HTML + plaintext. System fonts, 600px wide, inline-styled for client compatibility, visible opt-out footer.
+- [x] [`src/lib/audit/niche.ts`](../src/lib/audit/niche.ts) — `recommendThemeFor(audit)` keyword-matches the audited page's title + schema name to one of the three themes (skincare-orelle / supplement-vitalstack / gadget-aurabud). Conservative — misses → `null` → generic CTA.
+- [x] [`src/app/audit/[id]/actions.ts`](../src/app/audit/[id]/actions.ts) — `unlockAuditWithEmail` now writes `unlockedAt`, sends the unlock email synchronously (~400ms add), stamps `unlockEmailSentAt` on success. Soft-fails — if Resend isn't configured the unlock still completes.
+- [x] [`src/app/api/cron/audit-nurture/route.ts`](../src/app/api/cron/audit-nurture/route.ts) — cron-secret-gated endpoint. Finds audits unlocked ≥3 days / ≥7 days ago without the matching send-stamp, fires the nurture email, stamps the row. Batch limit 100 per tick. Accepts `Authorization: Bearer $CRON_SECRET` (Vercel format) or `?token=$CRON_SECRET` (curl).
+- [x] [`vercel.json`](../vercel.json) — Vercel cron schedules `audit-nurture` every 15 minutes.
+- [x] [`src/components/marketing/Hero.tsx`](../src/components/marketing/Hero.tsx) — added "Audit your store — free" as the secondary hero CTA (the actual lead magnet is no longer hidden in the nav).
+- [x] [`src/app/audit/[id]/page.tsx`](../src/app/audit/[id]/page.tsx) — after-unlock CTA replaced with a niche-aware recommendation card: matched theme name, evidence ("we saw 'serum' in the page"), single primary buy button + "See it live" showcase link. Falls back to the generic three-themes block when no match.
+- [x] [`.env.example`](../.env.example) — `RESEND_API_KEY`, `RESEND_FROM`, `RESEND_REPLY_TO`, `CRON_SECRET` documented.
+
+**To turn on the pipeline in prod:**
+1. Add `RESEND_API_KEY` + `CRON_SECRET` to Vercel env. (Optionally `RESEND_FROM` once a domain is verified.)
+2. Redeploy. Vercel Cron picks up `vercel.json` automatically.
+3. New audits unlock → user gets Email 1 immediately. Days 3 + 7 fire from cron.
+
+Without those envs, the audit still works heuristic + LLM-only with no email flow, exactly as before.
 
 ## Backlog (post-launch)
 
