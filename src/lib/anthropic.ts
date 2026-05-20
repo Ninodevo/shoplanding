@@ -1,7 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 
 /**
- * Lazy Anthropic client. Mirrors the Stripe wrapper — won't throw at module
+ * Lazy Anthropic client. Mirrors the Resend / Lemon Squeezy wrappers — won't throw at module
  * load if the key is missing so the rest of the app can boot. Callers should
  * either gate on `isAnthropicConfigured()` or wrap the call in try/catch and
  * treat absence as a soft failure.

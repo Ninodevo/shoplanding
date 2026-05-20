@@ -217,6 +217,33 @@ The audit funnel could now send people to `/themes/[slug]`, but that page made t
 
 **Verified:** `npx tsx scripts/smoke-rules.ts` shows 69 rules total (4/6/9/23/8/9/10 per block, exactly matching the playbook), and a fresh heuristic run on `drinkolipop.com/products/strawberry-vanilla` returns 15 pass / 12 fail / 42 unknown — the 42 unknowns feed directly into the LLM pass.
 
+## ✅ Phase 12 — Swap Stripe → Lemon Squeezy (shipped)
+
+The Croatian d.o.o. is the legal seller on every Stripe transaction, which means OSS VAT for the EU (27 rates, quarterly), separate UK VAT post-Brexit, US sales-tax nexus filings for ~30 states on digital products, plus chargeback / fraud handling. Lemon Squeezy is merchant of record — they collect + remit all of that — for roughly +2% per transaction. At our pricing ($99–$249) that's $2–5/sale to avoid €1,500–3,000/yr in accountant + filing fees plus the audit risk. Trivially worth it.
+
+- [x] [`prisma/schema.prisma`](../prisma/schema.prisma) — `Order` columns made provider-agnostic: `stripeSessionId` → `providerOrderId` (still unique), `stripePaymentIntentId` dropped, `provider String @default("lemonsqueezy")` added. `Theme` gets `lsVariants Json?` for the `{ single, unlimited, setup }` LS variant-ID mapping per theme. Migration `swap_stripe_to_lemonsqueezy` (hand-written because the rename triggers a Prisma interactive prompt) applied to Neon — verified `orders` was empty first.
+- [x] [`src/lib/lemonsqueezy.ts`](../src/lib/lemonsqueezy.ts) — lazy SDK wrapper mirroring the Anthropic / Resend pattern. Exports `isLemonSqueezyConfigured()`, `asThemeLsVariants()` (JSON guard), `createLemonCheckoutUrl()`, and `verifyLemonSqueezySignature()` (HMAC-SHA256, timing-safe compare, same scheme as Stripe just `X-Signature` header).
+- [x] [`src/app/buy/actions.ts`](../src/app/buy/actions.ts) — `createCheckoutSession` rewritten: resolves the LS variant for `(theme, tier)`, calls LS to mint a hosted checkout URL with `meta.custom_data = { themeId, themeSlug, tier }`, redirects browser to it.
+- [x] [`src/app/api/lemonsqueezy/webhook/route.ts`](../src/app/api/lemonsqueezy/webhook/route.ts) — replaces the Stripe webhook. Verifies signature, dispatches on `meta.event_name`, handles `order_created` (mints Order with license key + preview slug + LS `data.id` stored as `providerOrderId`). Other events 200-ack so LS stops retrying.
+- [x] [`src/app/buy/success/page.tsx`](../src/app/buy/success/page.tsx) — looks up by `providerOrderId` from `?order_id=…` (LS's redirect query param). Copy updated.
+- [x] [`src/app/themes/[slug]/page.tsx`](../src/app/themes/[slug]/page.tsx) — `isStripeConfigured` → `isLemonSqueezyConfigured` AND `Theme.lsVariants !== null`. Disabled-button copy now mentions LS + the missing-variants step. Footer line: "Secure checkout via Lemon Squeezy · VAT / sales tax handled for you."
+- [x] Stripe code removed: deleted `src/lib/stripe.ts` + `src/app/api/stripe/webhook/route.ts`. `npm uninstall stripe`, `npm install @lemonsqueezy/lemonsqueezy.js@^4`.
+- [x] [`.env.example`](../.env.example) — Stripe block replaced with `LEMONSQUEEZY_API_KEY` / `LEMONSQUEEZY_STORE_ID` / `LEMONSQUEEZY_WEBHOOK_SECRET` (no `NEXT_PUBLIC_*` needed — LS has no client-side keys).
+
+**Verified end-to-end on dev:**
+- Theme pages render 200 with the LS-not-configured gate showing the correct copy (no Stripe leakage).
+- Webhook returns 500 with `LEMONSQUEEZY_WEBHOOK_SECRET not configured` when the secret is unset, 401 on bad signatures once it is.
+
+**Manual steps left for the founder:**
+1. Sign up at lemonsqueezy.com, complete KYC (~24h).
+2. Create a Store. Inside it, create one Product per Theme with three Variants priced exactly the same as `priceSingleCents` / `priceUnlimitedCents` / `setupAddOnCents` ($99 / $249 / $199).
+3. Copy variant IDs into a JSON object per theme, e.g.:
+   ```sql
+   UPDATE themes SET ls_variants = '{"single":12345,"unlimited":12346,"setup":12347}'::jsonb WHERE slug = 'skincare-orelle';
+   ```
+4. Drop `LEMONSQUEEZY_API_KEY`, `LEMONSQUEEZY_STORE_ID`, `LEMONSQUEEZY_WEBHOOK_SECRET` into `.env.local` + Vercel.
+5. Add webhook URL `https://shoplanding.io/api/lemonsqueezy/webhook` in the LS dashboard, sign with the secret you set in step 4, subscribe to `order_created`. (Add `subscription_created` / `subscription_payment_success` later when the audit Pro tier ships.)
+
 ## Backlog (post-launch)
 
 - 5th and 6th niche presets (apparel? candles? books?).

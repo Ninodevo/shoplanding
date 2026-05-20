@@ -4,7 +4,7 @@ import { getPrisma } from "@/lib/db";
 import { Footer, Nav } from "@/components/marketing";
 import ThemeLivePreview from "@/components/marketing/ThemeLivePreview";
 import RuleCoverage from "@/components/marketing/RuleCoverage";
-import { isStripeConfigured } from "@/lib/stripe";
+import { asThemeLsVariants, isLemonSqueezyConfigured } from "@/lib/lemonsqueezy";
 import { createCheckoutSession } from "@/app/buy/actions";
 import type {
   LandingContent,
@@ -101,7 +101,9 @@ export default async function ThemePage({
   });
   if (!theme || !theme.published) notFound();
 
-  const stripeReady = isStripeConfigured();
+  // Two gates: LS env vars present AND this specific theme has its variant
+  // IDs populated. Either missing → buttons disable.
+  const lemonReady = isLemonSqueezyConfigured() && asThemeLsVariants(theme.lsVariants) !== null;
   const tokens = theme.preset.tokens as unknown as LandingTokens;
   const seed = theme.preset.demoSeed as unknown as LandingContent;
   const formatUsd = (cents: number) =>
@@ -268,15 +270,15 @@ export default async function ThemePage({
                       <input type="hidden" name="tier" value={tier.id} />
                       <button
                         type="submit"
-                        disabled={!stripeReady}
-                        aria-disabled={!stripeReady}
+                        disabled={!lemonReady}
+                        aria-disabled={!lemonReady}
                         className={`mk-btn ${
                           highlight ? "mk-btn-primary" : "mk-btn-ghost"
-                        } w-full justify-center ${stripeReady ? "" : "opacity-60"}`}
+                        } w-full justify-center ${lemonReady ? "" : "opacity-60"}`}
                         title={
-                          stripeReady
+                          lemonReady
                             ? `Checkout: ${tier.name}`
-                            : "Stripe not configured yet — drop test keys into .env.local."
+                            : "Lemon Squeezy not configured yet — set LEMONSQUEEZY_API_KEY + LEMONSQUEEZY_STORE_ID in .env.local and populate Theme.lsVariants."
                         }
                       >
                         {tier.cta}
@@ -284,9 +286,9 @@ export default async function ThemePage({
                       </button>
                     </form>
                     <p className="mt-2 text-center text-[12px] text-[var(--muted)]">
-                      {stripeReady
-                        ? "Secure checkout via Stripe."
-                        : "Buy buttons enable when Stripe keys land."}
+                      {lemonReady
+                        ? "Secure checkout via Lemon Squeezy · VAT / sales tax handled for you."
+                        : "Buy buttons enable once Lemon Squeezy products are wired up."}
                     </p>
                   </article>
                 );

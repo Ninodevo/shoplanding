@@ -18,24 +18,27 @@ export const metadata = {
 };
 
 /**
- * Stripe redirects buyers here after a successful checkout. The webhook is
- * the source of truth for Order creation, so we look up the row by
- * `stripeSessionId`. There's a small window where the redirect can beat the
- * webhook — if so we render a "still processing" state and the buyer can
- * refresh.
+ * Lemon Squeezy redirects buyers here after a successful checkout. The
+ * webhook at /api/lemonsqueezy/webhook is the source of truth for Order
+ * creation, so we look up the row by `providerOrderId`. LS appends the
+ * order id as `?order_id=…` to the redirect URL.
+ *
+ * There's a small window where this page can load before the webhook
+ * lands — when that happens we render the "still processing" fallback
+ * and the buyer refreshes.
  */
 export default async function BuySuccessPage({
   searchParams,
 }: {
-  searchParams: Promise<{ session_id?: string }>;
+  searchParams: Promise<{ order_id?: string }>;
 }) {
   const sp = await searchParams;
-  const sessionId = sp.session_id;
+  const orderId = sp.order_id;
 
   const prisma = getPrisma();
-  const order = sessionId
+  const order = orderId
     ? await prisma.order.findUnique({
-        where: { stripeSessionId: sessionId },
+        where: { providerOrderId: orderId },
         include: { theme: { include: { preset: true } } },
       })
     : null;
@@ -169,8 +172,8 @@ function Pending() {
       <p className="mk-eyebrow">Order received</p>
       <h1 className="mk-h1 mt-3">Processing your order…</h1>
       <p className="mt-5 text-lg text-[var(--ink-2)]">
-        Stripe confirmed the charge. We&apos;re minting your license key now —
-        usually a couple of seconds. Refresh the page.
+        Lemon Squeezy confirmed the charge. We&apos;re minting your license
+        key now — usually a couple of seconds. Refresh the page.
       </p>
       <div className="mt-10">
         <Link href="/" className="mk-btn mk-btn-ghost">

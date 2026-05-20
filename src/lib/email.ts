@@ -1,7 +1,7 @@
 import { Resend } from "resend";
 
 /**
- * Lazy Resend client wrapper. Same pattern as `lib/stripe.ts` + `lib/anthropic.ts`:
+ * Lazy Resend client wrapper. Same pattern as `lib/lemonsqueezy.ts` + `lib/anthropic.ts`:
  * won't throw at module load if the key is missing, so the app boots without
  * the email pipeline configured. Callers gate on `isResendConfigured()` and
  * treat absence as a soft failure — the audit still ships, the nurture just

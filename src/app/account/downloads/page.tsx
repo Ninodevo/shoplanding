@@ -20,10 +20,10 @@ export const metadata = {
 /**
  * `/account/downloads` — buyer's order history with fresh signed URLs.
  *
- * Auth strategy: the order's `userId` was originally set to the buyer's email
- * by the Stripe webhook (Phase 4). Once Neon Auth lands and a buyer signs in
- * with the same email, we match orders by email until proper user-id columns
- * land in a future migration.
+ * Auth strategy: the order's `userId` is set to the buyer's email by the
+ * checkout webhook (Lemon Squeezy today; Stripe in Phase 4 before the swap).
+ * When Neon Auth signs the buyer in with the same email, we match orders by
+ * email until proper user-id columns land in a future migration.
  *
  * Fresh download tokens are minted per visit so the buyer never has to chase
  * an expired URL in their inbox — every page load gets a 7-day token.
@@ -36,8 +36,8 @@ export default async function AccountDownloadsPage() {
   const prisma = getPrisma();
   const orders = await prisma.order.findMany({
     where: {
-      // Pre-auth Stripe orders set userId = email. Match by either column so
-      // historical purchases surface for the right person.
+      // Pre-auth checkout orders set userId = email. Match by either column
+      // so historical purchases surface for the right person.
       OR: [{ userId: user.id }, { userId: user.email }],
       status: "paid",
     },

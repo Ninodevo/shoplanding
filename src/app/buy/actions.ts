@@ -2,13 +2,12 @@
 
 import { redirect } from "next/navigation";
 import { getPrisma } from "@/lib/db";
-import { getStripe, getSiteUrl, type CheckoutTier } from "@/lib/stripe";
-
-const TIER_LABEL: Record<CheckoutTier, string> = {
-  single: "Single-store license",
-  unlimited: "Unlimited-stores license",
-  setup: "Done-for-you setup add-on",
-};
+import {
+  asThemeLsVariants,
+  createLemonCheckoutUrl,
+  getSiteUrl,
+  type CheckoutTier,
+} from "@/lib/lemonsqueezy";
 
 const TIER_PRICE_FIELD = {
   single: "priceSingleCents",
@@ -19,12 +18,17 @@ const TIER_PRICE_FIELD = {
 /**
  * Server action invoked by the buy buttons on /themes/[slug].
  *
- * Builds a one-shot Stripe Checkout Session in payment mode (one-time license),
- * stores `themeSlug` and `tier` in metadata so the webhook can mint the Order
- * row + license key without round-tripping to the DB during the redirect.
+ * Resolves the Theme + its LS variant ID for the requested tier, asks Lemon
+ * Squeezy for a hosted checkout URL with our metadata attached (themeId /
+ * themeSlug / tier), and `redirect`s the browser straight there. The
+ * webhook handler in /api/lemonsqueezy/webhook is the source of truth for
+ * Order creation — this action just gets the buyer to the checkout.
  *
- * The redirect to `session.url` happens via `redirect()` so the user
- * never sees the action's response — the browser jumps straight to Stripe.
+ * Failure surfaces:
+ *   - Unknown tier or theme → thrown error
+ *   - Theme has no `lsVariants` yet → human-readable error so the dev
+ *     knows they forgot to populate the JSON column for that theme
+ *   - LS API fails → bubble the LS error so we can debug
  */
 export async function createCheckoutSession(formData: FormData) {
   const themeSlug = String(formData.get("themeSlug") ?? "").trim();
@@ -41,10 +45,7 @@ export async function createCheckoutSession(formData: FormData) {
       id: true,
       slug: true,
       name: true,
-      tagline: true,
-      priceSingleCents: true,
-      priceUnlimitedCents: true,
-      setupAddOnCents: true,
+      lsVariants: true,
       published: true,
     },
   });
@@ -52,41 +53,26 @@ export async function createCheckoutSession(formData: FormData) {
     throw new Error(`Theme '${themeSlug}' not found or not published.`);
   }
 
-  const amountCents = theme[TIER_PRICE_FIELD[rawTier]];
-  const stripe = getStripe();
-  const siteUrl = getSiteUrl();
+  const variants = asThemeLsVariants(theme.lsVariants);
+  if (!variants) {
+    throw new Error(
+      `Theme '${theme.slug}' has no Lemon Squeezy variants configured. Update theme.lsVariants in the DB with { single, unlimited, setup } variant IDs from the LS dashboard.`,
+    );
+  }
+  const variantId = variants[rawTier];
 
-  const session = await stripe.checkout.sessions.create({
-    mode: "payment",
-    payment_method_types: ["card"],
-    line_items: [
-      {
-        price_data: {
-          currency: "usd",
-          unit_amount: amountCents,
-          product_data: {
-            name: `${theme.name} — ${TIER_LABEL[rawTier]}`,
-            description: theme.tagline,
-            metadata: { themeSlug: theme.slug, tier: rawTier },
-          },
-        },
-        quantity: 1,
-      },
-    ],
-    metadata: {
-      themeSlug: theme.slug,
-      themeId: theme.id,
-      tier: rawTier,
-    },
-    success_url: `${siteUrl}/buy/success?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${siteUrl}/themes/${theme.slug}?canceled=1`,
-    allow_promotion_codes: false,
-    billing_address_collection: "auto",
-    customer_creation: "always",
+  const siteUrl = getSiteUrl();
+  // LS redirects here on success; the success page looks up the order by
+  // providerOrderId, which LS appends as a query string.
+  const successUrl = `${siteUrl}/buy/success`;
+
+  const checkoutUrl = await createLemonCheckoutUrl({
+    variantId,
+    themeId: theme.id,
+    themeSlug: theme.slug,
+    tier: rawTier,
+    successUrl,
   });
 
-  if (!session.url) {
-    throw new Error("Stripe did not return a checkout URL.");
-  }
-  redirect(session.url);
+  redirect(checkoutUrl);
 }

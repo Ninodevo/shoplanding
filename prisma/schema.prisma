@@ -124,49 +124,58 @@ model PresetBlock {
 
 /// A sellable SKU. Wraps a LayoutPreset with versioned Shopify + Woo zip artifacts.
 model Theme {
-  id              String       @id @default(cuid())
-  slug            String       @unique
-  presetId        String       @map("preset_id")
-  preset          LayoutPreset @relation(fields: [presetId], references: [id], onDelete: Restrict)
-  name            String
-  tagline         String
-  version         String
-  changelog       String?
-  shopifyZipUrl   String?      @map("shopify_zip_url")
-  wooZipUrl       String?      @map("woo_zip_url")
+  id                  String       @id @default(cuid())
+  slug                String       @unique
+  presetId            String       @map("preset_id")
+  preset              LayoutPreset @relation(fields: [presetId], references: [id], onDelete: Restrict)
+  name                String
+  tagline             String
+  version             String
+  changelog           String?
+  shopifyZipUrl       String?      @map("shopify_zip_url")
+  wooZipUrl           String?      @map("woo_zip_url")
   /// JSON blob exported as the portable "system spec" tier.
-  systemSpecUrl   String?      @map("system_spec_url")
-  priceSingleCents     Int     @map("price_single_cents")
-  priceUnlimitedCents  Int     @map("price_unlimited_cents")
-  setupAddOnCents      Int     @map("setup_add_on_cents")
-  screenshots     Json
-  published       Boolean      @default(false)
-  orders          Order[]
-  createdAt       DateTime     @default(now()) @map("created_at")
-  updatedAt       DateTime     @updatedAt @map("updated_at")
+  systemSpecUrl       String?      @map("system_spec_url")
+  priceSingleCents    Int          @map("price_single_cents")
+  priceUnlimitedCents Int          @map("price_unlimited_cents")
+  setupAddOnCents     Int          @map("setup_add_on_cents")
+  /// Lemon Squeezy variant IDs per tier:
+  ///   { "single": 12345, "unlimited": 12346, "setup": 12347 }
+  /// Null until the founder creates the LS Product + variants and the seed
+  /// is updated. UI gates buy buttons on this being populated.
+  lsVariants          Json?        @map("ls_variants")
+  screenshots         Json
+  published           Boolean      @default(false)
+  orders              Order[]
+  createdAt           DateTime     @default(now()) @map("created_at")
+  updatedAt           DateTime     @updatedAt @map("updated_at")
 
   @@map("themes")
 }
 
 /// A purchase. License key + signed download tokens are derived per-order.
 model Order {
-  id             String   @id @default(cuid())
-  userId         String   @map("user_id")
-  themeId        String   @map("theme_id")
-  theme          Theme    @relation(fields: [themeId], references: [id], onDelete: Restrict)
-  tier           String
-  amountCents    Int      @map("amount_cents")
-  currency       String   @default("USD")
-  stripeSessionId String? @unique @map("stripe_session_id")
-  stripePaymentIntentId String? @map("stripe_payment_intent_id")
-  status         String   @default("pending")
-  licenseKey     String?  @unique @map("license_key")
+  id              String   @id @default(cuid())
+  userId          String   @map("user_id")
+  themeId         String   @map("theme_id")
+  theme           Theme    @relation(fields: [themeId], references: [id], onDelete: Restrict)
+  tier            String
+  amountCents     Int      @map("amount_cents")
+  currency        String   @default("USD")
+  /// Payment processor for this order. "lemonsqueezy" today; column kept
+  /// so we could coexist with other providers without nuking history.
+  provider        String   @default("lemonsqueezy")
+  /// Provider's order ID (LS sends `data.id` on order_created). Unique so
+  /// the webhook handler can be cleanly idempotent.
+  providerOrderId String?  @unique @map("provider_order_id")
+  status          String   @default("pending")
+  licenseKey      String?  @unique @map("license_key")
   /// Buyer-supplied tweaks: brand, palette, hero copy, fonts, image URLs.
-  tweaks         Json?
+  tweaks          Json?
   /// Public preview slug at /preview/[slug].
-  previewSlug    String?  @unique @map("preview_slug")
-  createdAt      DateTime @default(now()) @map("created_at")
-  updatedAt      DateTime @updatedAt @map("updated_at")
+  previewSlug     String?  @unique @map("preview_slug")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
 
   @@index([userId, createdAt(sort: Desc)])
   @@index([themeId])
