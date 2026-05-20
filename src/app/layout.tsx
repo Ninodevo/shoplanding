@@ -18,9 +18,9 @@ const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
   "http://localhost:3000";
 
-const TITLE = "ShopLanding — The system for converting one-product landing pages";
+const TITLE = "ShopLanding — High-converting product pages for Shopify + WooCommerce";
 const DESCRIPTION =
-  "Seven CRO blocks. Sixty-nine rules. Twenty rendered components. Shipped as Shopify and WooCommerce themes plus a portable system spec. From $99 one-time.";
+  "A one-product landing page built on 69 documented CRO rules. Shopify + WooCommerce zips plus a portable system spec. €99 one-time, lifetime updates. Free PDP audit at /audit.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -34,11 +34,15 @@ export const metadata: Metadata = {
     "Shopify theme",
     "WooCommerce theme",
     "single product landing page",
+    "product page audit",
+    "PDP audit",
     "CRO playbook",
     "Conversion optimization",
     "DTC",
   ],
-  authors: [{ name: "ShopLanding" }],
+  authors: [{ name: "Nino Mihovilić" }],
+  creator: "Nino Mihovilić",
+  publisher: "ShopLanding",
   alternates: { canonical: "/" },
   openGraph: {
     type: "website",
@@ -56,6 +60,35 @@ export const metadata: Metadata = {
   icons: { icon: "/favicon.ico" },
 };
 
+/**
+ * Site-wide Organization JSON-LD. Helps Google build a knowledge panel and
+ * makes the brand discoverable for "ShopLanding" branded searches once we
+ * start ranking. Founder is named so the Person entity wires up to LinkedIn
+ * / X if those get added later.
+ */
+const ORGANIZATION_JSON_LD = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "ShopLanding",
+  url: SITE_URL,
+  logo: `${SITE_URL}/favicon.ico`,
+  description: DESCRIPTION,
+  founder: {
+    "@type": "Person",
+    name: "Nino Mihovilić",
+  },
+  foundingLocation: {
+    "@type": "Place",
+    name: "Zagreb, Croatia",
+  },
+  contactPoint: {
+    "@type": "ContactPoint",
+    contactType: "customer support",
+    email: "hello@shoplanding.com",
+    areaServed: "Worldwide",
+  },
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -68,6 +101,12 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-[var(--bg)] text-[var(--ink)]">
         {children}
+        <script
+          type="application/ld+json"
+          // Structured data must be inline JSON; dangerouslySetInnerHTML is the
+          // standard Next.js pattern. Content is fully static, no XSS surface.
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(ORGANIZATION_JSON_LD) }}
+        />
       </body>
     </html>
   );

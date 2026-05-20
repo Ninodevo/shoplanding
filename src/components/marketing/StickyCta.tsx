@@ -28,11 +28,11 @@ export default function StickyCta() {
       aria-label="See pricing"
     >
       <a
-        href="#pricing"
+        href="/audit"
         className="mk-btn mk-btn-primary shadow-[0_8px_24px_-8px_rgba(46,125,91,0.6)]"
       >
         <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-300" />
-        $99 single · $249 unlimited
+        Audit your store · free
         <span aria-hidden>→</span>
       </a>
     </div>

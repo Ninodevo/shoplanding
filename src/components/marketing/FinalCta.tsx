@@ -13,10 +13,10 @@ export default function FinalCta() {
           {FINAL_CTA.sub}
         </p>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-          <a href={FINAL_CTA.ctaPrimaryHref} className="mk-btn mk-btn-primary">
+          <Link href={FINAL_CTA.ctaPrimaryHref} className="mk-btn mk-btn-primary">
             {FINAL_CTA.ctaPrimary}
             <span aria-hidden>→</span>
-          </a>
+          </Link>
           <Link
             href="/playbook"
             className="mk-btn mk-btn-ghost-on-dark"

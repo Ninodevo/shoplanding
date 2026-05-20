@@ -86,8 +86,8 @@ export default function Comparison() {
     <Section
       id="compare"
       eyebrow="Without · with"
-      title="A generic Shopify theme, vs. ours."
-      intro="Same product. Same imagery. Same price. The 12 rows below are what every conversion-tested PDP includes — and what most themes ship without."
+      title="A typical Shopify theme, vs. ours."
+      intro="Same product. Same photos. Same price. The 12 rows below are what every conversion-tested PDP includes — and what most stock themes ship without. Want to know where your current page actually stands? Run our free audit on it."
     >
       <div className="overflow-hidden rounded-xl border border-[var(--line)] bg-white">
         {/* Sticky header */}
@@ -96,13 +96,13 @@ export default function Comparison() {
             Capability
           </div>
           <div className="px-5 py-4 text-[12px] font-semibold uppercase tracking-[0.16em] text-[#b9261b]">
-            Generic Dawn-style
+            Typical Shopify theme
             <span className="ml-2 font-mono text-[11px] tracking-normal">
               {generic} / {ROWS.length}
             </span>
           </div>
           <div className="px-5 py-4 text-[12px] font-semibold uppercase tracking-[0.16em] text-[var(--accent-deep)]">
-            ShopLanding · skincare preset
+            Any ShopLanding theme
             <span className="ml-2 font-mono text-[11px] tracking-normal">
               {ours} / {ROWS.length}
             </span>
@@ -130,15 +130,21 @@ export default function Comparison() {
       </div>
 
       <p className="mt-6 max-w-2xl text-sm text-[var(--muted)]">
-        Coverage scoped to the 12 highest-impact CRO rules; the full 69-rule
-        playbook on{" "}
+        These 12 are the highest-impact rules; the full 69-rule playbook lives
+        on{" "}
         <a
           href="/playbook"
           className="text-[var(--accent-deep)] underline-offset-4 hover:underline"
         >
           /playbook
-        </a>{" "}
-        is the source of truth.
+        </a>
+        . Want to see how your current PDP scores against all 69?{" "}
+        <a
+          href="/audit"
+          className="text-[var(--accent-deep)] font-medium underline-offset-4 hover:underline"
+        >
+          Run the free audit →
+        </a>
       </p>
     </Section>
   );

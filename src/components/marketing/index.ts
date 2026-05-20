@@ -7,6 +7,7 @@ export { default as Comparison } from "./Comparison";
 export { default as Pricing } from "./Pricing";
 export { default as Faq } from "./Faq";
 export { default as FinalCta } from "./FinalCta";
+export { default as Founder } from "./Founder";
 export { default as Footer } from "./Footer";
 export { default as StickyCta } from "./StickyCta";
 export { default as Section } from "./Section";

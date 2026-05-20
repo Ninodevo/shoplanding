@@ -87,7 +87,7 @@ export default async function BuySuccessPage({
                   )}
                 </Field>
                 <Field label="Amount">
-                  ${(order.amountCents / 100).toFixed(2)} {order.currency}
+                  {formatAmount(order.amountCents, order.currency)}
                 </Field>
                 <Field label="Status">
                   <span className="rounded bg-[var(--accent-soft)] px-2 py-0.5 text-[var(--accent-deep)]">
@@ -200,8 +200,27 @@ function Field({
 }
 
 function tierLabel(t: string): string {
-  if (t === "single") return "Single-store license · $99";
-  if (t === "unlimited") return "Unlimited-stores license · $249";
-  if (t === "setup") return "Done-for-you setup · +$199";
+  if (t === "single") return "Single-store license · €99";
+  if (t === "unlimited") return "Unlimited-stores license · €249";
+  if (t === "setup") return "Done-for-you setup · +€199";
   return t;
+}
+
+/**
+ * Render an amount in its actual currency rather than assuming USD/EUR.
+ * LS pays in EUR today but the column carries whatever LS sent, so this
+ * stays right when we add USD or GBP stores later.
+ */
+function formatAmount(cents: number, currency: string): string {
+  const c = (currency || "EUR").toUpperCase();
+  const value = cents / 100;
+  try {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: c,
+      minimumFractionDigits: 2,
+    }).format(value);
+  } catch {
+    return `${value.toFixed(2)} ${c}`;
+  }
 }

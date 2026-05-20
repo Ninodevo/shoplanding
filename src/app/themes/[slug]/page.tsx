@@ -106,12 +106,37 @@ export default async function ThemePage({
   const lemonReady = isLemonSqueezyConfigured() && asThemeLsVariants(theme.lsVariants) !== null;
   const tokens = theme.preset.tokens as unknown as LandingTokens;
   const seed = theme.preset.demoSeed as unknown as LandingContent;
-  const formatUsd = (cents: number) =>
-    `$${Math.round(cents / 100).toLocaleString("en-US")}`;
+  const formatPrice = (cents: number) =>
+    `€${Math.round(cents / 100).toLocaleString("en-US")}`;
+
+  // Product JSON-LD — helps Google show this in product-card SERPs. The
+  // offers section uses the single-store price (the entry point); buyers
+  // see the full tier ladder on-page. AggregateRating omitted until we
+  // have real customer reviews (faking it would tank trust).
+  const productJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: `${theme.name} — ShopLanding theme`,
+    description: theme.tagline,
+    brand: { "@type": "Brand", name: "ShopLanding" },
+    category: `${theme.preset.niche} landing page theme`,
+    offers: {
+      "@type": "Offer",
+      url: `${process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || ""}/themes/${theme.slug}`,
+      priceCurrency: "EUR",
+      price: (theme.priceSingleCents / 100).toFixed(2),
+      availability: "https://schema.org/InStock",
+      seller: { "@type": "Organization", name: "ShopLanding" },
+    },
+  };
 
   return (
     <>
       <Nav />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+      />
       <main>
         <section className="mk-section">
           <div className="mk-container">
@@ -138,7 +163,7 @@ export default async function ThemePage({
                     className="mk-btn mk-btn-ghost"
                     target="_blank"
                   >
-                    Customize colors + copy ↗
+                    Open the live customizer ↗
                   </Link>
                 </div>
 
@@ -149,19 +174,19 @@ export default async function ThemePage({
                   </li>
                   <li>
                     <span className="mk-mono block text-[var(--muted)]">Platforms</span>
-                    Shopify · Woo
+                    Shopify · WooCommerce
                   </li>
                   <li>
                     <span className="mk-mono block text-[var(--muted)]">CRO coverage</span>
                     69 / 69 rules
                   </li>
                   <li>
-                    <span className="mk-mono block text-[var(--muted)]">Components</span>
-                    20 rendered blocks
+                    <span className="mk-mono block text-[var(--muted)]">Setup time</span>
+                    ~90 minutes
                   </li>
                   <li>
-                    <span className="mk-mono block text-[var(--muted)]">Demo product</span>
-                    {seed.product.title.split("—")[0]?.trim() ?? seed.product.title}
+                    <span className="mk-mono block text-[var(--muted)]">Extra plugins</span>
+                    Zero required
                   </li>
                   <li>
                     <span className="mk-mono block text-[var(--muted)]">Updates</span>
@@ -197,7 +222,7 @@ export default async function ThemePage({
                 <div className="mt-6 border-t border-[var(--line)] pt-5">
                   <span className="mk-mono text-[var(--muted)]">Starting at</span>
                   <p className="mt-1 text-3xl font-semibold tracking-tight">
-                    {formatUsd(theme.priceSingleCents)}
+                    {formatPrice(theme.priceSingleCents)}
                   </p>
                   <p className="mt-1 text-xs text-[var(--muted)]">
                     one-time · lifetime updates · 14-day refund
@@ -249,7 +274,7 @@ export default async function ThemePage({
                     <h3 className="mk-h3 mt-4">{tier.name}</h3>
                     <p className="mt-4 flex items-baseline gap-2">
                       <span className="font-mono text-5xl font-semibold tracking-tight">
-                        {formatUsd(cents)}
+                        {formatPrice(cents)}
                       </span>
                       <span className="text-[13px] text-[var(--muted)]">{tier.cadence}</span>
                     </p>

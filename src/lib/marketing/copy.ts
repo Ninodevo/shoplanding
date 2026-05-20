@@ -2,20 +2,25 @@
  * Static marketing copy. Hand-written per AGENTS.md (no AI-generated copy on
  * marketing surfaces). Keep tone: confident, not theatrical. Match the brand
  * voice in docs/product.md and docs/pricing.md.
+ *
+ * Currency: EUR. The Lemon Squeezy store is EUR-denominated (Croatian d.o.o.
+ * is the seller, LS is merchant of record). Showing $ here while charging €
+ * at checkout was a credibility leak — fixed Phase 13.
  */
 
 export const HERO = {
-  eyebrow: "The system, not just a theme",
-  headline: "Sell one product. Convert like ten stores.",
-  sub: "ShopLanding is the block system for single-product landing pages — 7 CRO blocks distilled from 69 conversion rules, shipped as Shopify and WooCommerce themes plus a portable system spec.",
-  ctaPrimary: "See pricing",
-  ctaPrimaryHref: "#pricing",
-  ctaSecondary: "Read the playbook",
+  eyebrow: "Free 15-second audit · Shopify + WooCommerce",
+  headline: "A high-converting product page, live this weekend.",
+  sub: "Drop in your brand, your photos, your copy — ship a one-product landing page built on 69 documented CRO rules. Both Shopify and WooCommerce zips, €99 once, you keep the updates.",
+  ctaPrimary: "Audit your store — free",
+  ctaPrimaryHref: "/audit",
+  ctaSecondary: "See the themes",
+  ctaSecondaryHref: "#themes",
   trustLine: "Seven blocks · sixty-nine rules · twenty components",
 } as const;
 
 export const ANNOUNCEMENT = [
-  "7 CRO blocks · 69 rules · 20 components",
+  "Free PDP audit · score in 15 seconds",
   "Shopify + WooCommerce, lifetime updates",
   "One product. One page. One decision.",
   "One-time license. No subscription.",
@@ -32,11 +37,11 @@ export const NAV_LINKS = [
 ] as const;
 
 /* ============================================================
-   Theme catalog — Option A.
-   Each preset gets a card with hover-swap mock screenshots, a CRO
-   coverage chip, and an explicit price + demo link. When the
-   real LayoutPreset rows ship in Phase 3, this static list moves
-   to the DB; copy/positioning stays here.
+   Theme catalog cards. The `price` / `was` / `annText` fields
+   are the FICTIONAL brand-demo prices (the made-up Orelle /
+   VitalStack / Aurabud products) and stay in $ — they represent
+   each demo brand's pricing on the mock-PDP, not OUR pricing
+   for the theme. Our pricing (single/unlimited/setup) is in €.
    ============================================================ */
 export type ThemeCatalogEntry = {
   slug: string;
@@ -60,7 +65,7 @@ export type ThemeCatalogEntry = {
   /** Visible price + strikethrough on the front. */
   price: number;
   was?: number;
-  /** Single-store license price (in cents). */
+  /** Single-store license price (in EUR cents). */
   priceSingleCents: number;
 };
 
@@ -236,20 +241,36 @@ export type Faq = {
 
 export const FAQS: Faq[] = [
   {
-    q: "Is this a page builder?",
-    a: "No. The block order is opinionated and fixed — only content and visual tokens change between themes. The reason is conversion: every block exists for a documented reason, and rearranging them silently breaks the rule coverage.",
+    q: "Do I need to know how to code?",
+    a: "No for everything you'd change in a Shopify theme editor — brand, palette, fonts, hero copy, product photos, benefits, FAQ items, all surface through the tweaks panel. If your developer wants to dig deeper, the zip ships clean Shopify Liquid + WooCommerce PHP templates and (for the portable spec tier) the full React component tree.",
+  },
+  {
+    q: "Shopify or WooCommerce — which one do I get?",
+    a: "Both, in the same zip. One license. The Shopify theme drops into Online Store 2.0 via the CLI or the dashboard ZIP upload; the WooCommerce template lands as a single-product page template under Appearance → Editor. Use one, use the other, or run both during a migration.",
+  },
+  {
+    q: "What about my product photos and brand assets?",
+    a: "You bring them — the tweaks panel takes URLs from any public CDN (Shopify, Cloudinary, S3, even Imgur), slots them into the gallery, hero, benefits grid, and reviews. We don't host images for you, so the page stays fast and you keep your asset rights.",
   },
   {
     q: "Will this work for my niche?",
-    a: "Yes for any single-product launch where the customer is making one decision: skincare, supplements, food and CPG, candles, single-SKU gadgets. We ship niche presets so the defaults match the category.",
+    a: "Yes for any single-product launch where the customer is making one decision: skincare, supplements, food and CPG, candles, single-SKU gadgets, accessories. We ship niche presets so the defaults match the category. Outside of single-product? Reply before you buy — we'll be honest about whether the system fits.",
   },
   {
-    q: "How is this different from a Theme Store theme?",
-    a: "Theme Store themes position on visuals. ShopLanding positions on conversion logic. The marketing site you're reading is the proof — every section is one of the blocks we sell, traceable to a documented conversion rule.",
+    q: "How is this different from a Shopify Theme Store theme?",
+    a: "Theme Store themes position on visuals. ShopLanding positions on conversion logic. Every block exists for a documented reason — a row from the 69-rule playbook. Most $30 themes ship 5–6 of those rules out of the box; ours ships every one of the 69.",
+  },
+  {
+    q: "Is this a page builder?",
+    a: "No. The block order is opinionated and fixed — only content and visual tokens change between themes. The reason is conversion: every block exists for a documented reason, and rearranging them silently breaks the rule coverage. If you want infinite flexibility, you want Shogun or Replo; if you want a page that converts on day one, you want this.",
+  },
+  {
+    q: "Who handles VAT / sales tax?",
+    a: "Lemon Squeezy — they're the merchant of record on every sale. EU buyers see VAT added at checkout at their country's rate, US buyers see sales tax in taxable states, UK buyers see UK VAT. You don't register, file, or remit anything. We get a clean EUR payout.",
   },
   {
     q: "Can my agency rebuild the system on a different stack?",
-    a: "Yes. The unlimited-stores license includes a portable system spec (JSON + Markdown) so a competent team can reimplement the same anatomy in Hydrogen, Astro, Webflow, or anywhere else.",
+    a: "Yes. The unlimited-stores license includes a portable system spec (JSON + Markdown) so a competent team can reimplement the same anatomy in Hydrogen, Astro, Webflow, or anywhere else. The 69 rules + the block ordering are the IP; the implementation is interchangeable.",
   },
   {
     q: "Do I get updates after I buy?",
@@ -257,16 +278,16 @@ export const FAQS: Faq[] = [
   },
   {
     q: "What's the refund policy?",
-    a: "14-day refund on the digital license, no questions. The done-for-you setup add-on is refundable until work begins.",
+    a: "14-day refund on the digital license, no questions asked — Lemon Squeezy processes it. The done-for-you setup add-on is refundable until installation work begins.",
   },
 ];
 
 export const FINAL_CTA = {
   eyebrow: "Ready when you are",
-  headline: "Ship a landing page that's defensibly good.",
-  sub: "$99 single-store. $249 unlimited. One-time, lifetime updates, refundable for 14 days.",
-  ctaPrimary: "See pricing",
-  ctaPrimaryHref: "#pricing",
+  headline: "Ship a product page that actually converts.",
+  sub: "€99 single-store · €249 unlimited · one-time, lifetime updates, refundable for 14 days.",
+  ctaPrimary: "Audit your store first",
+  ctaPrimaryHref: "/audit",
   ctaSecondary: "Read the playbook",
 } as const;
 
@@ -278,28 +299,29 @@ export const FOOTER = {
         { label: "Playbook", href: "/playbook" },
         { label: "Showcase", href: "/showcase" },
         { label: "Themes", href: "/themes" },
+        { label: "Free audit", href: "/audit" },
       ],
     },
     {
       heading: "Company",
       links: [
         { label: "About", href: "/about" },
-        { label: "Contact", href: "mailto:hello@shoplanding.com" },
+        { label: "Contact", href: "/contact" },
       ],
     },
     {
       heading: "Legal",
       links: [
+        { label: "Refund policy", href: "/refund" },
         { label: "Terms", href: "/terms" },
         { label: "Privacy", href: "/privacy" },
-        { label: "License", href: "/license" },
       ],
     },
   ],
 } as const;
 
-/** Cents to display string. */
+/** EUR cents → display string. */
 export function priceLabel(cents: number): string {
-  const dollars = cents / 100;
-  return `$${dollars.toFixed(0)}`;
+  const euros = cents / 100;
+  return `€${euros.toFixed(0)}`;
 }

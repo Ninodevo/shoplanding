@@ -375,7 +375,7 @@ export default async function AuditResultPage({
                     href={recommendation.href}
                     className="mk-btn mk-btn-primary"
                   >
-                    Get the {recommendation.label.split(" · ")[1] ?? recommendation.label} theme · $99 →
+                    Get the {recommendation.label.split(" · ")[1] ?? recommendation.label} theme · €99 →
                   </Link>
                   <Link
                     href={`/showcase/${recommendation.niche}`}

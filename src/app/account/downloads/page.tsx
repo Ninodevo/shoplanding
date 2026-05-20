@@ -214,8 +214,8 @@ function Field({
 }
 
 function tierLabel(t: string): string {
-  if (t === "single") return "Single-store · $99";
-  if (t === "unlimited") return "Unlimited · $249";
-  if (t === "setup") return "Setup add-on · +$199";
+  if (t === "single") return "Single-store · €99";
+  if (t === "unlimited") return "Unlimited · €249";
+  if (t === "setup") return "Setup add-on · +€199";
   return t;
 }
