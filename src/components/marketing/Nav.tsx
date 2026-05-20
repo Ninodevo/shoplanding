@@ -76,30 +76,10 @@ export default function Nav() {
         <div className="flex items-center gap-2">
           <Link
             href="/audit"
-            className="hidden text-[14px] text-[var(--ink-2)] transition-colors hover:text-[var(--ink)] sm:block"
-          >
-            Audit
-          </Link>
-          <Link
-            href="/playbook"
-            className="hidden text-[14px] text-[var(--ink-2)] transition-colors hover:text-[var(--ink)] sm:block"
-          >
-            Playbook
-          </Link>
-          <Link
-            href="/account/downloads"
-            className="hidden text-[14px] text-[var(--ink-2)] transition-colors hover:text-[var(--ink)] sm:block"
-            aria-label="Account · sign in to manage downloads"
-          >
-            Account
-          </Link>
-          <a
-            href="/#pricing"
-            onClick={(e) => onAnchorClick(e, "/#pricing")}
             className="mk-btn mk-btn-primary !py-2 text-[13px]"
           >
-            See pricing
-          </a>
+            Audit your store — free
+          </Link>
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}

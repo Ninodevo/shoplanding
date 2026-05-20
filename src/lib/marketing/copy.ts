@@ -27,13 +27,14 @@ export const ANNOUNCEMENT = [
 ] as const;
 
 /* Anchor hrefs are absolute (`/#…`) so the nav works from any route — clicking
-   "Pricing" on /showcase navigates home and then scrolls to #pricing. */
+   "Pricing" on /showcase navigates home and then scrolls to #pricing.
+   Kept deliberately short — three items + one CTA. Compare / Proof / FAQ live
+   on the home page; the visitor finds them by scrolling. The audit lives in
+   the primary right-side CTA, not the left list. */
 export const NAV_LINKS = [
   { href: "/#themes", label: "Themes" },
-  { href: "/#proof", label: "How it works" },
-  { href: "/#compare", label: "Compare" },
+  { href: "/playbook", label: "Playbook" },
   { href: "/#pricing", label: "Pricing" },
-  { href: "/#faq", label: "FAQ" },
 ] as const;
 
 /* ============================================================
@@ -296,10 +297,17 @@ export const FOOTER = {
     {
       heading: "System",
       links: [
+        { label: "Themes", href: "/themes" },
         { label: "Playbook", href: "/playbook" },
         { label: "Showcase", href: "/showcase" },
-        { label: "Themes", href: "/themes" },
         { label: "Free audit", href: "/audit" },
+      ],
+    },
+    {
+      heading: "Account",
+      links: [
+        { label: "My downloads", href: "/account/downloads" },
+        { label: "Sign in", href: "/auth/sign-in" },
       ],
     },
     {

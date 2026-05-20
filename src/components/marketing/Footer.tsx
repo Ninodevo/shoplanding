@@ -4,7 +4,7 @@ import { FOOTER } from "@/lib/marketing/copy";
 export default function Footer() {
   return (
     <footer className="border-t border-[var(--line)] bg-[var(--surface)]">
-      <div className="mk-container grid gap-10 py-14 lg:grid-cols-[1.4fr_repeat(3,minmax(0,1fr))]">
+      <div className="mk-container grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-[1.4fr_repeat(4,minmax(0,1fr))]">
         <div>
           <Link href="/" className="flex items-center gap-2 text-[var(--ink)]">
             <span
