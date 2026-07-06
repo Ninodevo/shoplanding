@@ -503,7 +503,7 @@ export function sectionCrossSell(): string {
         { "type": "text", "id": "rating", "label": "Rating", "default": "4.7" },
         { "type": "text", "id": "count", "label": "Review count", "default": "212" },
         { "type": "text", "id": "price", "label": "Price", "default": "$24" },
-        { "type": "text", "id": "was", "label": "Compare-at (optional)", "default": "" }
+        { "type": "text", "id": "was", "label": "Compare-at (optional)" }
       ]
     }
   ],

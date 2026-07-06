@@ -6,6 +6,36 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
       "port": 3000
+    },
+    {
+      "name": "wp-playground",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "-y",
+        "@wp-playground/cli",
+        "server",
+        "--mount=/private/tmp/claude-501/-Users-ninomihovilic-work-private-shoplanding/8479dd0c-d67d-4057-84a4-4ea34e69376c/scratchpad/woo/shoplanding-landing:/wordpress/wp-content/plugins/shoplanding-landing",
+        "--blueprint=/private/tmp/claude-501/-Users-ninomihovilic-work-private-shoplanding/8479dd0c-d67d-4057-84a4-4ea34e69376c/scratchpad/woo/blueprint.json",
+        "--port=9400"
+      ],
+      "port": 9400
+    },
+    {
+      "name": "shopify-theme",
+      "runtimeExecutable": "shopify",
+      "runtimeArgs": [
+        "theme",
+        "dev",
+        "--path",
+        "/private/tmp/claude-501/-Users-ninomihovilic-work-private-shoplanding/8479dd0c-d67d-4057-84a4-4ea34e69376c/scratchpad/theme-skincare",
+        "--store",
+        "shoplanding-mulltz8q.myshopify.com",
+        "--store-password",
+        "sewren",
+        "--port",
+        "9292"
+      ],
+      "port": 9292
     }
   ]
 }

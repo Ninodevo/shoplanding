@@ -649,6 +649,16 @@ function buildLandingTemplate(): string {
 /**
  * Template: ShopLanding — Product Landing.
  * Rendered via the template_include filter in shoplanding-landing.php.
+ *
+ * Blank-canvas shell — deliberately NOT get_header()/get_footer(). Two
+ * reasons, both verified on a live WordPress install:
+ *   1. Host themes wrap page content in their own constrained content
+ *      column (Twenty Twenty-One squeezed the page to ~650px) and inject
+ *      their site header/nav above it.
+ *   2. The playbook's General block rules say a landing page has no
+ *      outgoing nav — the blank canvas is the conversion-correct default.
+ * wp_head()/wp_footer() still run, so plugins (analytics, pixels, Woo
+ * scripts) keep working.
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -657,9 +667,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 $sl_content = shoplanding_content();
 $sl_product = shoplanding_product();
-
-get_header();
 ?>
+<!DOCTYPE html>
+<html <?php language_attributes(); ?>>
+<head>
+<meta charset="<?php bloginfo( 'charset' ); ?>">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<?php wp_head(); ?>
+</head>
+<body <?php body_class( 'sl-landing-body' ); ?>>
+<?php wp_body_open(); ?>
 <div class="sl-landing">
 	<?php
 	sl_render_announce( $sl_content );
@@ -685,8 +702,9 @@ get_header();
 	sl_render_jsonld( $sl_content, $sl_product );
 	?>
 </div>
-<?php
-get_footer();
+<?php wp_footer(); ?>
+</body>
+</html>
 `;
 }
 
@@ -696,6 +714,8 @@ get_footer();
 function buildCss(input: PackagerInput): string {
   const t = input.tokens;
   return `/* ShopLanding · WooCommerce landing plugin · preset: ${input.presetSlug} */
+
+body.sl-landing-body { margin: 0; padding: 0; }
 
 .sl-landing {
   --accent: ${t.accent};

@@ -269,7 +269,7 @@ The Woo artifact was a README placeholder. It's now a real WordPress plugin.
 - [x] Delivery gates re-opened: `DELIVERABLE_ARTIFACT_KINDS` + download route include `woo` again; label is "WooCommerce plugin zip". `/buy/success` + `/account/downloads` show all three artifacts.
 - [x] Marketing restored to "both platforms" — now true: hero sub, announcement, FAQ ("Shopify or WooCommerce — which one do I get?" → both, plugin explained), pricing bullets, theme detail (Platforms row, tier bullets, pricing intro), /about, metadata, OG image, footer.
 
-Still open: activate the plugin on a real WordPress + WooCommerce install (php -l ≠ rendered validation) — pairs with the Shopify dev-store install task.
+- [x] **Rendered validation done** — plugin activated on a real WordPress + WooCommerce (via WordPress Playground CLI, blueprint installs Woo + creates a product + a page with the template). Caught + fixed one real bug: `get_header()` let the host theme (TT21) squeeze the page into its ~650px content column with its own nav above. Template is now a blank-canvas shell (own doctype + wp_head/wp_footer) — full-width, no host nav, which also matches the playbook's no-outgoing-nav rule. Verified visually: buy box with live Woo sale pricing, sticky ATC, all 14 sections.
 
 ## Backlog (post-launch)
 
