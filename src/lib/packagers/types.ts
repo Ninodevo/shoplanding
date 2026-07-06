@@ -9,17 +9,16 @@ export const ARTIFACT_KINDS = ["spec", "shopify", "woo"] as const;
 export type ArtifactKind = (typeof ARTIFACT_KINDS)[number];
 
 /**
- * The kinds actually delivered to buyers today. "woo" is excluded — its
- * packager emits a placeholder README and selling that is indefensible.
- * Add it back here (and to the download route's VALID_KINDS) when the real
- * WooCommerce emitter ships; every license holder gets it as a free update.
+ * The kinds actually delivered to buyers today. All three are real as of
+ * Phase 16: the Shopify theme (validated by Shopify Theme Check), the
+ * WooCommerce landing plugin (php -l validated), and the portable spec.
  */
-export const DELIVERABLE_ARTIFACT_KINDS = ["shopify", "spec"] as const;
+export const DELIVERABLE_ARTIFACT_KINDS = ["shopify", "woo", "spec"] as const;
 
 export const ARTIFACT_LABEL: Record<ArtifactKind, string> = {
   spec: "Portable system spec",
   shopify: "Shopify theme zip",
-  woo: "WooCommerce theme zip",
+  woo: "WooCommerce plugin zip",
 };
 
 export const ARTIFACT_FILENAME: Record<ArtifactKind, (slug: string) => string> = {

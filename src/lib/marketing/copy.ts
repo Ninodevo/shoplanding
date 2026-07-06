@@ -9,9 +9,9 @@
  */
 
 export const HERO = {
-  eyebrow: "Free 15-second audit · Built for Shopify",
+  eyebrow: "Free 15-second audit · Shopify + WooCommerce",
   headline: "A high-converting product page, live this weekend.",
-  sub: "Drop in your brand, your photos, your copy — ship a one-product Shopify landing page built on 69 documented CRO rules. €99 once, you keep the updates.",
+  sub: "Drop in your brand, your photos, your copy — ship a one-product landing page built on 69 documented CRO rules. Shopify theme + WooCommerce plugin, €99 once, you keep the updates.",
   ctaPrimary: "Audit your store — free",
   ctaPrimaryHref: "/audit",
   ctaSecondary: "See the themes",
@@ -21,7 +21,7 @@ export const HERO = {
 
 export const ANNOUNCEMENT = [
   "Free PDP audit · score in 15 seconds",
-  "Built for Shopify · lifetime updates",
+  "Shopify + WooCommerce · lifetime updates",
   "One product. One page. One decision.",
   "One-time license. No subscription.",
 ] as const;
@@ -197,8 +197,8 @@ export const PRICING_TIERS: PricingTier[] = [
     priceCents: 9900,
     cadence: "one-time · lifetime updates",
     bullets: [
-      "One Shopify store (Online Store 2.0)",
-      "Theme zip + portable system spec",
+      "One Shopify or WooCommerce store",
+      "Shopify theme + Woo plugin + system spec",
       "Tweaks panel + personalized preview",
       "Lifetime updates for that store",
     ],
@@ -246,8 +246,8 @@ export const FAQS: Faq[] = [
     a: "No for everything you'd change in a Shopify theme editor — brand, palette, fonts, hero copy, product photos, benefits, FAQ items, all surface through the tweaks panel. If your developer wants to dig deeper, the zip ships clean Shopify Liquid (Online Store 2.0) and the portable system spec includes the full component anatomy.",
   },
   {
-    q: "Is this Shopify-only? What about WooCommerce?",
-    a: "Shopify today. A WooCommerce port is on the roadmap, and because every license includes lifetime updates, it lands in your downloads for free the day it ships — no re-purchase. In the meantime the portable system spec (JSON + Markdown) documents the full page anatomy, so a developer can reimplement it on Woo or any stack now.",
+    q: "Shopify or WooCommerce — which one do I get?",
+    a: "Both, in one license. The Shopify theme (the flagship) uploads via Online Store → Themes → Upload zip. The WooCommerce artifact is a plugin — it drops into whatever theme you already run, registers a \"ShopLanding — Product Landing\" page template, and wires the page to your product. No theme switch on the WordPress side.",
   },
   {
     q: "What about my product photos and brand assets?",

@@ -168,7 +168,7 @@ function OrderCard({
       {order.licenseKey && (
         <div className="mt-6 border-t border-[var(--line)] pt-5">
           <p className="mk-mono text-[var(--muted)]">Downloads</p>
-          <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+          <ul className="mt-3 grid gap-2 sm:grid-cols-3">
             {DELIVERABLE_ARTIFACT_KINDS.map((kind: ArtifactKind) => {
               const token = issueDownloadToken({
                 orderId: order.id,

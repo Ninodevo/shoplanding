@@ -37,8 +37,8 @@ export default function AboutPage() {
                 published CRO research — Baymard, Conversion.design&apos;s
                 checklist, a decade of Shopify Plus case studies — and
                 distilled the 69 highest-impact rules into 7 ordered blocks.
-                Then I built the renderer + the Shopify theme that ship
-                every one of those rules out of the box.
+                Then I built the renderer, the Shopify theme, and the
+                WooCommerce plugin that ship those rules out of the box.
               </p>
 
               <p>
@@ -53,8 +53,8 @@ export default function AboutPage() {
               </h2>
               <ul className="space-y-2 pl-0">
                 <li>A Shopify CLI 3 theme zip — drop it in via the dashboard or CLI.</li>
+                <li>A WooCommerce landing-page plugin — drops into whatever theme your WordPress site already runs.</li>
                 <li>A portable system spec (JSON + Markdown) — your developer can rebuild the same anatomy in Hydrogen, Astro, Webflow, anywhere.</li>
-                <li>A WooCommerce port is on the roadmap — free for every license holder the day it ships (lifetime updates).</li>
                 <li>A live <Link href="/showcase" className="text-[var(--accent-deep)] underline-offset-4 hover:underline">customizer</Link> that takes your brand + content + photos and shows you the exact page you&apos;d ship.</li>
                 <li>Lifetime updates for the stores covered by your license.</li>
               </ul>

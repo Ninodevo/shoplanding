@@ -255,7 +255,21 @@ The Shopify zip had 11 empty stub sections while the marketing claimed "69/69 ou
 
 Still open before selling:
 - [ ] Install the zip on a real Shopify dev store (structural validation ≠ rendered validation).
-- [ ] WooCommerce: zip is still a README placeholder — either build the child theme or pull the claim from marketing.
+- [x] WooCommerce: real emitter shipped in Phase 16 (below).
+
+## ✅ Phase 16 — Real WooCommerce emitter: a plugin, not a theme (shipped)
+
+The Woo artifact was a README placeholder. It's now a real WordPress plugin.
+
+**Why a plugin:** a theme forces the buyer to abandon their site's theme; a plugin drops into whatever they run, registers a "ShopLanding — Product Landing" page template, and renders the full landing page for one WooCommerce product on any Page that selects it.
+
+- [x] [`src/lib/packagers/woo.ts`](../src/lib/packagers/woo.ts) — full rewrite (~900 lines). Emits `shoplanding-landing/` plugin: bootstrap (template registration + scoped asset enqueue + WC-missing admin notice), `includes/render.php` (16 escaped render functions — hero buy box with live Woo pricing/`add-to-cart`, press, benefits, steps, comparison, ingredients, reviews, social wall, cross-sell, founder, specs, FAQ `<details>` accordion, final CTA, sticky ATC, Schema.org JSON-LD), page template shell, CSS (preset tokens + the same `SECTIONS_CSS` the Shopify theme uses), JS, WP `readme.txt`, README, LICENSE.
+- [x] **Content strategy:** all copy seeded into `includes/content.json` (JSON, not PHP arrays — generation can't produce parse errors, buyers edit plain JSON). `product_id` in the same file; falls back to the newest published product. Simple products get inline ATC + qty stepper; variable products get a "Choose options" link to the native product page (documented).
+- [x] [`scripts/validate-woo-zip.ts`](../scripts/validate-woo-zip.ts) — extracts the zip, runs **`php -l`** (real PHP 8.3 linter) on every `.php` file, parses content.json, verifies per-section seeded counts + that every `sl_render_*` the template calls exists. **All 3 presets PASS.**
+- [x] Delivery gates re-opened: `DELIVERABLE_ARTIFACT_KINDS` + download route include `woo` again; label is "WooCommerce plugin zip". `/buy/success` + `/account/downloads` show all three artifacts.
+- [x] Marketing restored to "both platforms" — now true: hero sub, announcement, FAQ ("Shopify or WooCommerce — which one do I get?" → both, plugin explained), pricing bullets, theme detail (Platforms row, tier bullets, pricing intro), /about, metadata, OG image, footer.
+
+Still open: activate the plugin on a real WordPress + WooCommerce install (php -l ≠ rendered validation) — pairs with the Shopify dev-store install task.
 
 ## Backlog (post-launch)
 

@@ -33,9 +33,9 @@ const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
   "http://localhost:3000";
 
-const TITLE = "ShopLanding — High-converting Shopify product pages";
+const TITLE = "ShopLanding — High-converting product pages for Shopify + WooCommerce";
 const DESCRIPTION =
-  "A one-product Shopify landing page built on 69 documented CRO rules, plus a portable system spec. €99 one-time, lifetime updates. Free PDP audit at /audit.";
+  "A one-product landing page built on 69 documented CRO rules. Shopify theme + WooCommerce plugin + portable system spec. €99 one-time, lifetime updates. Free PDP audit at /audit.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -47,6 +47,7 @@ export const metadata: Metadata = {
   applicationName: "ShopLanding",
   keywords: [
     "Shopify theme",
+    "WooCommerce plugin",
     "single product landing page",
     "product page audit",
     "PDP audit",

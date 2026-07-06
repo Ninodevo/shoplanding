@@ -10,9 +10,7 @@ import {
   type DownloadKind,
 } from "@/lib/download-token";
 
-// "woo" is deliberately absent — its packager still emits a placeholder.
-// Re-add when the real WooCommerce emitter ships (see DELIVERABLE_ARTIFACT_KINDS).
-const VALID_KINDS = new Set<ArtifactKind>(["spec", "shopify"]);
+const VALID_KINDS = new Set<ArtifactKind>(["spec", "shopify", "woo"]);
 
 /**
  * Signed download endpoint.

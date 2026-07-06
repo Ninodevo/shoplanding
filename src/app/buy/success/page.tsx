@@ -99,13 +99,13 @@ export default async function BuySuccessPage({
               {order.licenseKey && (
                 <section className="mt-12 rounded-lg border border-[var(--line)] bg-white p-6">
                   <p className="mk-eyebrow">Downloads</p>
-                  <h2 className="mk-h3 mt-2">Your theme + the system spec.</h2>
+                  <h2 className="mk-h3 mt-2">Three artifacts. One license.</h2>
                   <p className="mt-2 text-sm text-[var(--ink-2)]">
+                    Shopify theme, WooCommerce plugin, portable system spec.
                     Each link is signed against your license key and expires in
-                    7 days. Re-issue any time from your account dashboard. The
-                    WooCommerce port lands here as a free update when it ships.
+                    7 days. Re-issue any time from your account dashboard.
                   </p>
-                  <ul className="mt-6 grid gap-3 sm:grid-cols-2">
+                  <ul className="mt-6 grid gap-3 sm:grid-cols-3">
                     {DELIVERABLE_ARTIFACT_KINDS.map((kind: ArtifactKind) => {
                       const token = issueDownloadToken({
                         orderId: order.id,
