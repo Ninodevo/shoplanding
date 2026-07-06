@@ -254,7 +254,7 @@ The Shopify zip had 11 empty stub sections while the marketing claimed "69/69 ou
 - [x] [`scripts/validate-shopify-zip.ts`](../scripts/validate-shopify-zip.ts) — packages a preset from the DB and validates like Shopify's uploader: every `{% schema %}` parses as JSON, all template/config JSON parses, zero stub markers, per-section seeded block counts match the demo seed. **All 3 presets PASS.**
 
 Still open before selling:
-- [ ] Install the zip on a real Shopify dev store (structural validation ≠ rendered validation).
+- [x] Installed on a real Shopify store (shoplanding-mulltz8q, theme id 158371381295). Live rendering caught + fixed 3 bugs (empty-drop image_url crash, mailto support URL, duplicate ticker line). Full landing page verified end-to-end with a real product: live price math, sale badge, all 14 sections, zero Liquid errors.
 - [x] WooCommerce: real emitter shipped in Phase 16 (below).
 
 ## ✅ Phase 16 — Real WooCommerce emitter: a plugin, not a theme (shipped)
