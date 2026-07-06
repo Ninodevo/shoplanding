@@ -5,30 +5,39 @@ import {
   type PackagerOutput,
 } from "./types";
 import { packageSpec } from "./spec";
+import {
+  SECTIONS_CSS,
+  buildSectionTemplateEntries,
+  sectionBenefits,
+  sectionComparison,
+  sectionCrossSell,
+  sectionFaq,
+  sectionFounder,
+  sectionHowItWorks,
+  sectionIngredients,
+  sectionPress,
+  sectionReviews,
+  sectionSpecs,
+  sectionUgc,
+} from "./shopify-sections";
 
 /**
- * Shopify theme emitter — Phase 6.1 (skeleton + 4 working sections).
+ * Shopify theme emitter — Phase 15: all 17 sections real, zero stubs.
  *
  * Generates a Shopify CLI 3 compatible theme that installs cleanly via
- * Online Store → Themes → Add theme → Upload zip. The buyer's preset tokens
- * (palette, fonts) flow through as theme settings and CSS variables; their
- * content seed (brand name, product title, free-ship copy) populates section
- * defaults via `config/settings_data.json`.
+ * Online Store → Themes → Add theme → Upload zip.
  *
- * Working sections in v1:
- *   - announcement-bar  · top promo strip
- *   - header            · single-product nav
- *   - hero-product      · the buy box (variants, qty, ATC, trust row)
- *   - footer            · brand + contact + payment icons
- *   - sticky-atc        · persistent bottom buy bar
+ * Content flow:
+ *   - Palette + fonts → `config/settings_data.json` (theme settings).
+ *   - Section copy, reviews, FAQ, specs, comparison rows … → baked into
+ *     `templates/product.json` (OS 2.0 JSON templates override schema
+ *     defaults, so the page renders fully populated on install).
+ *   - Section `.liquid` files stay content-agnostic with generic schema
+ *     defaults, so "Add section" in the editor works on any store.
  *
- * Stub sections (valid Liquid, configurable but content-only) for v1:
- *   - press, benefits, how-it-works, comparison, ingredients,
- *     reviews, ugc, cross-sell, founder, specs, faq, final-cta
- *
- * The stubs install cleanly and let the buyer drop content in via the theme
- * editor; the Liquid for full per-section interaction (review filters, FAQ
- * accordion, etc.) lands in follow-up PRs.
+ * Sections: announcement-bar · header · hero-product · press · benefits ·
+ * how-it-works · comparison · ingredients · reviews · ugc · cross-sell ·
+ * founder · specs · faq · final-cta · footer · sticky-atc
  */
 export async function packageShopify(
   input: PackagerInput,
@@ -50,18 +59,18 @@ export async function packageShopify(
   zip.file("sections/footer.liquid", sectionFooter(input));
   zip.file("sections/sticky-atc.liquid", sectionStickyAtc(input));
 
-  // ── sections (stubs that install cleanly + accept content)
-  zip.file("sections/press.liquid", sectionStub("press", "Press / As Seen In"));
-  zip.file("sections/benefits.liquid", sectionStub("benefits", "Benefits Grid"));
-  zip.file("sections/how-it-works.liquid", sectionStub("how-it-works", "How It Works"));
-  zip.file("sections/comparison.liquid", sectionStub("comparison", "Comparison Table"));
-  zip.file("sections/ingredients.liquid", sectionStub("ingredients", "Ingredients"));
-  zip.file("sections/reviews.liquid", sectionStub("reviews", "Reviews"));
-  zip.file("sections/ugc.liquid", sectionStub("ugc", "UGC Wall"));
-  zip.file("sections/cross-sell.liquid", sectionStub("cross-sell", "Cross-Sell"));
-  zip.file("sections/founder.liquid", sectionStub("founder", "Founder Letter"));
-  zip.file("sections/specs.liquid", sectionStub("specs", "Specifications"));
-  zip.file("sections/faq.liquid", sectionStub("faq", "FAQ"));
+  // ── sections (content sections — real Liquid, seeded via product.json)
+  zip.file("sections/press.liquid", sectionPress());
+  zip.file("sections/benefits.liquid", sectionBenefits());
+  zip.file("sections/how-it-works.liquid", sectionHowItWorks());
+  zip.file("sections/comparison.liquid", sectionComparison());
+  zip.file("sections/ingredients.liquid", sectionIngredients());
+  zip.file("sections/reviews.liquid", sectionReviews());
+  zip.file("sections/ugc.liquid", sectionUgc());
+  zip.file("sections/cross-sell.liquid", sectionCrossSell());
+  zip.file("sections/founder.liquid", sectionFounder());
+  zip.file("sections/specs.liquid", sectionSpecs());
+  zip.file("sections/faq.liquid", sectionFaq());
   zip.file("sections/final-cta.liquid", sectionFinalCta(input));
 
   // ── snippets
@@ -163,22 +172,15 @@ function buildThemeLiquid(input: PackagerInput): string {
 // ============================================================================
 // templates/product.json — defines the section order for product pages
 // ============================================================================
-function buildProductTemplate(_input: PackagerInput): string {
+function buildProductTemplate(input: PackagerInput): string {
+  // The buyer's seeded content (reviews, FAQ, specs, comparison rows …)
+  // lands here — OS 2.0 template JSON overrides schema defaults, so the
+  // page renders fully populated the moment the theme is installed.
   return JSON.stringify(
     {
       sections: {
         "hero-product": { type: "hero-product", settings: {} },
-        press: { type: "press", settings: {} },
-        benefits: { type: "benefits", settings: {} },
-        "how-it-works": { type: "how-it-works", settings: {} },
-        comparison: { type: "comparison", settings: {} },
-        ingredients: { type: "ingredients", settings: {} },
-        reviews: { type: "reviews", settings: {} },
-        ugc: { type: "ugc", settings: {} },
-        "cross-sell": { type: "cross-sell", settings: {} },
-        founder: { type: "founder", settings: {} },
-        specs: { type: "specs", settings: {} },
-        faq: { type: "faq", settings: {} },
+        ...buildSectionTemplateEntries(input),
         "final-cta": { type: "final-cta", settings: {} },
       },
       order: [
@@ -696,46 +698,8 @@ function sectionFinalCta(input: PackagerInput): string {
 `;
 }
 
-// ============================================================================
-// sections/<stub>.liquid
-// ============================================================================
-function sectionStub(slug: string, name: string): string {
-  return `{%- comment -%}
-  ${name} section — v1 stub.
-
-  This installs cleanly and accepts content via the theme editor. Full
-  rendering logic (review filters, FAQ accordion, comparison rows, etc.) lands
-  in a follow-up release. For now you can edit the heading + body copy to
-  match your product, or delete the section from the template.
-{%- endcomment -%}
-
-<section class="sl-section sl-${slug}-section">
-  <div class="sl-container">
-    {%- if section.settings.eyebrow != blank -%}
-      <p class="sl-mono">{{ section.settings.eyebrow }}</p>
-    {%- endif -%}
-    <h2 class="sl-display">{{ section.settings.heading }}</h2>
-    {%- if section.settings.body != blank -%}
-      <div class="sl-rte">{{ section.settings.body }}</div>
-    {%- endif -%}
-  </div>
-</section>
-
-{% schema %}
-{
-  "name": "${name}",
-  "tag": "section",
-  "class": "sl-stub-section",
-  "settings": [
-    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "" },
-    { "type": "text", "id": "heading", "label": "Heading", "default": "${name}" },
-    { "type": "richtext", "id": "body", "label": "Body" }
-  ],
-  "presets": [{ "name": "${name}" }]
-}
-{% endschema %}
-`;
-}
+// (The v1 `sectionStub` factory is gone — every content section is real
+// Liquid now, built in ./shopify-sections.ts and seeded via product.json.)
 
 // ============================================================================
 // snippets/price.liquid
@@ -853,11 +817,9 @@ a { color: inherit; text-decoration: none; }
 
 .sl-trust-mini { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 8px; padding: 16px; background: var(--surface); border-radius: 10px; font-size: 13px; color: var(--ink-2); }
 
-/* Stub sections */
+/* Content sections */
 .sl-section { padding: 64px 0; }
-.sl-stub-section + .sl-stub-section { padding-top: 0; }
-.sl-rte { margin-top: 16px; max-width: 640px; color: var(--ink-2); }
-.sl-rte p { margin: 0 0 12px; }
+${SECTIONS_CSS}
 
 /* Final CTA */
 .sl-final-cta { background: var(--accent-deep); color: #fff; padding: 88px 0; text-align: center; }
@@ -1072,21 +1034,32 @@ function buildReadme(input: PackagerInput): string {
     "4. **Customize → Sections** to edit headlines, copy, and link lists.",
     "5. Set this theme as your active theme when ready.",
     "",
-    "## What ships in v1",
+    "## What ships",
+    "",
+    "Seventeen sections, all functional on install:",
     "",
     "- `announcement-bar` — multi-message ticker.",
     "- `header` — single-product nav with cart count.",
-    "- `hero-product` — full buy box with variants, qty stepper, CTA, trust row, and Schema.org JSON-LD.",
-    "- `footer` — branded footer with up to 4 link columns + payment icons.",
-    "- `sticky-atc` — persistent bottom buy bar after the hero scrolls past.",
+    "- `hero-product` — full buy box: variants, qty stepper, CTA, rating link, trust row, Schema.org JSON-LD.",
+    "- `press` — as-seen-in wordmark strip.",
+    "- `benefits` — benefit-led card grid.",
+    "- `how-it-works` — numbered 3-step explainer.",
+    "- `comparison` — you-vs-alternatives table.",
+    "- `ingredients` — what's-inside cards with swatches + percentages.",
+    "- `reviews` — aggregate score, star-distribution bars, review cards with verified badge, occupation/age, optional customer photos. Anchored `#reviews` from the hero rating link.",
+    "- `ugc` — social-post wall.",
+    "- `cross-sell` — pick real store products via the editor (`Products`); seeded placeholder cards render until you do.",
+    "- `founder` — founder letter with photo or initial avatar.",
+    "- `specs` — alternating-row technical table.",
+    "- `faq` — native <details> accordion, zero JS. Anchored `#faq`.",
     "- `final-cta` — closing CTA on a deep-accent band.",
+    "- `footer` — link columns + payment icons.",
+    "- `sticky-atc` — persistent bottom buy bar after the hero scrolls past.",
     "",
-    "## Stub sections (v1.x follow-ups)",
-    "",
-    "These install cleanly and accept content via the theme editor; full",
-    "rendering logic ships in 1.x:",
-    "",
-    "- press · benefits · how-it-works · comparison · ingredients · reviews · ugc · cross-sell · founder · specs · faq",
+    "Your preset's demo content (reviews, FAQ, specs, comparison rows …) is",
+    "pre-loaded into the product template — edit or replace every line in",
+    "**Customize → Sections**. Swap the placeholder review/UGC content for",
+    "your real customers' words before launch.",
     "",
     "## System spec inside",
     "",

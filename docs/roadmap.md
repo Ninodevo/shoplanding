@@ -244,6 +244,19 @@ The Croatian d.o.o. is the legal seller on every Stripe transaction, which means
 4. Drop `LEMONSQUEEZY_API_KEY`, `LEMONSQUEEZY_STORE_ID`, `LEMONSQUEEZY_WEBHOOK_SECRET` into `.env.local` + Vercel.
 5. Add webhook URL `https://shoplanding.io/api/lemonsqueezy/webhook` in the LS dashboard, sign with the secret you set in step 4, subscribe to `order_created`. (Add `subscription_created` / `subscription_payment_success` later when the audit Pro tier ships.)
 
+## ✅ Phase 15 — Real Shopify sections: zero stubs (shipped)
+
+The Shopify zip had 11 empty stub sections while the marketing claimed "69/69 out of the box" — the single biggest sell-honesty gap. Phase 15 replaces every stub with real Liquid.
+
+- [x] [`src/lib/packagers/shopify-sections.ts`](../src/lib/packagers/shopify-sections.ts) (new, ~900 lines) — 11 real sections: press, benefits, how-it-works, comparison, ingredients, **reviews** (aggregate score + star-distribution bars computed in Liquid + verified/occupation/age cards, tinted band per rule 51, anchored `#reviews`), ugc, cross-sell (native `product_list` picker with seeded fallback cards), founder, specs, **faq** (native `<details>` accordion, zero JS, anchored `#faq`). Plus `SECTIONS_CSS` (~130 lines) in the same token vocabulary as the base sheet.
+- [x] **Architecture**: section `.liquid` files are content-agnostic (render logic + generic schema defaults so "Add section" works anywhere); the buyer's seeded content is baked into `templates/product.json` via `buildSectionTemplateEntries()` — the OS 2.0 mechanism where template JSON overrides schema defaults. Theme renders fully populated on install.
+- [x] [`src/lib/packagers/shopify.ts`](../src/lib/packagers/shopify.ts) — stub factory deleted, real sections wired, README rewritten (17 functional sections listed, no "stub" language).
+- [x] [`scripts/validate-shopify-zip.ts`](../scripts/validate-shopify-zip.ts) — packages a preset from the DB and validates like Shopify's uploader: every `{% schema %}` parses as JSON, all template/config JSON parses, zero stub markers, per-section seeded block counts match the demo seed. **All 3 presets PASS.**
+
+Still open before selling:
+- [ ] Install the zip on a real Shopify dev store (structural validation ≠ rendered validation).
+- [ ] WooCommerce: zip is still a README placeholder — either build the child theme or pull the claim from marketing.
+
 ## Backlog (post-launch)
 
 - 5th and 6th niche presets (apparel? candles? books?).
