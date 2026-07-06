@@ -26,7 +26,16 @@ export default async function ChecklistGuide() {
     0,
   );
 
-  let runningIndex = 0;
+  // Precomputed global rule offsets per block (lint-clean: no render-time
+  // mutation) — rule numbering runs 1..N across the whole checklist.
+  const startIndexBySlug = new Map<string, number>();
+  {
+    let acc = 0;
+    for (const b of blocks) {
+      startIndexBySlug.set(b.slug, acc);
+      acc += Array.isArray(b.mustInclude) ? (b.mustInclude as string[]).length : 0;
+    }
+  }
 
   return (
     <>
@@ -71,8 +80,7 @@ export default async function ChecklistGuide() {
               const rules = Array.isArray(b.mustInclude)
                 ? (b.mustInclude as string[])
                 : [];
-              const startIndex = runningIndex;
-              runningIndex += rules.length;
+              const startIndex = startIndexBySlug.get(b.slug) ?? 0;
               return (
                 <section key={b.slug} id={b.slug} className="mt-14">
                   <div className="flex flex-wrap items-baseline justify-between gap-2">
