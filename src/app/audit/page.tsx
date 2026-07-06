@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Footer, Nav } from "@/components/marketing";
-import { runAuditAndRedirect } from "./actions";
+import AuditForm from "./AuditForm";
 
 export const metadata = {
   title: "Audit your Shopify PDP · ShopLanding",
@@ -33,35 +33,7 @@ export default async function AuditLandingPage({
               impact. Built for solo founders and DTC operators.
             </p>
 
-            <form
-              action={runAuditAndRedirect}
-              className="mt-10 flex flex-col gap-2 sm:flex-row"
-            >
-              <input
-                type="url"
-                name="url"
-                placeholder="https://yourstore.com/products/your-hero"
-                required
-                inputMode="url"
-                autoComplete="url"
-                className="flex-1 rounded-full border border-[var(--line)] bg-white px-5 py-3 text-[15px] outline-none transition focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent-soft)]"
-              />
-              <button
-                type="submit"
-                className="mk-btn mk-btn-primary justify-center"
-              >
-                Audit it →
-              </button>
-            </form>
-
-            {errorMsg && (
-              <div
-                role="alert"
-                className="mt-4 rounded-md border border-[#f5d8d2] bg-[#fff0ed] px-4 py-3 text-sm text-[#b9261b]"
-              >
-                {errorMsg}
-              </div>
-            )}
+            <AuditForm error={errorMsg} />
 
             <p className="mt-3 text-[12px] text-[var(--muted)]">
               The score + per-block scoreboard show immediately. The ranked

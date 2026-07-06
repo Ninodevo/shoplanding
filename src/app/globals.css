@@ -1,31 +1,43 @@
 @import "tailwindcss";
 
+/* ============================================================
+   ShopLanding — "the conversion lab."
+   Editorial spec-sheet aesthetic: warm paper, ink, one emerald
+   accent + one amber annotation tone. Fraunces (display serif)
+   over Instrument Sans body, JetBrains Mono as the annotation
+   voice. Fine ruled lines + grain give it print texture — the
+   site should read like an engineered, documented artifact,
+   because "documented system" IS the product's pitch.
+   ============================================================ */
+
 :root {
-  /* Marketing tokens (modern SaaS, single accent) */
-  --bg: #ffffff;
-  --surface: #fafaf7;
-  --surface-2: #f4f2ed;
-  --ink: #0a0a0a;
-  --ink-2: #3f3f46;
-  --muted: #71717a;
-  --line: #e5e7eb;
-  --line-2: #f1f1ee;
+  /* Paper + ink */
+  --bg: #f7f4ec;
+  --surface: #efeadf;
+  --surface-2: #e7e1d3;
+  --ink: #131711;
+  --ink-2: #43483f;
+  --muted: #7d8076;
+  --line: #d9d2c0;
+  --line-2: #e6e0d1;
 
-  /* Accent — the green the buyer sees in shipped themes (template/styles.css) */
-  --accent: #2e7d5b;
-  --accent-deep: #1f5a40;
-  --accent-soft: #e8f3ec;
+  /* Accent — emerald, kept from the shipped themes; amber = annotation */
+  --accent: #157f56;
+  --accent-deep: #0d5c3d;
+  --accent-soft: #dfe9dc;
+  --amber: #b96f16;
+  --amber-soft: #f4e4cb;
 
-  /* Hero band (dark) */
-  --hero-bg: #0a0a0a;
-  --hero-ink: #fafaf7;
-  --hero-ink-2: #a1a1aa;
-  --hero-line: #1f1f1f;
+  /* Hero band (deep forest, not pure black) */
+  --hero-bg: #0e1d16;
+  --hero-ink: #f5f2e9;
+  --hero-ink-2: #a3b0a4;
+  --hero-line: #22332a;
 
-  /* Geometry */
-  --r-sm: 6px;
-  --r-md: 12px;
-  --r-lg: 18px;
+  /* Geometry — squarer than before; pills only for chips/buttons */
+  --r-sm: 4px;
+  --r-md: 10px;
+  --r-lg: 16px;
   --r-pill: 999px;
 
   --maxw: 1200px;
@@ -73,22 +85,40 @@ body {
   font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI",
     sans-serif;
   font-size: 16px;
-  line-height: 1.55;
+  line-height: 1.6;
+  font-feature-settings: "ss01" on;
+}
+
+::selection {
+  background: var(--accent);
+  color: #fff;
 }
 
 /* ---------- Marketing primitives ---------- */
 
+/* Eyebrow — mono annotation with a ruled line running to the right.
+   The line is the "spec sheet" signature; it appears everywhere. */
 .mk-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
   font-family: var(--font-mono), ui-monospace, monospace;
   font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--accent-deep);
+  color: var(--amber);
 }
-
+.mk-eyebrow::after {
+  content: "";
+  flex: 1;
+  max-width: 160px;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.35;
+}
 .mk-eyebrow-on-dark {
-  color: #6ee7a8;
+  color: #8fd6ae;
 }
 
 .mk-section {
@@ -102,24 +132,37 @@ body {
   padding-inline: 24px;
 }
 
+/* Display type — Fraunces. Tight leading, real italics for emphasis. */
 .mk-h1 {
-  font-size: clamp(40px, 6.4vw, 72px);
-  line-height: 1.02;
-  letter-spacing: -0.03em;
-  font-weight: 600;
+  font-family: var(--font-display), Georgia, serif;
+  font-size: clamp(44px, 7vw, 84px);
+  line-height: 0.98;
+  letter-spacing: -0.02em;
+  font-weight: 560;
+  font-variation-settings: "opsz" 72, "SOFT" 0, "WONK" 0;
+}
+.mk-h1 em,
+.mk-h2 em {
+  font-style: italic;
+  font-weight: 480;
+  font-variation-settings: "opsz" 72, "SOFT" 40, "WONK" 1;
 }
 
 .mk-h2 {
-  font-size: clamp(28px, 4vw, 44px);
-  line-height: 1.08;
-  letter-spacing: -0.02em;
-  font-weight: 600;
+  font-family: var(--font-display), Georgia, serif;
+  font-size: clamp(30px, 4.2vw, 48px);
+  line-height: 1.04;
+  letter-spacing: -0.015em;
+  font-weight: 540;
+  font-variation-settings: "opsz" 40;
 }
 
 .mk-h3 {
-  font-size: 18px;
-  font-weight: 600;
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 20px;
+  font-weight: 580;
   letter-spacing: -0.005em;
+  font-variation-settings: "opsz" 18;
 }
 
 .mk-mono {
@@ -129,68 +172,81 @@ body {
   text-transform: uppercase;
 }
 
-/* Pill button */
+/* Buttons — tactile: hard 1px ink edge + offset shadow that presses flat.
+   Print-shop vibe, unmistakably clickable, zero glassmorphism. */
 .mk-btn {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 12px 22px;
+  padding: 13px 24px;
   border-radius: var(--r-pill);
   font-weight: 600;
   font-size: 14px;
   line-height: 1;
-  transition:
-    transform 160ms ease,
-    background-color 160ms ease,
-    color 160ms ease,
-    border-color 160ms ease;
   white-space: nowrap;
+  transition:
+    transform 140ms ease,
+    box-shadow 140ms ease,
+    background-color 140ms ease,
+    color 140ms ease,
+    border-color 140ms ease;
 }
-
 .mk-btn:active {
-  transform: translateY(1px);
+  transform: translate(1px, 2px);
+  box-shadow: none !important;
+}
+.mk-btn [aria-hidden] {
+  transition: transform 140ms ease;
+}
+.mk-btn:hover [aria-hidden] {
+  transform: translateX(3px);
 }
 
 .mk-btn-primary {
   background: var(--accent);
-  color: #fff;
-  box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.05) inset;
+  color: #fdfcf7;
+  border: 1px solid var(--accent-deep);
+  box-shadow: 2px 3px 0 0 rgba(13, 92, 61, 0.55);
 }
 .mk-btn-primary:hover {
   background: var(--accent-deep);
+  box-shadow: 2px 3px 0 0 rgba(9, 61, 41, 0.6);
 }
 
 .mk-btn-light {
-  background: #fff;
+  background: #fffdf8;
   color: var(--ink);
+  border: 1px solid var(--line);
+  box-shadow: 2px 3px 0 0 rgba(19, 23, 17, 0.12);
 }
 .mk-btn-light:hover {
-  background: var(--surface);
+  background: #fff;
 }
 
 .mk-btn-ghost {
   background: transparent;
   color: var(--ink);
-  border: 1px solid var(--line);
+  border: 1px solid var(--ink);
+  box-shadow: 2px 3px 0 0 rgba(19, 23, 17, 0.14);
 }
 .mk-btn-ghost:hover {
-  background: var(--surface);
-  border-color: #d4d4d4;
+  background: #fffdf8;
 }
 
 .mk-btn-ghost-on-dark {
   background: transparent;
   color: var(--hero-ink);
-  border: 1px solid var(--hero-line);
+  border: 1px solid rgba(245, 242, 233, 0.35);
+  box-shadow: 2px 3px 0 0 rgba(245, 242, 233, 0.12);
 }
 .mk-btn-ghost-on-dark:hover {
-  background: rgba(255, 255, 255, 0.04);
-  border-color: #2a2a2a;
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(245, 242, 233, 0.6);
 }
 
-/* Cards / chrome */
+/* Cards — warm paper, hairline, offset hover shadow (no blur-glow) */
 .mk-card {
-  background: #fff;
+  background: #fffdf8;
   border: 1px solid var(--line);
   border-radius: var(--r-md);
   padding: 24px;
@@ -200,11 +256,9 @@ body {
     box-shadow 200ms ease;
 }
 .mk-card:hover {
-  transform: translateY(-2px);
-  border-color: #d4d4d4;
-  box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.04),
-    0 8px 24px -12px rgba(0, 0, 0, 0.08);
+  transform: translate(-1px, -2px);
+  border-color: var(--ink);
+  box-shadow: 4px 5px 0 0 rgba(19, 23, 17, 0.08);
 }
 
 .mk-card-accent {
@@ -215,7 +269,7 @@ body {
   content: "";
   position: absolute;
   inset: 0 auto 0 0;
-  width: 2px;
+  width: 3px;
   background: var(--accent);
   transform: scaleY(0);
   transform-origin: top;
@@ -243,42 +297,84 @@ body {
 
 .mk-chip-accent {
   background: var(--accent-soft);
-  border-color: rgba(46, 125, 91, 0.18);
+  border-color: rgba(21, 127, 86, 0.25);
   color: var(--accent-deep);
 }
 
-/* Hero band */
+/* Hero band — deep forest + emerald bloom + printed grain.
+   The grain is the atmosphere move: a tiled feTurbulence PNG-in-SVG
+   data URI at ~4% opacity. Reads as paper/film, kills the flat void. */
 .mk-hero {
+  position: relative;
   background:
     radial-gradient(
-      1200px 600px at 75% -10%,
-      rgba(46, 125, 91, 0.18),
-      transparent 60%
+      1100px 560px at 78% -12%,
+      rgba(31, 143, 96, 0.32),
+      transparent 62%
     ),
     radial-gradient(
-      900px 500px at 0% 100%,
-      rgba(46, 125, 91, 0.08),
-      transparent 70%
+      800px 480px at -6% 104%,
+      rgba(31, 143, 96, 0.14),
+      transparent 68%
     ),
     var(--hero-bg);
   color: var(--hero-ink);
+}
+.mk-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.mk-hero > * {
+  position: relative;
+  z-index: 1;
 }
 
 .mk-hero a.mk-link {
   color: var(--hero-ink);
 }
 
+/* Hero load reveal — one orchestrated stagger on first paint. */
+@keyframes mk-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.mk-rise {
+  opacity: 0;
+  animation: mk-rise 640ms cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+}
+.mk-rise-1 { animation-delay: 40ms; }
+.mk-rise-2 { animation-delay: 140ms; }
+.mk-rise-3 { animation-delay: 240ms; }
+.mk-rise-4 { animation-delay: 340ms; }
+.mk-rise-5 { animation-delay: 460ms; }
+@media (prefers-reduced-motion: reduce) {
+  .mk-rise {
+    opacity: 1;
+    animation: none;
+  }
+}
+
 /* Faux browser chrome */
 .mk-frame {
   position: relative;
   border-radius: var(--r-lg);
-  border: 1px solid #1f1f1f;
-  background: #0f0f0f;
+  border: 1px solid #22332a;
+  background: #101a14;
   overflow: hidden;
   box-shadow:
     0 1px 0 0 rgba(255, 255, 255, 0.04) inset,
     0 30px 60px -20px rgba(0, 0, 0, 0.6),
-    0 10px 30px -10px rgba(46, 125, 91, 0.25);
+    0 10px 30px -10px rgba(21, 127, 86, 0.25);
 }
 
 .mk-frame-bar {
@@ -286,15 +382,15 @@ body {
   align-items: center;
   gap: 8px;
   padding: 10px 14px;
-  border-bottom: 1px solid #1f1f1f;
-  background: linear-gradient(180deg, #131313 0%, #0f0f0f 100%);
+  border-bottom: 1px solid #22332a;
+  background: linear-gradient(180deg, #16241c 0%, #101a14 100%);
 }
 
 .mk-frame-dot {
   width: 10px;
   height: 10px;
   border-radius: 999px;
-  background: #2a2a2a;
+  background: #2a3a30;
 }
 .mk-frame-dot:nth-child(1) {
   background: #ef4444;
@@ -312,9 +408,9 @@ body {
   font-family: var(--font-mono), ui-monospace, monospace;
   font-size: 11px;
   letter-spacing: 0.04em;
-  color: #71717a;
-  background: #1a1a1a;
-  border: 1px solid #262626;
+  color: #7d8a7f;
+  background: #16241c;
+  border: 1px solid #22332a;
   border-radius: 999px;
   padding: 5px 12px;
   white-space: nowrap;
@@ -322,13 +418,13 @@ body {
   text-overflow: ellipsis;
 }
 
-/* Reveal animation */
+/* Reveal animation (scroll-triggered via <Reveal>) */
 .mk-reveal {
   opacity: 0;
-  transform: translateY(8px);
+  transform: translateY(10px);
   transition:
-    opacity 480ms ease,
-    transform 480ms ease;
+    opacity 520ms ease,
+    transform 520ms ease;
 }
 .mk-reveal.is-visible {
   opacity: 1;
@@ -344,7 +440,7 @@ body {
   padding: 18px 20px;
   border: 1px solid var(--line);
   border-radius: var(--r-md);
-  background: #fff;
+  background: #fffdf8;
   transition:
     border-color 200ms ease,
     background-color 200ms ease,
@@ -353,8 +449,8 @@ body {
 }
 .mk-bs-row[data-active="true"],
 .mk-bs-row:hover {
-  border-color: rgba(46, 125, 91, 0.35);
-  background: linear-gradient(180deg, var(--accent-soft) 0%, #fff 60%);
+  border-color: var(--accent);
+  background: linear-gradient(180deg, var(--accent-soft) 0%, #fffdf8 60%);
 }
 
 .mk-bs-num {
@@ -413,7 +509,6 @@ body {
   .mk-sticky-cta {
     transition: none;
   }
-  .mk-card:hover,
   .mk-card:hover {
     transform: none;
   }
@@ -438,8 +533,8 @@ body {
 }
 
 /* ============================================================
-   Option A — catalog primitives (preset stack, theme card,
-   annotated proof, vs-cards, price strip).
+   Catalog primitives (preset stack, theme card, annotated
+   proof, price strip).
    ============================================================ */
 
 /* Preset stack inside the hero */
@@ -462,29 +557,29 @@ body {
 }
 .mk-frame-card {
   position: relative;
-  border-radius: 14px;
+  border-radius: 12px;
   overflow: hidden;
-  background: #fff;
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: #fffdf8;
+  border: 1px solid rgba(19, 23, 17, 0.08);
   box-shadow:
     0 1px 0 rgba(0,0,0,0.04) inset,
-    0 30px 60px -25px rgba(0,0,0,0.25),
-    0 10px 20px -10px rgba(0,0,0,0.10);
+    0 30px 60px -25px rgba(6, 16, 11, 0.45),
+    0 10px 20px -10px rgba(6, 16, 11, 0.25);
 }
 .mk-stack-inner > .mk-frame-card:nth-child(1) {
-  transform: rotate(-6deg) translateY(20px);
+  transform: rotate(-5.5deg) translateY(22px);
   z-index: 1;
 }
 .mk-stack-inner > .mk-frame-card:nth-child(2) {
-  transform: rotate(0deg) translateY(-10px) scale(1.05);
+  transform: rotate(0.5deg) translateY(-12px) scale(1.05);
   z-index: 2;
   box-shadow:
     0 1px 0 rgba(0,0,0,0.04) inset,
-    0 50px 80px -30px rgba(0,0,0,0.35),
-    0 20px 30px -15px rgba(0,0,0,0.15);
+    0 50px 80px -30px rgba(6, 16, 11, 0.6),
+    0 20px 30px -15px rgba(6, 16, 11, 0.3);
 }
 .mk-stack-inner > .mk-frame-card:nth-child(3) {
-  transform: rotate(6deg) translateY(20px);
+  transform: rotate(6deg) translateY(26px);
   z-index: 1;
 }
 @media (max-width: 760px) {
@@ -499,7 +594,7 @@ body {
   font-size: 10px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--muted);
+  color: var(--hero-ink-2);
   font-weight: 600;
   white-space: nowrap;
 }
@@ -509,7 +604,7 @@ body {
   gap: 5px;
   padding: 8px 12px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-  background: #fafaf8;
+  background: #f6f2e9;
 }
 .mk-chrome span {
   width: 9px;
@@ -533,6 +628,7 @@ body {
   display: grid;
   gap: 12px;
   position: relative;
+  background: #fff;
 }
 .mk-mock-ann {
   height: 18px;
@@ -618,8 +714,7 @@ body {
   letter-spacing: 0.06em;
 }
 
-/* "Below the fold" preview rows — give mocks a realistic page-density feel
-   without requiring an artificial min-height. Press strip + benefits tiles. */
+/* "Below the fold" preview rows */
 .mk-mock-divider {
   margin-top: 8px;
   height: 1px;
@@ -655,7 +750,7 @@ body {
 .preset-supplement .mk-mock-press span { background: rgba(255, 255, 255, 0.30); }
 .preset-supplement .mk-mock-tiles div { background: rgba(255, 255, 255, 0.06); }
 
-/* Per-niche palettes — applied as a class on .mk-mock or .mk-frame-card */
+/* Per-niche palettes */
 .preset-skincare { --p: #f5e6d6; --p-deep: #c9a37a; --p-cta: #1f5a40; }
 .preset-skincare .mk-mock-ann { background: var(--p-deep); color: #fff; }
 .preset-skincare .mk-mock-gal { background: linear-gradient(135deg, var(--p), var(--p-deep)); }
@@ -679,11 +774,12 @@ body {
 .preset-gadget .mk-mock-gal { background: linear-gradient(135deg, var(--p), var(--p-deep)); }
 .preset-gadget .mk-mock-cta { background: var(--p-cta); }
 
-/* Dark price strip */
+/* Dark price strip — spec-sheet footer row */
 .mk-price-strip {
   background: var(--ink);
   color: var(--bg);
-  border-radius: 12px;
+  border-radius: var(--r-md);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   padding: 14px 24px;
   display: flex;
   gap: 24px;
@@ -691,7 +787,13 @@ body {
   align-items: center;
   justify-content: space-between;
 }
-.mk-price-strip strong { font-weight: 600; font-size: 15px; }
+.mk-price-strip strong {
+  font-weight: 600;
+  font-size: 15px;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+}
 .mk-price-strip .mk-strip-tags {
   display: flex;
   gap: 18px;
@@ -706,14 +808,14 @@ body {
 }
 .mk-price-strip .mk-strip-tags span::before {
   content: "✓";
-  color: var(--accent);
+  color: #4ade80;
 }
 
 /* Theme catalog card */
 .mk-theme-card {
-  background: #fff;
+  background: #fffdf8;
   border: 1px solid var(--line);
-  border-radius: 18px;
+  border-radius: var(--r-lg);
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -723,9 +825,9 @@ body {
     border-color 280ms ease;
 }
 .mk-theme-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 30px 60px -25px rgba(0, 0, 0, 0.18);
-  border-color: var(--accent);
+  transform: translate(-1px, -4px);
+  box-shadow: 6px 8px 0 0 rgba(19, 23, 17, 0.1);
+  border-color: var(--ink);
 }
 .mk-theme-thumbs {
   position: relative;
@@ -736,9 +838,6 @@ body {
 .mk-theme-thumb {
   position: absolute;
   inset: 0;
-  /* Anchor to the top so the chrome bar + announcement strip are always
-     visible. The bottom (below-fold preview) clips naturally — that mirrors
-     how real landing-page screenshots crop on a card. */
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -767,8 +866,9 @@ body {
   gap: 12px;
 }
 .mk-theme-card h3 {
-  font-size: 22px;
-  font-weight: 600;
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 24px;
+  font-weight: 580;
   letter-spacing: -0.01em;
 }
 .mk-theme-pos {
@@ -788,7 +888,7 @@ body {
   text-transform: uppercase;
   font-weight: 600;
   padding: 4px 8px;
-  border-radius: 5px;
+  border-radius: var(--r-sm);
   background: var(--surface-2);
   color: var(--ink-2);
 }
@@ -827,7 +927,7 @@ body {
   width: 28px;
   height: 28px;
   border-radius: 999px;
-  background: var(--accent);
+  background: var(--amber);
   color: #fff;
   display: flex;
   align-items: center;
@@ -838,8 +938,8 @@ body {
   cursor: pointer;
   z-index: 5;
   box-shadow:
-    0 6px 20px rgba(46, 125, 91, 0.5),
-    0 0 0 4px rgba(46, 125, 91, 0.15);
+    0 6px 20px rgba(185, 111, 22, 0.45),
+    0 0 0 4px rgba(185, 111, 22, 0.15);
   transition: transform 200ms ease, background 200ms ease;
 }
 .mk-pin:hover { transform: scale(1.1); background: var(--ink); }
@@ -854,8 +954,8 @@ body {
   border-radius: 14px;
   overflow: hidden;
   background: #fff;
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  box-shadow: 0 30px 60px -30px rgba(0, 0, 0, 0.20);
+  border: 1px solid rgba(19, 23, 17, 0.09);
+  box-shadow: 0 30px 60px -30px rgba(19, 23, 17, 0.25);
 }
 .mk-proof-strip {
   height: 28px;
@@ -974,7 +1074,6 @@ body {
   color: var(--muted);
   margin-top: 12px;
 }
-/* Pins sit inset within the rounded `.mk-proof-frame` (which clips overflow). */
 .mk-proof-pin-1 {
   top: 24px;
   right: 16px;
@@ -993,7 +1092,7 @@ body {
   list-style: none;
   padding: 6px;
   margin: 0;
-  background: #fff;
+  background: #fffdf8;
   border: 1px solid var(--line);
   border-radius: 14px;
 }
@@ -1001,7 +1100,7 @@ body {
   display: flex;
   gap: 12px;
   padding: 14px;
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid var(--line-2);
   font-size: 13px;
 }
 .mk-rule-list li:last-child { border-bottom: none; }
@@ -1024,6 +1123,24 @@ body {
   line-height: 1.4;
 }
 
-/* (Without/with comparison now uses Tailwind utility classes in
-   `<Comparison>`. The mk-vs-* CSS that previously rendered mock screens
-   was deleted — feature table is HTML-driven now and can't break under HMR.) */
+/* ============================================================
+   Audit tool — spinner + progress line for the pending state.
+   ============================================================ */
+@keyframes mk-spin {
+  to { transform: rotate(1turn); }
+}
+.mk-spinner {
+  width: 15px;
+  height: 15px;
+  border-radius: 999px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #fff;
+  animation: mk-spin 700ms linear infinite;
+}
+@keyframes mk-pulse-line {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+.mk-audit-progress {
+  animation: mk-pulse-line 1.4s ease-in-out infinite;
+}

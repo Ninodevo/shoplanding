@@ -139,6 +139,8 @@ export const RULES: RuleDef[] = [
     detect: (p) =>
       p.starRating !== null
         ? pass(`${p.starRating}/5${p.reviewCount ? ` from ${p.reviewCount} reviews` : ""}`)
+        : p.reviewApp
+        ? unknown(`${p.reviewApp} detected — its rating widget renders client-side; verify it sits near the title`)
         : fail("No star rating detected near the title"),
   },
   {
@@ -408,9 +410,12 @@ export const RULES: RuleDef[] = [
       if (p.textIncludes.googlePay) opts.push("Google Pay");
       if (p.textIncludes.paypal) opts.push("PayPal");
       if (p.textIncludes.shopPay) opts.push("Shop Pay");
-      return opts.length >= 2
-        ? pass(opts.join(", "))
-        : opts.length === 1
+      if (opts.length >= 2) return pass(opts.join(", "));
+      // Shopify dynamic checkout renders wallets client-side — the static
+      // wrapper markup is the reliable signal.
+      if (p.hasExpressCheckoutMarkers)
+        return pass("Shopify dynamic-checkout wallet markup detected (Shop Pay / Apple Pay / Google Pay render client-side)");
+      return opts.length === 1
         ? fail(`Only ${opts[0]} mentioned — add at least one more`)
         : fail("No express-pay options visible");
     },
@@ -424,7 +429,10 @@ export const RULES: RuleDef[] = [
       const opts: string[] = [];
       if (p.textIncludes.klarna) opts.push("Klarna");
       if (p.textIncludes.afterpay) opts.push("Afterpay");
-      return opts.length > 0 ? pass(opts.join(", ")) : fail("No BNPL option visible — optional but lifts AOV");
+      if (opts.length > 0) return pass(opts.join(", "));
+      if (p.hasBnplMarkers)
+        return pass("BNPL placement markup detected (Shopify installments / Klarna / Afterpay widget)");
+      return fail("No BNPL option visible — optional but lifts AOV");
     },
   },
   {
@@ -454,6 +462,8 @@ export const RULES: RuleDef[] = [
     detect: (p) =>
       p.hasReviewsSection
         ? pass(p.reviewCount ? `${p.reviewCount} reviews — content depth needs eyes` : "Reviews section present")
+        : p.reviewApp
+        ? pass(`${p.reviewApp} installed — widget renders client-side; review depth needs eyes`)
         : fail("No reviews section detected"),
   },
   {
@@ -478,6 +488,8 @@ export const RULES: RuleDef[] = [
     detect: (p) =>
       p.starRating !== null && p.reviewCount !== null
         ? pass(`${p.starRating}/5 · ${p.reviewCount} reviews`)
+        : p.reviewApp
+        ? unknown(`${p.reviewApp} detected — rating renders client-side; check filterability manually`)
         : fail("Star rating + review count not both visible"),
   },
   {

@@ -42,6 +42,16 @@ export type ExtractedPage = {
   hasGalleryThumbs: boolean;
   hasPressLogos: boolean;
 
+  /**
+   * App-marker signals detected in the RAW HTML (script srcs, widget class
+   * prefixes). Most Shopify stores render reviews / wallets / BNPL via JS
+   * apps whose content never appears in static HTML — without these
+   * markers the heuristics fail those stores unfairly.
+   */
+  reviewApp: string | null;
+  hasExpressCheckoutMarkers: boolean;
+  hasBnplMarkers: boolean;
+
   // Text presence (lowercased, full-body keyword search)
   textIncludes: {
     freeShipping: boolean;
@@ -168,9 +178,41 @@ export function extractPage(args: {
   const hasSpecsTable =
     $("table").length > 0 &&
     /(spec(ification|s)|dimensions|weight|materials)/.test(bodyText);
+  const rawLower = args.html.toLowerCase();
   const hasStickyAtcMarkers =
-    /sticky[-_ ]?atc|add[-_ ]to[-_ ]cart[-_ ]sticky|sticky[-_ ]bar/.test(
-      args.html.toLowerCase(),
+    /sticky[-_ ]?atc|add[-_ ]to[-_ ]cart[-_ ]sticky|sticky[-_ ]bar|sticky[-_ ]?cart|upcart/.test(
+      rawLower,
+    );
+
+  // ── Review-app markers. Widget content renders client-side, but the app's
+  // script tags / class prefixes are in the static HTML. First match wins.
+  const REVIEW_APPS: Array<[string, RegExp]> = [
+    ["Judge.me", /jdgm|judge\.me/],
+    ["Loox", /loox/],
+    ["Yotpo", /yotpo/],
+    ["Okendo", /okendo/],
+    ["Stamped", /stamped[.-]?io|stamped-/],
+    ["REVIEWS.io", /reviews\.io|ruk_rating/],
+    ["Junip", /junip/],
+    ["Opinew", /opinew/],
+    ["Rivyo", /rivyo/],
+    ["Ali Reviews", /alireviews|ali-reviews/],
+  ];
+  const reviewApp =
+    REVIEW_APPS.find(([, re]) => re.test(rawLower))?.[0] ?? null;
+
+  // Shopify dynamic checkout renders wallet buttons (Shop Pay / Apple Pay /
+  // Google Pay / PayPal) client-side; the container markup is static.
+  const hasExpressCheckoutMarkers =
+    /shopify-payment-button|dynamic-checkout|shop-pay-wallet|accelerated-checkout/.test(
+      rawLower,
+    );
+
+  // BNPL placement wrappers (Shopify installments banner, Klarna/Afterpay
+  // on-site messaging) — again static wrappers around JS content.
+  const hasBnplMarkers =
+    /shopify-installments|klarna[-_ ]?placement|afterpay[-_ ]?placement|data-sezzle|sezzle-widget/.test(
+      rawLower,
     );
   const hasGalleryThumbs =
     $("[class*='thumb' i], [class*='gallery' i] [class*='nav' i]").length > 0;
@@ -249,6 +291,9 @@ export function extractPage(args: {
     hasStickyAtcMarkers,
     hasGalleryThumbs,
     hasPressLogos,
+    reviewApp,
+    hasExpressCheckoutMarkers,
+    hasBnplMarkers,
     textIncludes,
     starRating,
     reviewCount,

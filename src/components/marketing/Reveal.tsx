@@ -32,6 +32,17 @@ export default function Reveal({
     if (visible) return;
     const el = ref.current;
     if (!el) return;
+
+    // Anchor landings (`/#pricing`) hydrate with the element already in the
+    // viewport. Skip the observer + stagger delay in that case — otherwise
+    // the visitor stares at blank space until the IO callback fires, and the
+    // stagger reads as lag instead of choreography.
+    const rect = el.getBoundingClientRect();
+    if (rect.top < window.innerHeight && rect.bottom > 0) {
+      setVisible(true);
+      return;
+    }
+
     let timer: number | undefined;
     const obs = new IntersectionObserver(
       (entries) => {

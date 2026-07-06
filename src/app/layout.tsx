@@ -1,8 +1,23 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { Fraunces, Instrument_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({
+/**
+ * Type system — "the conversion lab".
+ * Fraunces (display serif, optical sizing + real italics) carries every
+ * headline; Instrument Sans does body work; JetBrains Mono is the
+ * annotation voice (eyebrows, spec rows, rule numbers). The pairing is the
+ * brand: an engineered, documented system — not another Inter SaaS page.
+ */
+const fraunces = Fraunces({
+  variable: "--font-display",
+  subsets: ["latin"],
+  display: "swap",
+  axes: ["opsz", "SOFT", "WONK"],
+  style: ["normal", "italic"],
+});
+
+const instrumentSans = Instrument_Sans({
   variable: "--font-sans",
   subsets: ["latin"],
   display: "swap",
@@ -97,7 +112,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${jetBrainsMono.variable} h-full antialiased`}
+      className={`${fraunces.variable} ${instrumentSans.variable} ${jetBrainsMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-[var(--bg)] text-[var(--ink)]">
         {children}
