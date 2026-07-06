@@ -739,21 +739,42 @@ body.sl-landing-body { margin: 0; padding: 0; }
   line-height: 1.55;
 }
 
-/* Scope resets — the host theme's styles stay outside .sl-landing. */
+/* Scope resets — neutralize the HOST THEME's element styles inside the
+   landing page. This must survive hostile selectors: Twenty Twenty-One
+   paints buttons via \`button:not(:hover):not(:active)\` — specificity
+   (0,3,1) — which beats any sane scoped selector. Interactive primitives
+   therefore use !important armor (the same pragmatic choice page-builder
+   plugins make); our own component rules that restyle the same
+   properties carry !important too so they win back deterministically. */
 .sl-landing img { max-width: 100%; height: auto; display: block; }
-.sl-landing button { font-family: inherit; cursor: pointer; }
+.sl-landing button {
+  font-family: inherit; cursor: pointer;
+  background: none !important; border: 0 !important;
+  padding: 0 !important; margin: 0 !important;
+  color: inherit !important; font-size: inherit; line-height: inherit;
+  border-radius: 0 !important; text-transform: none !important;
+  letter-spacing: normal !important; box-shadow: none !important;
+  min-height: 0 !important; min-width: 0 !important;
+}
+.sl-landing input {
+  font-family: inherit;
+  background: transparent !important; border: 0 !important;
+  box-shadow: none !important; border-radius: 0 !important;
+  margin: 0 !important;
+}
 .sl-landing a { text-decoration: none; color: inherit; }
 .sl-landing h1, .sl-landing h2, .sl-landing h3 { margin: 0; }
 .sl-landing ul, .sl-landing ol, .sl-landing dl { margin: 0; }
+.sl-landing p { margin: 0; }
 
 .sl-container { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 24px; }
 .sl-display { font-family: var(--font-display); font-weight: 600; letter-spacing: -0.02em; line-height: 1.05; }
 .sl-mono { font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--muted); font-weight: 600; }
 
-.sl-btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; border-radius: 999px; font-weight: 600; font-size: 14px; line-height: 1; border: 0; transition: background 160ms ease; }
-.sl-btn-primary { background: var(--accent); color: #fff; }
-.sl-btn-primary:hover { background: var(--accent-deep); }
-.sl-btn-lg { padding: 16px 28px; font-size: 16px; }
+.sl-landing .sl-btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px !important; border-radius: 999px !important; font-weight: 600; font-size: 14px !important; line-height: 1 !important; border: 0 !important; transition: background 160ms ease; }
+.sl-landing .sl-btn-primary { background: var(--accent) !important; color: #fff !important; }
+.sl-landing .sl-btn-primary:hover { background: var(--accent-deep) !important; }
+.sl-landing .sl-btn-lg { padding: 16px 28px !important; font-size: 16px !important; }
 
 /* Announcement */
 .sl-announce { background: var(--ink); color: var(--bg); overflow: hidden; }
@@ -773,26 +794,34 @@ body.sl-landing-body { margin: 0; padding: 0; }
 .sl-thumb { width: 64px; height: 64px; border-radius: 8px; overflow: hidden; border: 1px solid var(--line); display: block; }
 .sl-thumb img { width: 100%; height: 100%; object-fit: cover; }
 
-.sl-info { display: flex; flex-direction: column; gap: 16px; }
-.sl-title { font-size: clamp(28px, 4vw, 44px); }
-.sl-subtitle { color: var(--ink-2); font-size: 17px; line-height: 1.5; margin: 0; }
-.sl-rating { display: inline-flex; gap: 8px; align-items: center; font-size: 13px; }
+/* Buy box — differentiated rhythm: identity lines tight, groups get air. */
+.sl-info { display: flex; flex-direction: column; gap: 0; }
+.sl-title { font-size: clamp(28px, 4vw, 44px); margin-bottom: 12px; }
+.sl-subtitle { color: var(--ink-2); font-size: 17px; line-height: 1.55; margin: 0 0 14px; }
+.sl-rating { display: inline-flex; gap: 8px; align-items: center; font-size: 13px; margin-bottom: 20px; }
 .sl-stars { color: #d49a3a; letter-spacing: 1px; }
 .sl-rating-link { color: var(--ink-2); text-decoration: underline; text-underline-offset: 4px; }
-.sl-key-benefits { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 8px; font-size: 14px; color: var(--ink-2); }
-.sl-key-benefits li { display: flex; gap: 10px; align-items: flex-start; }
+.sl-key-benefits { list-style: none; padding: 0; margin: 0 0 22px; display: flex; flex-direction: column; gap: 9px; font-size: 14px; color: var(--ink-2); }
+.sl-key-benefits li { display: flex; gap: 10px; align-items: flex-start; line-height: 1.5; }
 .sl-check { color: var(--accent); font-weight: 700; flex-shrink: 0; }
-.sl-price-block { padding: 8px 0; }
+.sl-price-block { padding: 0; margin-bottom: 16px; }
 .sl-price-row { font-family: var(--font-display); font-size: 32px; font-weight: 600; }
 .sl-price-row del { color: var(--muted); font-size: 20px; font-weight: 400; margin-right: 8px; }
 .sl-price-row ins { text-decoration: none; }
 .sl-stock { margin: 6px 0 0; color: var(--accent-deep); }
-.sl-qty-atc { display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: stretch; }
-.sl-qty { display: inline-flex; align-items: center; border: 1px solid var(--line); border-radius: 999px; background: var(--card); }
-.sl-qty button { width: 36px; height: 44px; font-size: 18px; background: none; border: 0; }
-.sl-qty input { width: 44px; height: 44px; border: 0; text-align: center; font-size: 14px; background: transparent; }
-.sl-atc { height: 44px; padding: 0 22px; justify-content: center; }
-.sl-trust-mini { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; padding: 16px; background: var(--surface); border-radius: 10px; font-size: 13px; color: var(--ink-2); }
+/* Qty + ATC — segmented stepper: [ − | 1 | + ] with hairline dividers,
+   ATC fills the row at the same 48px height. */
+.sl-qty-atc { display: flex; gap: 10px; align-items: stretch; }
+.sl-qty { display: inline-flex; align-items: stretch; height: 48px; border: 1px solid var(--line); border-radius: 999px; background: var(--card); overflow: hidden; flex-shrink: 0; }
+.sl-landing .sl-qty button { width: 42px; font-size: 17px !important; font-weight: 600; color: var(--ink-2) !important; display: flex; align-items: center; justify-content: center; transition: background 120ms ease, color 120ms ease; }
+.sl-landing .sl-qty button:hover { background: var(--surface) !important; color: var(--ink) !important; }
+.sl-landing .sl-qty button:first-child { border-right: 1px solid var(--line) !important; }
+.sl-landing .sl-qty button:last-of-type { border-left: 1px solid var(--line) !important; }
+.sl-landing .sl-qty input { width: 44px; text-align: center; font-size: 15px; font-weight: 600; color: var(--ink); padding: 0; font-variant-numeric: tabular-nums; -moz-appearance: textfield; }
+.sl-qty input::-webkit-outer-spin-button, .sl-qty input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.sl-qty input:focus { outline: none; }
+.sl-atc { height: 48px; flex: 1; padding: 0 24px; justify-content: center; gap: 10px; font-size: 15px; }
+.sl-trust-mini { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px 16px; margin-top: 14px; padding: 16px 18px; background: var(--surface); border-radius: 12px; font-size: 13px; color: var(--ink-2); }
 .sl-notices { padding-top: 16px; }
 
 /* Final CTA */
@@ -800,7 +829,7 @@ body.sl-landing-body { margin: 0; padding: 0; }
 .sl-final-eyebrow { color: var(--accent-soft); }
 .sl-final-cta h2 { font-size: clamp(32px, 5vw, 56px); margin: 16px 0 12px; }
 .sl-final-sub { color: rgba(255,255,255,0.8); max-width: 520px; margin: 0 auto 28px; font-size: 17px; }
-.sl-final-cta .sl-btn-primary { background: #fff; color: var(--accent-deep); }
+.sl-landing .sl-final-cta .sl-btn-primary { background: #fff !important; color: var(--accent-deep) !important; }
 
 /* Sticky ATC */
 .sl-sticky-atc { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; background: var(--card); border-top: 1px solid var(--line); box-shadow: 0 -8px 24px rgba(0,0,0,0.06); transform: translateY(120%); transition: transform 280ms ease; }

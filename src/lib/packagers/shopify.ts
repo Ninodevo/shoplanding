@@ -441,10 +441,17 @@ function sectionHeroProduct(input: PackagerInput): string {
       {%- else -%}
         <form action="{{ routes.cart_add_url }}" method="post" class="sl-form">
           <input type="hidden" name="id" value="{{ current_variant.id }}">
-          <button type="submit" class="sl-btn sl-btn-primary sl-atc">
-            ⊞ {{ section.settings.cta_label | default: 'Add to cart' }}
-            <span>{{ current_variant.price | money }}</span>
-          </button>
+          <div class="sl-qty-atc">
+            <div class="sl-qty">
+              <button type="button" data-qty-step="-1" aria-label="Decrease">−</button>
+              <input type="number" name="quantity" value="1" min="1" inputmode="numeric" data-qty>
+              <button type="button" data-qty-step="1" aria-label="Increase">+</button>
+            </div>
+            <button type="submit" class="sl-btn sl-btn-primary sl-atc">
+              ⊞ {{ section.settings.cta_label | default: 'Add to cart' }}
+              <span>{{ current_variant.price | money }}</span>
+            </button>
+          </div>
         </form>
       {%- endunless -%}
 
@@ -799,24 +806,27 @@ a { color: inherit; text-decoration: none; }
 .sl-thumb img { width: 100%; height: 100%; object-fit: cover; }
 .sl-thumb.is-active { border-color: var(--accent); }
 
-.sl-info { display: flex; flex-direction: column; gap: 16px; }
-.sl-crumb { color: var(--accent-deep); }
-.sl-title { font-size: clamp(28px, 4vw, 44px); }
-.sl-subtitle { color: var(--ink-2); font-size: 17px; line-height: 1.5; }
-.sl-rating { display: inline-flex; gap: 8px; align-items: center; font-size: 13px; }
+/* Buy box — differentiated rhythm instead of one uniform gap: identity
+   lines sit tight, groups (benefits / price / form / trust) get air. */
+.sl-info { display: flex; flex-direction: column; gap: 0; }
+.sl-crumb { color: var(--accent-deep); margin-bottom: 10px; }
+.sl-title { font-size: clamp(28px, 4vw, 44px); margin-bottom: 12px; }
+.sl-subtitle { color: var(--ink-2); font-size: 17px; line-height: 1.55; margin: 0 0 14px; }
+.sl-rating { display: inline-flex; gap: 8px; align-items: center; font-size: 13px; margin-bottom: 20px; }
 .sl-stars { color: #d49a3a; letter-spacing: 1px; }
 .sl-rating-link { color: var(--ink-2); text-decoration: underline; text-underline-offset: 4px; }
 
-.sl-key-benefits { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; font-size: 14px; color: var(--ink-2); }
-.sl-key-benefits li { display: flex; gap: 10px; align-items: flex-start; }
+.sl-key-benefits { list-style: none; padding: 0; margin: 0 0 22px; display: flex; flex-direction: column; gap: 9px; font-size: 14px; color: var(--ink-2); }
+.sl-key-benefits li { display: flex; gap: 10px; align-items: flex-start; line-height: 1.5; }
 .sl-check { color: var(--accent); font-weight: 700; flex-shrink: 0; }
 
-.sl-price-block { padding: 8px 0; }
+.sl-price-block { padding: 0; margin-bottom: 6px; }
 .sl-price-row { display: flex; align-items: baseline; gap: 12px; }
 .sl-price-current { font-family: var(--font-display); font-size: 32px; font-weight: 600; }
 .sl-price-was { color: var(--muted); font-size: 18px; }
 .sl-price-save { background: var(--accent-soft); color: var(--accent-deep); padding: 4px 8px; border-radius: 4px; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em; font-weight: 700; }
 
+.sl-form { display: flex; flex-direction: column; gap: 16px; margin-top: 8px; }
 .sl-variant-block { display: flex; flex-direction: column; gap: 8px; }
 .sl-variant-label { display: flex; justify-content: space-between; align-items: baseline; font-weight: 600; }
 .sl-selected { color: var(--muted); font-weight: 400; }
@@ -825,14 +835,21 @@ a { color: inherit; text-decoration: none; }
 .sl-variant-pill input { position: absolute; opacity: 0; pointer-events: none; }
 .sl-variant-pill.is-active { border-color: var(--ink); background: var(--ink); color: var(--card); }
 
-.sl-qty-atc { display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: stretch; margin-top: 8px; }
-.sl-qty { display: inline-flex; align-items: center; border: 1px solid var(--line); border-radius: 999px; background: var(--card); }
-.sl-qty button { width: 36px; height: 44px; font-size: 18px; }
-.sl-qty input { width: 36px; height: 44px; border: 0; text-align: center; font-size: 14px; background: transparent; -moz-appearance: textfield; }
+/* Qty + ATC — segmented stepper with real hit areas. The stepper is a
+   single pill: [ − | 1 | + ] with hairline internal dividers; ATC fills
+   the rest of the row at the same 48px height. */
+.sl-qty-atc { display: flex; gap: 10px; align-items: stretch; margin-top: 10px; }
+.sl-qty { display: inline-flex; align-items: stretch; height: 48px; border: 1px solid var(--line); border-radius: 999px; background: var(--card); overflow: hidden; flex-shrink: 0; }
+.sl-qty button { width: 42px; border: 0; background: none; font-size: 17px; font-weight: 600; color: var(--ink-2); display: flex; align-items: center; justify-content: center; transition: background 120ms ease, color 120ms ease; }
+.sl-qty button:hover { background: var(--surface); color: var(--ink); }
+.sl-qty button:first-child { border-right: 1px solid var(--line); }
+.sl-qty button:last-child { border-left: 1px solid var(--line); }
+.sl-qty input { width: 44px; border: 0; text-align: center; font-size: 15px; font-weight: 600; color: var(--ink); background: transparent; padding: 0; font-variant-numeric: tabular-nums; -moz-appearance: textfield; }
 .sl-qty input::-webkit-outer-spin-button, .sl-qty input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-.sl-atc { height: 44px; padding: 0 22px; justify-content: center; gap: 12px; }
+.sl-qty input:focus { outline: none; }
+.sl-atc { height: 48px; flex: 1; padding: 0 24px; justify-content: center; gap: 10px; font-size: 15px; }
 
-.sl-trust-mini { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 8px; padding: 16px; background: var(--surface); border-radius: 10px; font-size: 13px; color: var(--ink-2); }
+.sl-trust-mini { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px 16px; margin-top: 12px; padding: 16px 18px; background: var(--surface); border-radius: 12px; font-size: 13px; color: var(--ink-2); }
 
 /* Content sections */
 .sl-section { padding: 64px 0; }
