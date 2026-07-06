@@ -90,7 +90,7 @@ export const THEME_CATALOG: ThemeCatalogEntry[] = [
     slug: "supplement",
     name: "VitalStack",
     niche: "Supplement",
-    positioning: "Daily greens stick. Dark-mode default, neon-green CTAs.",
+    positioning: "Daily greens stick. Clean light theme, emerald CTAs.",
     badges: ["Supplement", "Shopify", "Bundle"],
     presetClass: "preset-supplement",
     url: "vitalstack.io",

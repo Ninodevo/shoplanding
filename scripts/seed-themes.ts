@@ -37,7 +37,7 @@ const THEMES: ThemeSeed[] = [
     slug: "supplement-vitalstack",
     presetSlug: "supplement",
     name: "VitalStack · Supplement",
-    tagline: "Dark-mode default, neon-green CTAs. For greens, daily stacks, and clinical doses.",
+    tagline: "Clean light theme, emerald CTAs. For greens, daily stacks, and clinical doses.",
     version: "1.0.0",
     changelog: "Initial release.",
     screenshots: [],
