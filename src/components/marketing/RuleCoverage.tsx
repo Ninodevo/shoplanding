@@ -1,4 +1,5 @@
 import { getPrisma } from "@/lib/db";
+import { BLOCK_ONE_LINER } from "@/lib/marketing/blockCopy";
 
 /**
  * Proves the "69/69 rules" claim on theme detail pages. Reads the seeded
@@ -53,7 +54,7 @@ export default async function RuleCoverage() {
                       {b.name}
                     </h3>
                     <p className="mt-0.5 line-clamp-1 text-[13px] text-[var(--muted)]">
-                      {b.purpose}
+                      {BLOCK_ONE_LINER[b.slug] ?? ""}
                     </p>
                   </div>
                   <div className="flex shrink-0 items-center gap-3">

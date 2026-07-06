@@ -14,18 +14,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
   const prisma = getPrisma();
 
-  const [presets, themes] = await Promise.all([
+  const [presets, themes, blocks] = await Promise.all([
     prisma.layoutPreset.findMany({ select: { slug: true, updatedAt: true } }),
     prisma.theme.findMany({
       where: { published: true },
       select: { slug: true, updatedAt: true },
     }),
+    prisma.block.findMany({ select: { slug: true } }),
   ]);
 
   const staticEntries: MetadataRoute.Sitemap = [
     { url: `${SITE_URL}/`, lastModified: now, changeFrequency: "weekly", priority: 1 },
     { url: `${SITE_URL}/audit`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },
     { url: `${SITE_URL}/playbook`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
+    { url: `${SITE_URL}/guides`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+    { url: `${SITE_URL}/guides/product-page-cro-checklist`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
+    { url: `${SITE_URL}/guides/how-to-increase-shopify-conversion-rate`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
+    { url: `${SITE_URL}/guides/shopify-product-page-examples`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${SITE_URL}/showcase`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
     { url: `${SITE_URL}/about`, lastModified: now, changeFrequency: "yearly", priority: 0.4 },
     { url: `${SITE_URL}/contact`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
@@ -48,5 +53,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.9,
   }));
 
-  return [...staticEntries, ...showcaseEntries, ...themeEntries];
+  const blockEntries: MetadataRoute.Sitemap = blocks.map((b) => ({
+    url: `${SITE_URL}/playbook/${b.slug}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
+  }));
+
+  const templateEntries: MetadataRoute.Sitemap = presets.map((p) => ({
+    url: `${SITE_URL}/templates/${p.slug}`,
+    lastModified: p.updatedAt,
+    changeFrequency: "monthly" as const,
+    priority: 0.8,
+  }));
+
+  return [
+    ...staticEntries,
+    ...showcaseEntries,
+    ...themeEntries,
+    ...blockEntries,
+    ...templateEntries,
+  ];
 }

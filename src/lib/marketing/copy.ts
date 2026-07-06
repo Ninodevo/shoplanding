@@ -299,6 +299,7 @@ export const FOOTER = {
       links: [
         { label: "Themes", href: "/themes" },
         { label: "Playbook", href: "/playbook" },
+        { label: "Guides", href: "/guides" },
         { label: "Showcase", href: "/showcase" },
         { label: "Free audit", href: "/audit" },
       ],
