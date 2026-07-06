@@ -232,7 +232,16 @@ function build404(): string {
 // sections/announcement-bar.liquid
 // ============================================================================
 function sectionAnnouncementBar(input: PackagerInput): string {
-  const text = escapeLiquid(input.content.announce[0] ?? "Free shipping on orders $35+");
+  // Dedupe the seed's announce lines against each other + our fallbacks so
+  // the ticker never repeats a message (caught rendering live: skincare's
+  // announce[1] duplicated the hardcoded guarantee line).
+  const fallbacks = [
+    "Free shipping on orders $35+",
+    "30-day money-back guarantee",
+    "One product. One decision.",
+  ];
+  const lines = [...new Set([...input.content.announce, ...fallbacks])].slice(0, 3);
+  const text = escapeLiquid(lines[0]!);
   return `<div class="sl-announce">
   <div class="sl-announce-track">
     {%- for block in section.blocks -%}
@@ -261,8 +270,8 @@ function sectionAnnouncementBar(input: PackagerInput): string {
   "default": {
     "blocks": [
       { "type": "message", "settings": { "text": "${text}" } },
-      { "type": "message", "settings": { "text": "30-day money-back guarantee" } },
-      { "type": "message", "settings": { "text": "${escapeLiquid(input.content.announce[1] ?? "Subscribe & save")}" } }
+      { "type": "message", "settings": { "text": "${escapeLiquid(lines[1]!)}" } },
+      { "type": "message", "settings": { "text": "${escapeLiquid(lines[2]!)}" } }
     ]
   }
 }
@@ -327,7 +336,11 @@ function sectionHeroProduct(input: PackagerInput): string {
     <!-- Gallery -->
     <div class="sl-gallery">
       <div class="sl-gallery-main">
-        {%- if product.featured_image -%}
+        {%- comment -%} product can be an empty drop (all_products[""] on a
+        store with no products) whose featured_image passes a bare truthiness
+        check but blows up image_url — hence the explicit != blank guards.
+        Caught on a live store; do not simplify. {%- endcomment -%}
+        {%- if product != blank and product.featured_image != blank -%}
           {{ product.featured_image | image_url: width: 1200 | image_tag: alt: product.title, loading: 'eager', class: 'sl-gallery-img' }}
         {%- else -%}
           <div class="sl-gallery-placeholder">{{ product.title | default: "Product image" }}</div>
@@ -448,12 +461,15 @@ function sectionHeroProduct(input: PackagerInput): string {
   </div>
 </section>
 
+{%- if product != blank -%}
 <script type="application/ld+json">
 {
   "@context": "https://schema.org/",
   "@type": "Product",
   "name": {{ product.title | json }},
+  {%- if product.featured_image != blank -%}
   "image": [{{ product.featured_image | image_url: width: 1200 | json }}],
+  {%- endif -%}
   "description": {{ product.description | strip_html | json }},
   "brand": { "@type": "Brand", "name": {{ shop.name | json }} },
   "offers": {
@@ -465,6 +481,7 @@ function sectionHeroProduct(input: PackagerInput): string {
   }
 }
 </script>
+{%- endif -%}
 
 {% schema %}
 {
@@ -932,7 +949,7 @@ function buildSettingsSchema(): string {
         theme_version: "1.0.0",
         theme_author: "ShopLanding",
         theme_documentation_url: "https://shoplanding.com/docs/shopify",
-        theme_support_url: "mailto:support@shoplanding.com",
+        theme_support_url: "https://shoplanding.com/contact",
       },
       {
         name: "Palette",
