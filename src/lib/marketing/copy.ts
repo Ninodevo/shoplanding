@@ -9,9 +9,9 @@
  */
 
 export const HERO = {
-  eyebrow: "Free 15-second audit · Shopify + WooCommerce",
+  eyebrow: "Free 15-second audit · Built for Shopify",
   headline: "A high-converting product page, live this weekend.",
-  sub: "Drop in your brand, your photos, your copy — ship a one-product landing page built on 69 documented CRO rules. Both Shopify and WooCommerce zips, €99 once, you keep the updates.",
+  sub: "Drop in your brand, your photos, your copy — ship a one-product Shopify landing page built on 69 documented CRO rules. €99 once, you keep the updates.",
   ctaPrimary: "Audit your store — free",
   ctaPrimaryHref: "/audit",
   ctaSecondary: "See the themes",
@@ -21,7 +21,7 @@ export const HERO = {
 
 export const ANNOUNCEMENT = [
   "Free PDP audit · score in 15 seconds",
-  "Shopify + WooCommerce, lifetime updates",
+  "Built for Shopify · lifetime updates",
   "One product. One page. One decision.",
   "One-time license. No subscription.",
 ] as const;
@@ -76,7 +76,7 @@ export const THEME_CATALOG: ThemeCatalogEntry[] = [
     name: "Orelle",
     niche: "Skincare",
     positioning: "Pocketable solid lotion. Cream paper, sage accent.",
-    badges: ["Skincare", "Shopify", "Woo", "Subscription"],
+    badges: ["Skincare", "Shopify", "Subscription"],
     presetClass: "preset-skincare",
     url: "orelle.com",
     annText: "FREE SHIPPING $35+",
@@ -91,7 +91,7 @@ export const THEME_CATALOG: ThemeCatalogEntry[] = [
     name: "VitalStack",
     niche: "Supplement",
     positioning: "Daily greens stick. Dark-mode default, neon-green CTAs.",
-    badges: ["Supplement", "Shopify", "Woo", "Bundle"],
+    badges: ["Supplement", "Shopify", "Bundle"],
     presetClass: "preset-supplement",
     url: "vitalstack.io",
     annText: "SUBSCRIBE · SAVE 20%",
@@ -106,7 +106,7 @@ export const THEME_CATALOG: ThemeCatalogEntry[] = [
     name: "Aurabud",
     niche: "Gadget",
     positioning: "Single-SKU earbud. Steel-grey, electric-blue, spec-table heavy.",
-    badges: ["Gadget", "Shopify", "Woo", "Spec table"],
+    badges: ["Gadget", "Shopify", "Spec table"],
     presetClass: "preset-gadget",
     url: "aurabud.co",
     annText: "FREE 2-DAY SHIPPING",
@@ -197,8 +197,8 @@ export const PRICING_TIERS: PricingTier[] = [
     priceCents: 9900,
     cadence: "one-time · lifetime updates",
     bullets: [
-      "One Shopify or WooCommerce store",
-      "Both .zip artifacts + system spec",
+      "One Shopify store (Online Store 2.0)",
+      "Theme zip + portable system spec",
       "Tweaks panel + personalized preview",
       "Lifetime updates for that store",
     ],
@@ -243,11 +243,11 @@ export type Faq = {
 export const FAQS: Faq[] = [
   {
     q: "Do I need to know how to code?",
-    a: "No for everything you'd change in a Shopify theme editor — brand, palette, fonts, hero copy, product photos, benefits, FAQ items, all surface through the tweaks panel. If your developer wants to dig deeper, the zip ships clean Shopify Liquid + WooCommerce PHP templates and (for the portable spec tier) the full React component tree.",
+    a: "No for everything you'd change in a Shopify theme editor — brand, palette, fonts, hero copy, product photos, benefits, FAQ items, all surface through the tweaks panel. If your developer wants to dig deeper, the zip ships clean Shopify Liquid (Online Store 2.0) and the portable system spec includes the full component anatomy.",
   },
   {
-    q: "Shopify or WooCommerce — which one do I get?",
-    a: "Both, in the same zip. One license. The Shopify theme drops into Online Store 2.0 via the CLI or the dashboard ZIP upload; the WooCommerce template lands as a single-product page template under Appearance → Editor. Use one, use the other, or run both during a migration.",
+    q: "Is this Shopify-only? What about WooCommerce?",
+    a: "Shopify today. A WooCommerce port is on the roadmap, and because every license includes lifetime updates, it lands in your downloads for free the day it ships — no re-purchase. In the meantime the portable system spec (JSON + Markdown) documents the full page anatomy, so a developer can reimplement it on Woo or any stack now.",
   },
   {
     q: "What about my product photos and brand assets?",

@@ -42,12 +42,12 @@ const TIERS = [
     id: "single",
     eyebrow: "For founders",
     name: "Single-store license",
-    cadence: "one-time · one Shopify or Woo store",
+    cadence: "one-time · one Shopify store",
     bullets: [
-      "Both Shopify + WooCommerce zips",
+      "Shopify theme zip (Online Store 2.0)",
       "Portable system spec (JSON + Markdown)",
       "Tweaks panel + personalized preview URL",
-      "Lifetime updates for that store",
+      "Lifetime updates — incl. the Woo port when it ships",
     ],
     priceField: "priceSingleCents",
     cta: "Buy single-store",
@@ -173,8 +173,8 @@ export default async function ThemePage({
                     {theme.preset.niche}
                   </li>
                   <li>
-                    <span className="mk-mono block text-[var(--muted)]">Platforms</span>
-                    Shopify · WooCommerce
+                    <span className="mk-mono block text-[var(--muted)]">Platform</span>
+                    Shopify (OS 2.0)
                   </li>
                   <li>
                     <span className="mk-mono block text-[var(--muted)]">CRO coverage</span>
@@ -250,7 +250,8 @@ export default async function ThemePage({
               <p className="mk-eyebrow">Pricing · one-time</p>
               <h2 className="mk-h2 mt-3">Pay once. Ship today.</h2>
               <p className="mt-4 text-lg text-[var(--ink-2)]">
-                Both Shopify and WooCommerce zips ship together. Lifetime updates. 14-day refund.
+                Shopify theme zip + portable system spec. Lifetime updates —
+                including the WooCommerce port when it ships. 14-day refund.
               </p>
             </header>
 

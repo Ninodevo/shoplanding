@@ -2,7 +2,7 @@ import Link from "next/link";
 import { getPrisma } from "@/lib/db";
 import { Footer, Nav } from "@/components/marketing";
 import {
-  ARTIFACT_KINDS,
+  DELIVERABLE_ARTIFACT_KINDS,
   ARTIFACT_LABEL,
   type ArtifactKind,
 } from "@/lib/packagers";
@@ -99,13 +99,14 @@ export default async function BuySuccessPage({
               {order.licenseKey && (
                 <section className="mt-12 rounded-lg border border-[var(--line)] bg-white p-6">
                   <p className="mk-eyebrow">Downloads</p>
-                  <h2 className="mk-h3 mt-2">Three artifacts. One license.</h2>
+                  <h2 className="mk-h3 mt-2">Your theme + the system spec.</h2>
                   <p className="mt-2 text-sm text-[var(--ink-2)]">
                     Each link is signed against your license key and expires in
-                    7 days. Re-issue any time from your account dashboard.
+                    7 days. Re-issue any time from your account dashboard. The
+                    WooCommerce port lands here as a free update when it ships.
                   </p>
-                  <ul className="mt-6 grid gap-3 sm:grid-cols-3">
-                    {ARTIFACT_KINDS.map((kind: ArtifactKind) => {
+                  <ul className="mt-6 grid gap-3 sm:grid-cols-2">
+                    {DELIVERABLE_ARTIFACT_KINDS.map((kind: ArtifactKind) => {
                       const token = issueDownloadToken({
                         orderId: order.id,
                         kind,

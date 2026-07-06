@@ -11,6 +11,7 @@ import type { ArtifactKind, PackagerInput, PackagerOutput } from "./types";
 
 export {
   ARTIFACT_KINDS,
+  DELIVERABLE_ARTIFACT_KINDS,
   ARTIFACT_LABEL,
   ARTIFACT_FILENAME,
   type ArtifactKind,

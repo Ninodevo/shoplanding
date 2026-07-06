@@ -2,7 +2,7 @@ import Link from "next/link";
 import { getPrisma } from "@/lib/db";
 import { requireSignedInUser } from "@/lib/auth/server";
 import {
-  ARTIFACT_KINDS,
+  DELIVERABLE_ARTIFACT_KINDS,
   ARTIFACT_LABEL,
   type ArtifactKind,
 } from "@/lib/packagers";
@@ -168,8 +168,8 @@ function OrderCard({
       {order.licenseKey && (
         <div className="mt-6 border-t border-[var(--line)] pt-5">
           <p className="mk-mono text-[var(--muted)]">Downloads</p>
-          <ul className="mt-3 grid gap-2 sm:grid-cols-3">
-            {ARTIFACT_KINDS.map((kind: ArtifactKind) => {
+          <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+            {DELIVERABLE_ARTIFACT_KINDS.map((kind: ArtifactKind) => {
               const token = issueDownloadToken({
                 orderId: order.id,
                 kind,

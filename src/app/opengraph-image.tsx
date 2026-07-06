@@ -95,7 +95,7 @@ export default function OpenGraphImage() {
             lineHeight: 1.4,
           }}
         >
-          Shopify + WooCommerce themes built on 69 documented CRO rules.
+          Shopify themes built on 69 documented CRO rules.
         </div>
 
         {/* Bottom: three niche pills + price */}

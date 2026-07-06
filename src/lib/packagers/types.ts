@@ -4,9 +4,17 @@ import type {
   LandingTweaks,
 } from "@/components/landing/types";
 
-/** Sellable artifact kinds. Order matters — used for tab order in UIs. */
+/** All artifact kinds the packager layer knows how to build. */
 export const ARTIFACT_KINDS = ["spec", "shopify", "woo"] as const;
 export type ArtifactKind = (typeof ARTIFACT_KINDS)[number];
+
+/**
+ * The kinds actually delivered to buyers today. "woo" is excluded — its
+ * packager emits a placeholder README and selling that is indefensible.
+ * Add it back here (and to the download route's VALID_KINDS) when the real
+ * WooCommerce emitter ships; every license holder gets it as a free update.
+ */
+export const DELIVERABLE_ARTIFACT_KINDS = ["shopify", "spec"] as const;
 
 export const ARTIFACT_LABEL: Record<ArtifactKind, string> = {
   spec: "Portable system spec",

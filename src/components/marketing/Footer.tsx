@@ -18,8 +18,8 @@ export default function Footer() {
             </span>
           </Link>
           <p className="mt-4 max-w-sm text-[14px] leading-relaxed text-[var(--ink-2)]">
-            The block system, CRO playbook, and Shopify + WooCommerce themes
-            for high-converting one-product landing pages.
+            The block system, CRO playbook, and Shopify themes for
+            high-converting one-product landing pages.
           </p>
         </div>
         {FOOTER.cols.map((col) => (
