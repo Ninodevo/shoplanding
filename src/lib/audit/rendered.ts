@@ -196,15 +196,36 @@ function measureInPage() {
     ? px(getComputedStyle(para).fontSize)
     : px(getComputedStyle(document.body).fontSize);
 
-  // Buy box anchor: the visible add-to-cart control
-  const atcRe = /add to (cart|bag|basket)|buy now|add to cart/i;
+  // Buy box anchor: the MAIN add-to-cart control — largest visible match
+  // that isn't inside a fixed/sticky container (sticky bars and cart
+  // drawers carry their own ATC buttons and would anchor everything wrong).
+  const inFixed = (el: Element) => {
+    // Only position:fixed ancestors disqualify (cart drawers, floating
+    // bars). position:sticky is how themes pin the buy-box COLUMN while
+    // the gallery scrolls — the main ATC legitimately lives inside one.
+    let n: Element | null = el;
+    while (n && n !== document.body) {
+      if (getComputedStyle(n).position === "fixed") return true;
+      n = n.parentElement;
+    }
+    return false;
+  };
+  const atcRe = /add to (cart|bag|basket)|buy now/i;
   const atc =
-    Array.from(document.querySelectorAll("button, input[type=submit], a")).find(
-      (el) =>
-        atcRe.test(
-          (el.textContent || (el as HTMLInputElement).value || "").trim(),
-        ) && vis(el),
-    ) ?? null;
+    Array.from(document.querySelectorAll("button, input[type=submit], a"))
+      .filter(
+        (el) =>
+          atcRe.test(
+            (el.textContent || (el as HTMLInputElement).value || "").trim(),
+          ) &&
+          vis(el) &&
+          !inFixed(el),
+      )
+      .sort((a, b) => {
+        const ra = a.getBoundingClientRect();
+        const rb = b.getBoundingClientRect();
+        return rb.width * rb.height - ra.width * ra.height;
+      })[0] ?? null;
   const buyBox = atc
     ? atc.closest("form") ??
       atc.closest('[class*="product" i], [class*="buy" i], section, aside') ??
@@ -246,7 +267,10 @@ function measureInPage() {
     }
   }
 
-  // Rating widget distance to title
+  // Rating widget distance to title. Candidates must actually SHOW a
+  // rating (digit or star glyph in text/aria-label) — an empty widget
+  // placeholder or a "Reviews" nav link near the title would otherwise
+  // produce a false pass.
   let ratingDistancePx: number | null = null;
   if (h1) {
     const hr = h1.getBoundingClientRect();
@@ -256,6 +280,11 @@ function measureInPage() {
       ),
     )
       .filter(vis)
+      .filter((el) => {
+        const label =
+          (el.textContent ?? "") + (el.getAttribute("aria-label") ?? "");
+        return /[\d★⭐✮✭]/.test(label);
+      })
       .map((el) => {
         const r = el.getBoundingClientRect();
         return Math.abs(r.top - hr.bottom) + Math.abs(r.left - hr.left) / 4;
@@ -417,10 +446,16 @@ function detectStickyAtcInPage() {
   return Array.from(document.querySelectorAll("*")).some((el) => {
     const s = getComputedStyle(el);
     if (s.position !== "fixed" && s.position !== "sticky") return false;
+    if (s.visibility === "hidden" || s.display === "none" || parseFloat(s.opacity) < 0.5)
+      return false;
     const r = el.getBoundingClientRect();
     if (r.width < window.innerWidth * 0.5 || r.height > 220 || r.height < 20) return false;
-    // pinned to top or bottom edge of the viewport
-    if (r.top > 8 && r.bottom < window.innerHeight - 8) return false;
+    // Actually ON screen, pinned to the top or bottom edge — a bar parked
+    // off-screen via translateY(-100%) has edge-touching geometry too.
+    const vh = window.innerHeight;
+    const pinnedTopVisible = r.top <= 8 && r.bottom > 30;
+    const pinnedBottomVisible = r.bottom >= vh - 8 && r.top < vh - 30;
+    if (!pinnedTopVisible && !pinnedBottomVisible) return false;
     return atcRe.test(el.textContent ?? "");
   });
 }
@@ -430,14 +465,30 @@ async function probeVariantsInPage() {
     const r = el.getBoundingClientRect();
     return r.width > 2 && r.height > 2;
   };
+  const inFixed = (el: Element) => {
+    // Only position:fixed ancestors disqualify (cart drawers, floating
+    // bars). position:sticky is how themes pin the buy-box COLUMN while
+    // the gallery scrolls — the main ATC legitimately lives inside one.
+    let n: Element | null = el;
+    while (n && n !== document.body) {
+      if (getComputedStyle(n).position === "fixed") return true;
+      n = n.parentElement;
+    }
+    return false;
+  };
   const atcRe = /add to (cart|bag|basket)|buy now/i;
-  const atc = Array.from(
-    document.querySelectorAll("button, input[type=submit]"),
-  ).find(
-    (el) =>
-      atcRe.test((el.textContent || (el as HTMLInputElement).value || "").trim()) &&
-      vis(el),
-  );
+  const atc = Array.from(document.querySelectorAll("button, input[type=submit]"))
+    .filter(
+      (el) =>
+        atcRe.test((el.textContent || (el as HTMLInputElement).value || "").trim()) &&
+        vis(el) &&
+        !inFixed(el),
+    )
+    .sort((a, b) => {
+      const ra = a.getBoundingClientRect();
+      const rb = b.getBoundingClientRect();
+      return rb.width * rb.height - ra.width * ra.height;
+    })[0];
   const scope: Element | Document = atc
     ? atc.closest("form") ?? atc.closest('[class*="product" i], section') ?? document
     : document;
@@ -518,17 +569,34 @@ async function probeAtc(
       const r = el.getBoundingClientRect();
       return r.width > 2 && r.height > 2;
     };
+    const inFixed = (el: Element) => {
+      // Only position:fixed ancestors disqualify (cart drawers, floating
+      // bars). position:sticky is how themes pin the buy-box COLUMN while
+      // the gallery scrolls — the main ATC legitimately lives inside one.
+      let n: Element | null = el;
+      while (n && n !== document.body) {
+        if (getComputedStyle(n).position === "fixed") return true;
+        n = n.parentElement;
+      }
+      return false;
+    };
+    const match = (el: Element) =>
+      /add to (cart|bag|basket)|buy now/i.test(
+        (el.textContent || (el as HTMLInputElement).value || "").trim(),
+      ) &&
+      vis(el) &&
+      !inFixed(el);
+    const byArea = (a: Element, b: Element) => {
+      const ra = a.getBoundingClientRect();
+      const rb = b.getBoundingClientRect();
+      return rb.width * rb.height - ra.width * ra.height;
+    };
     // Buttons first; ATC-labeled <a> links second (some themes use anchors)
-    const cands = [
-      ...Array.from(document.querySelectorAll("button, input[type=submit]")),
-      ...Array.from(document.querySelectorAll("a")),
-    ];
-    const atc = cands.find(
-      (el) =>
-        /add to (cart|bag|basket)|buy now/i.test(
-          (el.textContent || (el as HTMLInputElement).value || "").trim(),
-        ) && vis(el),
-    );
+    const atc =
+      Array.from(document.querySelectorAll("button, input[type=submit]"))
+        .filter(match)
+        .sort(byArea)[0] ??
+      Array.from(document.querySelectorAll("a")).filter(match).sort(byArea)[0];
     if (!atc) return false;
     (atc as HTMLElement).click();
     return true;
