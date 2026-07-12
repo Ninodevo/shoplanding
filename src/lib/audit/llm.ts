@@ -69,6 +69,9 @@ export async function llmScoreUnknowns(
 function failUnverifiable(page: ExtractedPage, ruleText: string): boolean {
   const t = ruleText.toLowerCase();
   if (page.reviewApp && /(rating|review|star|testimonial)/.test(t)) return true;
+  // Photo CONTENT (faces, attractiveness) is invisible to a text-only model
+  // in every mode — an LLM fail on it is always a confabulation.
+  if (/(photo|faces|attractive)/.test(t)) return true;
   if (page.rendered) return false;
   // A thumbnail strip in the markup means the gallery is a JS widget whose
   // slides load client-side — media counts from static HTML prove nothing.
@@ -146,12 +149,16 @@ async function callLlm(
     looksClientRendered: page.looksClientRendered,
     h1: page.h1Text.slice(0, 3),
     buttonExamples,
+    // NOTE: rendered-probe data deliberately NOT included — probe false/null
+    // means "couldn't confirm", and the model reads it as "verified absent".
+    // The rules layer consumes probes with the correct semantics.
   };
 
   const evidenceRules = page.rendered
     ? `CRITICAL — the evidence is the RENDERED DOM, captured in a real browser after JavaScript ran and the full page was scrolled:
 - Review widgets, galleries, variant pickers, and wallet buttons HAVE rendered. If something is absent from these signals and text, it is genuinely absent from the page — you may mark "fail" for absence.
 - Still return "unknown" for judgments that need eyes or interaction: photo attractiveness, zoom/swipe behavior, what happens after a click, layout aesthetics.
+- You receive TEXT only — you cannot see any image. Never pass or fail a rule about photo CONTENT (faces, customer photos, attractiveness); those stay "unknown".
 - "pass" requires evidence you can point to in the signals or text. Never pass on "likely" or "probably".
 - Duplicate identical H1s are usually a responsive layout (desktop + mobile copies), not a defect.
 - If a rule doesn't apply to this product category (e.g. apparel sizing on a beverage), return "unknown" with a "Not applicable — …" note. Never "fail" a rule for being inapplicable.`

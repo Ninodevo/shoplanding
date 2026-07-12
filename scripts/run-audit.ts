@@ -29,7 +29,17 @@ async function main() {
   const fetched = rendered
     ? await fetchRenderedPage(url)
     : await fetchPageForAudit(url);
-  const page = extractPage({ html: fetched.html, url, finalUrl: fetched.finalUrl, rendered });
+  const page = extractPage({
+    html: fetched.html,
+    url,
+    finalUrl: fetched.finalUrl,
+    rendered,
+    probes: "probes" in fetched ? fetched.probes : null,
+  });
+  if (page.probes) {
+    console.log("── probes ────────────────────────────────────────");
+    console.log(JSON.stringify(page.probes, null, 1));
+  }
 
   console.log("── extracted signals ─────────────────────────────");
   const { bodyTextSnippet: _snip, textIncludes, buttonText, h1Text, ...rest } = page;

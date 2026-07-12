@@ -1,6 +1,7 @@
 import { createRequire } from "node:module";
-import type { Browser } from "playwright-core";
+import type { Browser, Page } from "playwright-core";
 import { isBlockedHost } from "./fetch";
+import { EMPTY_PROBES, type RenderedProbes } from "./probes";
 
 /**
  * Rendered-browser fetch for the paid deep audit. Returns the post-hydration
@@ -23,6 +24,8 @@ export type RenderedFetch = {
   finalUrl: string;
   /** Base64 JPEG, viewport-width full-page capture (quality-capped). */
   screenshotBase64: string;
+  /** Measured + interaction signals — see probes.ts. */
+  probes: RenderedProbes;
 };
 
 export function isRenderedFetchConfigured(): boolean {
@@ -105,10 +108,455 @@ export async function fetchRenderedPage(url: string): Promise<RenderedFetch> {
       console.warn("[rendered] full-page screenshot failed, continuing without", err);
     }
 
-    return { html, finalUrl, screenshotBase64 };
+    // Probes run AFTER html + screenshot are captured — the interaction
+    // probes mutate the page (variant clicks, ATC click) and the last one
+    // may navigate away entirely.
+    const probes = await collectProbes(page);
+
+    return { html, finalUrl, screenshotBase64, probes };
   } finally {
     await browser.close();
   }
+}
+
+/**
+ * Measurement + interaction probes. Each step is individually fenced —
+ * a selector that matches nothing on some exotic theme must never sink
+ * the audit, it just leaves that probe at its EMPTY default.
+ */
+async function collectProbes(page: Page): Promise<RenderedProbes> {
+  const probes: RenderedProbes = { ...EMPTY_PROBES };
+
+  // tsx/esbuild compile the probe functions with `keepNames`, which injects
+  // `__name(...)` helper calls — the helper doesn't exist in the page when
+  // Playwright serializes the function source. Shim it (no-op in prod
+  // builds that don't inject it).
+  await page
+    .evaluate("window.__name = window.__name || ((f) => f)")
+    .catch(() => {});
+
+  // ── 1. Static measurements (geometry, computed styles) — one evaluate.
+  try {
+    Object.assign(probes, await page.evaluate(measureInPage));
+  } catch (err) {
+    console.warn("[rendered] measurement probe failed", err);
+  }
+
+  // ── 2. Sticky buy bar: scroll well past the hero, wait, look for a
+  // fixed/sticky bar carrying an add-to-cart control.
+  try {
+    await page.evaluate(() =>
+      window.scrollTo(0, Math.min(2400, document.body.scrollHeight / 2)),
+    );
+    await page.waitForTimeout(900);
+    probes.stickyBarWithAtc = await page.evaluate(detectStickyAtcInPage);
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.waitForTimeout(300);
+  } catch (err) {
+    console.warn("[rendered] sticky probe failed", err);
+  }
+
+  // ── 3. Variant interaction: pick a different option, watch price + image.
+  try {
+    probes.variantProbe = await page.evaluate(probeVariantsInPage);
+  } catch (err) {
+    console.warn("[rendered] variant probe failed", err);
+  }
+
+  // ── 4. ATC click — LAST, may navigate to cart/checkout.
+  try {
+    probes.atcProbe = await probeAtc(page);
+  } catch (err) {
+    console.warn("[rendered] ATC probe failed", err);
+  }
+
+  return probes;
+}
+
+/* ─── in-page functions (serialized into the browser) ─────────────────── */
+
+function measureInPage() {
+  const vis = (el: Element) => {
+    const r = el.getBoundingClientRect();
+    const s = getComputedStyle(el);
+    return r.width > 2 && r.height > 2 && s.visibility !== "hidden" && s.display !== "none";
+  };
+  const px = (v: string) => {
+    const n = parseFloat(v);
+    return Number.isFinite(n) ? Math.round(n * 10) / 10 : null;
+  };
+
+  // Title vs body font size
+  const h1 = Array.from(document.querySelectorAll("h1")).find(vis) ?? null;
+  const h1FontPx = h1 ? px(getComputedStyle(h1).fontSize) : null;
+  const para = Array.from(document.querySelectorAll("p"))
+    .filter(vis)
+    .sort((a, b) => (b.textContent?.length ?? 0) - (a.textContent?.length ?? 0))[0];
+  const bodyFontPx = para
+    ? px(getComputedStyle(para).fontSize)
+    : px(getComputedStyle(document.body).fontSize);
+
+  // Buy box anchor: the visible add-to-cart control
+  const atcRe = /add to (cart|bag|basket)|buy now|add to cart/i;
+  const atc =
+    Array.from(document.querySelectorAll("button, input[type=submit], a")).find(
+      (el) =>
+        atcRe.test(
+          (el.textContent || (el as HTMLInputElement).value || "").trim(),
+        ) && vis(el),
+    ) ?? null;
+  const buyBox = atc
+    ? atc.closest("form") ??
+      atc.closest('[class*="product" i], [class*="buy" i], section, aside') ??
+      atc
+    : null;
+
+  // Gallery anchor: the largest visible image in the top half of the page
+  const heroImgs = Array.from(document.querySelectorAll("img"))
+    .filter(vis)
+    .filter((el) => el.getBoundingClientRect().top + window.scrollY < 2400)
+    .sort((a, b) => {
+      const ra = a.getBoundingClientRect();
+      const rb = b.getBoundingClientRect();
+      return rb.width * rb.height - ra.width * ra.height;
+    });
+  const mainImg = heroImgs[0] ?? null;
+
+  // Layout: gallery vs buy box geometry (desktop viewport). The gallery
+  // anchor is the largest image that VERTICALLY OVERLAPS the buy box —
+  // anchoring on the page's biggest image grabs below-fold marketing
+  // banners and reports "not side by side" for perfectly standard PDPs.
+  let layout: { sideBySide: boolean; galleryLeft: boolean } | null = null;
+  if (buyBox) {
+    const bb = buyBox.getBoundingClientRect();
+    const overlapping = heroImgs.slice(0, 8).find((img) => {
+      const gi = img.getBoundingClientRect();
+      const overlap = Math.min(gi.bottom, bb.bottom) - Math.max(gi.top, bb.top);
+      return (
+        overlap > Math.min(gi.height, bb.height) * 0.3 &&
+        Math.abs(gi.left - bb.left) > 100 &&
+        gi.width > 200
+      );
+    });
+    if (overlapping) {
+      const gi = overlapping.getBoundingClientRect();
+      layout = { sideBySide: true, galleryLeft: gi.left < bb.left };
+    } else if (mainImg) {
+      layout = { sideBySide: false, galleryLeft: false };
+    }
+  }
+
+  // Rating widget distance to title
+  let ratingDistancePx: number | null = null;
+  if (h1) {
+    const hr = h1.getBoundingClientRect();
+    const rating = Array.from(
+      document.querySelectorAll(
+        '[class*="rating" i], [class*="stars" i], [class*="review" i], [aria-label*="out of 5" i], [aria-label*="stars" i]',
+      ),
+    )
+      .filter(vis)
+      .map((el) => {
+        const r = el.getBoundingClientRect();
+        return Math.abs(r.top - hr.bottom) + Math.abs(r.left - hr.left) / 4;
+      })
+      .sort((a, b) => a - b)[0];
+    ratingDistancePx = rating !== undefined ? Math.round(rating) : null;
+  }
+
+  // Benefit bullets near the title (checkmark/icon list within ~400px below)
+  let benefitsNearTitle = false;
+  if (h1) {
+    const hb = h1.getBoundingClientRect().bottom;
+    benefitsNearTitle = Array.from(document.querySelectorAll("ul, ol")).some(
+      (list) => {
+        if (!vis(list)) return false;
+        const r = list.getBoundingClientRect();
+        if (r.top < hb - 40 || r.top > hb + 400) return false;
+        const items = Array.from(list.querySelectorAll("li")).filter(vis);
+        if (items.length < 2) return false;
+        return items.some(
+          (li) =>
+            /[✓✔☑✅•·]/.test(li.textContent ?? "") || li.querySelector("svg, img"),
+        );
+      },
+    );
+  }
+
+  // Gallery arrows: visible prev/next controls near the main image
+  let galleryArrows = false;
+  if (mainImg) {
+    const gr = mainImg.getBoundingClientRect();
+    galleryArrows = Array.from(
+      document.querySelectorAll(
+        '[class*="arrow" i], [class*="prev" i], [class*="next" i], [aria-label*="next" i], [aria-label*="previous" i]',
+      ),
+    ).some((el) => {
+      if (!vis(el)) return false;
+      const r = el.getBoundingClientRect();
+      return (
+        r.top < gr.bottom + 80 &&
+        r.bottom > gr.top - 80 &&
+        r.width < 120 &&
+        r.height < 120
+      );
+    });
+  }
+
+  // Slider library markers
+  const htmlLower = document.documentElement.outerHTML.slice(0, 400_000).toLowerCase();
+  const sliderLib =
+    ["swiper", "flickity", "splide", "glide", "keen-slider", "slick-slider"].find(
+      (lib) => htmlLower.includes(lib),
+    ) ?? null;
+
+  // Zoom affordance
+  const zoomMarkers = /photoswipe|magnif|image-zoom|zoom-image|data-zoom|click to zoom|drift-zoom/i.test(
+    htmlLower,
+  );
+
+  // Quantity control near the buy box — visible controls only (Shopify
+  // themes ship hidden quantity inputs that would false-positive here)
+  let qtyControl: "stepper" | "dropdown" | "input" | null = null;
+  const qtyScope = (buyBox as Element | null) ?? document;
+  const qtySelect = Array.from(
+    qtyScope.querySelectorAll(
+      'select[name*="quantity" i], select[id*="quantity" i], select[class*="quantity" i]',
+    ),
+  ).find(vis);
+  const qtyInput = Array.from(
+    qtyScope.querySelectorAll(
+      'input[type="number"], input[name*="quantity" i], input[class*="qty" i], input[class*="quantity" i]',
+    ),
+  ).find(vis);
+  if (qtyInput) {
+    const wrap = qtyInput.closest("div, fieldset");
+    const hasStepBtns =
+      wrap != null &&
+      Array.from(wrap.querySelectorAll("button")).some((b) =>
+        /[+\-−＋]/.test((b.textContent ?? "").trim()),
+      );
+    qtyControl = hasStepBtns ? "stepper" : "input";
+  } else if (qtySelect) {
+    qtyControl = "dropdown";
+  }
+
+  // Description readability: the longest paragraph's measured typography
+  let descriptionTypography: {
+    fontPx: number;
+    lineHeightRatio: number;
+    charsPerLine: number;
+  } | null = null;
+  if (para) {
+    const s = getComputedStyle(para);
+    const fontPx = parseFloat(s.fontSize);
+    const lineH = parseFloat(s.lineHeight);
+    const width = para.getBoundingClientRect().width;
+    if (Number.isFinite(fontPx) && fontPx > 0 && width > 0) {
+      descriptionTypography = {
+        fontPx: Math.round(fontPx * 10) / 10,
+        lineHeightRatio: Number.isFinite(lineH)
+          ? Math.round((lineH / fontPx) * 100) / 100
+          : 1.2,
+        // ~0.5em average glyph width is the classic approximation
+        charsPerLine: Math.round(width / (fontPx * 0.5)),
+      };
+    }
+  }
+
+  // Accordions below the fold
+  const accordionCount =
+    document.querySelectorAll("details").length +
+    Array.from(document.querySelectorAll("[aria-expanded]")).filter(
+      (el) => vis(el) && el.getBoundingClientRect().top + window.scrollY > 900,
+    ).length;
+
+  // Reviews section background vs page background
+  let reviewsBgDistinct: boolean | null = null;
+  const reviewsSection = Array.from(
+    document.querySelectorAll('[id*="review" i], [class*="review" i]'),
+  )
+    .filter(vis)
+    .sort(
+      (a, b) =>
+        b.getBoundingClientRect().height - a.getBoundingClientRect().height,
+    )[0];
+  if (reviewsSection) {
+    const bodyBg = getComputedStyle(document.body).backgroundColor;
+    let el: Element | null = reviewsSection;
+    let bg = "rgba(0, 0, 0, 0)";
+    while (el && el !== document.body) {
+      const c = getComputedStyle(el).backgroundColor;
+      if (c && !/rgba\(0, 0, 0, 0\)|transparent/.test(c)) {
+        bg = c;
+        break;
+      }
+      el = el.parentElement;
+    }
+    reviewsBgDistinct = bg !== "rgba(0, 0, 0, 0)" && bg !== bodyBg;
+  }
+
+  return {
+    h1FontPx,
+    bodyFontPx,
+    layout,
+    ratingDistancePx,
+    benefitsNearTitle,
+    galleryArrows,
+    sliderLib,
+    zoomMarkers,
+    qtyControl,
+    descriptionTypography,
+    accordionCount,
+    reviewsBgDistinct,
+  };
+}
+
+function detectStickyAtcInPage() {
+  const atcRe = /add to (cart|bag|basket)|buy now/i;
+  return Array.from(document.querySelectorAll("*")).some((el) => {
+    const s = getComputedStyle(el);
+    if (s.position !== "fixed" && s.position !== "sticky") return false;
+    const r = el.getBoundingClientRect();
+    if (r.width < window.innerWidth * 0.5 || r.height > 220 || r.height < 20) return false;
+    // pinned to top or bottom edge of the viewport
+    if (r.top > 8 && r.bottom < window.innerHeight - 8) return false;
+    return atcRe.test(el.textContent ?? "");
+  });
+}
+
+async function probeVariantsInPage() {
+  const vis = (el: Element) => {
+    const r = el.getBoundingClientRect();
+    return r.width > 2 && r.height > 2;
+  };
+  const atcRe = /add to (cart|bag|basket)|buy now/i;
+  const atc = Array.from(
+    document.querySelectorAll("button, input[type=submit]"),
+  ).find(
+    (el) =>
+      atcRe.test((el.textContent || (el as HTMLInputElement).value || "").trim()) &&
+      vis(el),
+  );
+  const scope: Element | Document = atc
+    ? atc.closest("form") ?? atc.closest('[class*="product" i], section') ?? document
+    : document;
+
+  const priceText = () => {
+    const el = Array.from(scope.querySelectorAll("*")).find(
+      (e) =>
+        e.children.length === 0 &&
+        /[$€£]\s?\d/.test(e.textContent ?? "") &&
+        vis(e),
+    );
+    return el?.textContent?.trim() ?? null;
+  };
+  const mainImgSrc = () => {
+    const img = Array.from(document.querySelectorAll("img"))
+      .filter(vis)
+      .sort((a, b) => {
+        const ra = a.getBoundingClientRect();
+        const rb = b.getBoundingClientRect();
+        return rb.width * rb.height - ra.width * ra.height;
+      })[0];
+    return img?.currentSrc || img?.src || null;
+  };
+
+  // Variant candidates: radio groups with >1 option, or selects with >1
+  // option (skip quantity selects).
+  const radios = Array.from(
+    scope.querySelectorAll('input[type="radio"]'),
+  ) as HTMLInputElement[];
+  const groups = new Map<string, HTMLInputElement[]>();
+  for (const r of radios) {
+    const g = groups.get(r.name) ?? [];
+    g.push(r);
+    groups.set(r.name, g);
+  }
+  const radioGroup = Array.from(groups.values()).find((g) => g.length > 1);
+  const select = (Array.from(scope.querySelectorAll("select")) as HTMLSelectElement[]).find(
+    (s) => s.options.length > 1 && !/quantity|qty/i.test(s.name + s.id + s.className),
+  );
+
+  const optionsFound = radioGroup?.length ?? select?.options.length ?? 0;
+  if (!radioGroup && !select) {
+    return { optionsFound: 0, clicked: false, priceChanged: false, imageChanged: false };
+  }
+
+  const beforePrice = priceText();
+  const beforeImg = mainImgSrc();
+
+  if (radioGroup) {
+    const other = radioGroup.find((r) => !r.checked) ?? radioGroup[1];
+    const label = other
+      ? document.querySelector(`label[for="${other.id}"]`) ?? other.closest("label")
+      : null;
+    ((label as HTMLElement | null) ?? other)?.click();
+  } else if (select) {
+    select.selectedIndex = select.selectedIndex === 0 ? 1 : 0;
+    select.dispatchEvent(new Event("change", { bubbles: true }));
+  }
+
+  await new Promise((r) => setTimeout(r, 1500));
+
+  const afterPrice = priceText();
+  const afterImg = mainImgSrc();
+  return {
+    optionsFound,
+    clicked: true,
+    priceChanged: beforePrice !== null && afterPrice !== null && beforePrice !== afterPrice,
+    imageChanged: beforeImg !== null && afterImg !== null && beforeImg !== afterImg,
+  };
+}
+
+async function probeAtc(
+  page: Page,
+): Promise<NonNullable<RenderedProbes["atcProbe"]>> {
+  const beforeUrl = page.url();
+  const clicked = await page.evaluate(() => {
+    const vis = (el: Element) => {
+      const r = el.getBoundingClientRect();
+      return r.width > 2 && r.height > 2;
+    };
+    // Buttons first; ATC-labeled <a> links second (some themes use anchors)
+    const cands = [
+      ...Array.from(document.querySelectorAll("button, input[type=submit]")),
+      ...Array.from(document.querySelectorAll("a")),
+    ];
+    const atc = cands.find(
+      (el) =>
+        /add to (cart|bag|basket)|buy now/i.test(
+          (el.textContent || (el as HTMLInputElement).value || "").trim(),
+        ) && vis(el),
+    );
+    if (!atc) return false;
+    (atc as HTMLElement).click();
+    return true;
+  });
+  if (!clicked) return { clicked: false, outcome: "none" };
+
+  await page.waitForTimeout(2500);
+
+  const afterUrl = page.url();
+  if (afterUrl !== beforeUrl) {
+    if (/checkout/i.test(afterUrl)) return { clicked: true, outcome: "checkout" };
+    if (/\/cart\b/i.test(afterUrl)) return { clicked: true, outcome: "cart-page" };
+  }
+
+  const drawer = await page.evaluate(() => {
+    return Array.from(document.querySelectorAll("*")).some((el) => {
+      const s = getComputedStyle(el);
+      if (s.position !== "fixed") return false;
+      if (s.visibility === "hidden" || s.display === "none" || parseFloat(s.opacity) < 0.5) return false;
+      const r = el.getBoundingClientRect();
+      // side panel: substantial height, partial width, hugging an edge
+      const hugsEdge = r.right >= window.innerWidth - 4 || r.left <= 4;
+      const panelSized =
+        r.width >= 240 && r.width <= window.innerWidth * 0.75 && r.height >= window.innerHeight * 0.5;
+      return hugsEdge && panelSized && /cart|bag|basket/i.test(el.textContent ?? "");
+    });
+  });
+  return { clicked: true, outcome: drawer ? "drawer" : "none" };
 }
 
 function assertSafeUrl(input: string): void {

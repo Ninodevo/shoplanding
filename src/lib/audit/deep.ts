@@ -43,6 +43,7 @@ export async function runDeepAudit(auditId: string): Promise<void> {
       url: audit.url,
       finalUrl: rendered.finalUrl,
       rendered: true,
+      probes: rendered.probes,
     });
     const heuristic = runRules(page);
     const rules = await llmScoreUnknowns(page, heuristic);

@@ -1,4 +1,5 @@
 import * as cheerio from "cheerio";
+import type { RenderedProbes } from "./probes";
 
 /**
  * Parse a fetched HTML page into a structured object the scoring engine can
@@ -16,6 +17,8 @@ export type ExtractedPage = {
    * what they'd otherwise leave at "unknown".
    */
   rendered: boolean;
+  /** Measured + interaction signals from the rendered pass (deep only). */
+  probes: RenderedProbes | null;
 
   // Head
   title: string | null;
@@ -132,15 +135,27 @@ export function extractPage(args: {
   finalUrl: string;
   /** Set true when `html` is a rendered-browser DOM (deep audit). */
   rendered?: boolean;
+  /** Measured signals from the rendered pass — pass through untouched. */
+  probes?: RenderedProbes | null;
 }): ExtractedPage {
   const $ = cheerio.load(args.html);
   const baseOrigin = safeOrigin(args.finalUrl);
 
-  // ── Head
-  const title = $("head > title").first().text().trim() || null;
+  // ── Head. Rendered DOMs often carry illegal elements inside <head>,
+  // which makes the parser close it early and orphan <title>/<meta> —
+  // always fall back to unscoped selectors.
+  const title =
+    $("head > title").first().text().trim() ||
+    $("title").first().text().trim() ||
+    null;
   const metaDescription =
-    $('head meta[name="description"]').attr("content")?.trim() || null;
-  const canonical = $('head link[rel="canonical"]').attr("href")?.trim() || null;
+    $('head meta[name="description"]').attr("content")?.trim() ||
+    $('meta[name="description"]').attr("content")?.trim() ||
+    null;
+  const canonical =
+    $('head link[rel="canonical"]').attr("href")?.trim() ||
+    $('link[rel="canonical"]').attr("href")?.trim() ||
+    null;
 
   // ── Schema.org Product JSON-LD (search all <script type="application/ld+json">)
   const productSchema = extractProductSchema($);
@@ -366,6 +381,7 @@ export function extractPage(args: {
     url: args.url,
     finalUrl: args.finalUrl,
     rendered: args.rendered ?? false,
+    probes: args.probes ?? null,
     title,
     metaDescription,
     canonical,

@@ -54,22 +54,36 @@ export const RULES: RuleDef[] = [
     ruleIndex: 0,
     text: "The buy button takes the user directly to the checkout (or upsell) and skips the cart page",
     weight: 2,
-    detect: (p) =>
-      p.cartDrawer
+    detect: (p) => {
+      // Deep audit clicked the button and watched what happened.
+      const atc = p.probes?.atcProbe;
+      if (atc?.clicked) {
+        if (atc.outcome === "checkout") return pass("Clicking add-to-cart went straight to checkout");
+        if (atc.outcome === "cart-page") return fail("Add-to-cart lands on the cart page — an extra step before checkout");
+        if (atc.outcome === "drawer") return fail("Add-to-cart opens a cart drawer — an extra step before checkout");
+      }
+      return p.cartDrawer
         ? fail(
             `${p.cartDrawer} detected — add-to-cart opens a cart drawer, an extra step before checkout`,
           )
-        : unknown("Can't trace the buy-button target from a single PDP fetch"),
+        : unknown("Can't trace the buy-button target from a single PDP fetch");
+    },
   },
   {
     blockSlug: "general",
     ruleIndex: 1,
     text: "Sticky navigation with product name, image, sections, availability, price, discount, and CTA",
     weight: 2,
-    detect: (p) =>
-      p.hasStickyAtcMarkers
+    detect: (p) => {
+      if (p.probes) {
+        return p.probes.stickyBarWithAtc
+          ? pass("A sticky buy bar with add-to-cart appears on scroll")
+          : fail("No sticky bar with add-to-cart appeared after scrolling the rendered page");
+      }
+      return p.hasStickyAtcMarkers
         ? pass("Sticky ATC markup detected — content quality needs eyes")
-        : unknown("No sticky-bar markup detected; could still exist as JS-rendered widget"),
+        : unknown("No sticky-bar markup detected; could still exist as JS-rendered widget");
+    },
   },
   {
     blockSlug: "general",
@@ -115,14 +129,23 @@ export const RULES: RuleDef[] = [
     ruleIndex: 1,
     text: "The main product title is visually prominent compared to other content",
     weight: 2,
-    detect: (p) =>
-      p.h1Count === 1
+    detect: (p) => {
+      // Deep audit: measured font sizes settle it.
+      const h1Px = p.probes?.h1FontPx;
+      const bodyPx = p.probes?.bodyFontPx;
+      if (h1Px != null && bodyPx != null) {
+        return h1Px >= Math.max(24, bodyPx * 1.5)
+          ? pass(`Title is ${h1Px}px vs ${bodyPx}px body text — clearly prominent`)
+          : fail(`Title is only ${h1Px}px vs ${bodyPx}px body text — not visually dominant`);
+      }
+      return p.h1Count === 1
         ? pass("Exactly one H1 — typical prominent title pattern")
         : p.h1Count === 0
         ? p.rendered
           ? fail("No H1 on the rendered page")
           : unknown("No H1 in static HTML — headless storefronts render it client-side; check live")
-        : unknown(`${p.h1Count} H1s — prominence depends on rendering`),
+        : unknown(`${p.h1Count} H1s — prominence depends on rendering`);
+    },
   },
   {
     blockSlug: "product-overview-above-the-cta-area",
@@ -147,12 +170,20 @@ export const RULES: RuleDef[] = [
     ruleIndex: 4,
     text: "Product rating shown near the title (linked to reviews)",
     weight: 3,
-    detect: (p) =>
-      p.starRating !== null
+    detect: (p) => {
+      // Deep audit: measured the widget's distance to the H1.
+      const d = p.probes?.ratingDistancePx;
+      if (d != null) {
+        return d <= 250
+          ? pass(`Rating widget sits ~${d}px from the title`)
+          : fail(`Rating widget found but ~${d}px away from the title — not adjacent`);
+      }
+      return p.starRating !== null
         ? pass(`${p.starRating}/5${p.reviewCount ? ` from ${p.reviewCount} reviews` : ""}`)
         : p.reviewApp
         ? unknown(`${p.reviewApp} detected — its rating widget renders client-side; verify it sits near the title`)
-        : fail("No star rating detected near the title"),
+        : fail("No star rating detected near the title");
+    },
   },
   {
     blockSlug: "product-overview-above-the-cta-area",
@@ -160,6 +191,11 @@ export const RULES: RuleDef[] = [
     text: "Short list of key benefits near the main title (checkmark bullets)",
     weight: 2,
     detect: (p) => {
+      if (p.probes) {
+        return p.probes.benefitsNearTitle
+          ? pass("Benefit bullet list found within ~400px below the title")
+          : unknown("No benefit bullets detected near the title on the rendered page — verify visually");
+      }
       const checkmarkPattern = /[✓✔☑]/;
       const hasBullets = checkmarkPattern.test(p.h1Text.join(" ") + " " + (p.metaDescription ?? ""));
       if (hasBullets) return pass("Checkmark bullets detected");
@@ -175,7 +211,15 @@ export const RULES: RuleDef[] = [
     ruleIndex: 0,
     text: "Page layout is standardized (gallery left, description + CTA right)",
     weight: 2,
-    detect: () => unknown("Layout topology needs rendered DOM — LLM judges from text flow"),
+    detect: (p) => {
+      const l = p.probes?.layout;
+      if (l) {
+        if (l.sideBySide && l.galleryLeft) return pass("Measured: gallery sits left of the buy box");
+        if (l.sideBySide) return fail("Measured: buy box sits LEFT of the gallery — reversed from convention");
+        return fail("Gallery and buy box don't sit side-by-side on a desktop viewport");
+      }
+      return unknown("Layout topology needs rendered DOM — LLM judges from text flow");
+    },
   },
   {
     blockSlug: "image-gallery",
@@ -189,7 +233,10 @@ export const RULES: RuleDef[] = [
     ruleIndex: 2,
     text: "Main photo supports zoom (especially on mobile)",
     weight: 1,
-    detect: () => unknown("Zoom is a JS interaction — not visible in static HTML"),
+    detect: (p) =>
+      p.probes?.zoomMarkers
+        ? pass("Zoom affordance detected (zoom/lightbox markers on the rendered page)")
+        : unknown("Zoom is a JS interaction — not provable absent even in a rendered DOM"),
   },
   {
     blockSlug: "image-gallery",
@@ -233,21 +280,40 @@ export const RULES: RuleDef[] = [
     ruleIndex: 6,
     text: "Gallery contains arrows / navigation between images",
     weight: 1,
-    detect: () => unknown("Arrow UI is a JS widget — not visible in static HTML"),
+    detect: (p) => {
+      if (p.probes) {
+        if (p.probes.galleryArrows) return pass("Visible prev/next controls beside the main image");
+        if (p.hasGalleryThumbs) return pass("No arrows, but a thumbnail strip navigates the gallery");
+        return fail("No arrows or thumbnail navigation found around the rendered gallery");
+      }
+      return unknown("Arrow UI is a JS widget — not visible in static HTML");
+    },
   },
   {
     blockSlug: "image-gallery",
     ruleIndex: 7,
     text: "Gallery supports swipe on mobile",
     weight: 1,
-    detect: () => unknown("Swipe gestures are runtime — not visible in static HTML"),
+    detect: (p) =>
+      p.probes?.sliderLib
+        ? pass(`Gallery runs on ${p.probes.sliderLib} — swipe comes built in`)
+        : unknown("Swipe gestures are runtime — not provable absent without a touch device"),
   },
   {
     blockSlug: "image-gallery",
     ruleIndex: 8,
     text: "Variant-aware imagery (different photos per variant/size)",
     weight: 2,
-    detect: () => unknown("Variant-image binding lives in JS state — manual review"),
+    detect: (p) => {
+      const v = p.probes?.variantProbe;
+      if (v) {
+        if (v.optionsFound === 0) return unknown("Single-variant product — not applicable");
+        if (v.clicked && v.imageChanged) return pass("Switching variants swapped the main image");
+        if (v.clicked)
+          return unknown("Clicked a variant option; main image didn't change — verify the picker manually");
+      }
+      return unknown("Variant-image binding lives in JS state — manual review");
+    },
   },
 
   // ────────────────────────────────────────────────────────────────────────
@@ -277,7 +343,16 @@ export const RULES: RuleDef[] = [
     ruleIndex: 2,
     text: "Variant selection is connected to the gallery (shows the chosen variant)",
     weight: 2,
-    detect: () => unknown("JS-bound — manual review required"),
+    detect: (p) => {
+      const v = p.probes?.variantProbe;
+      if (v) {
+        if (v.optionsFound === 0) return unknown("Single-variant product — not applicable");
+        if (v.clicked && v.imageChanged) return pass("Clicking a variant updated the gallery image");
+        if (v.clicked)
+          return unknown("Clicked a variant option; gallery didn't react — verify the picker manually");
+      }
+      return unknown("JS-bound — manual review required");
+    },
   },
   {
     blockSlug: "cta-area",
@@ -291,7 +366,21 @@ export const RULES: RuleDef[] = [
     ruleIndex: 4,
     text: "Interactive selectors for product variants (price + gallery update in real-time)",
     weight: 1,
-    detect: () => unknown("Real-time update behaviour — JS state, manual review"),
+    detect: (p) => {
+      const v = p.probes?.variantProbe;
+      if (v) {
+        if (v.optionsFound === 0) return unknown("Single-variant product — not applicable");
+        if (v.clicked && (v.priceChanged || v.imageChanged)) {
+          const what = [v.priceChanged ? "price" : null, v.imageChanged ? "gallery" : null]
+            .filter(Boolean)
+            .join(" + ");
+          return pass(`Clicking a variant updated the ${what} in real time`);
+        }
+        if (v.clicked)
+          return unknown("Clicked a variant option; neither price nor gallery reacted — verify manually");
+      }
+      return unknown("Real-time update behaviour — JS state, manual review");
+    },
   },
   {
     blockSlug: "cta-area",
@@ -319,7 +408,14 @@ export const RULES: RuleDef[] = [
     ruleIndex: 8,
     text: "Interactive quantity selector instead of a dropdown",
     weight: 1,
-    detect: () => unknown("Selector widget type — manual review"),
+    detect: (p) => {
+      const q = p.probes?.qtyControl;
+      if (q === "stepper") return pass("−/+ stepper next to the quantity field");
+      if (q === "input") return pass("Free-typing quantity input (no dropdown)");
+      if (q === "dropdown") return fail("Quantity is a <select> dropdown — steppers convert better");
+      if (p.probes) return unknown("No quantity control found — common for single-unit products");
+      return unknown("Selector widget type — manual review");
+    },
   },
   {
     blockSlug: "cta-area",
@@ -491,7 +587,12 @@ export const RULES: RuleDef[] = [
     ruleIndex: 2,
     text: "Reviews visually stand out (e.g. on a soft yellow background)",
     weight: 1,
-    detect: () => unknown("Visual contrast — needs rendered styles"),
+    detect: (p) => {
+      const d = p.probes?.reviewsBgDistinct;
+      if (d === true) return pass("Reviews section has its own background color — visually set apart");
+      if (d === false) return fail("Reviews section shares the page background — nothing sets it apart");
+      return unknown("Visual contrast — needs rendered styles");
+    },
   },
   {
     blockSlug: "social-proof",
@@ -633,7 +734,19 @@ export const RULES: RuleDef[] = [
     ruleIndex: 0,
     text: "Description is easy to read (font size, contrast, single column, 75 chars/line, 1.5 line-height)",
     weight: 2,
-    detect: () => unknown("Typography rendering — manual / Lighthouse territory"),
+    detect: (p) => {
+      const t = p.probes?.descriptionTypography;
+      if (t) {
+        const issues: string[] = [];
+        if (t.fontPx < 14) issues.push(`${t.fontPx}px font (want ≥14)`);
+        if (t.lineHeightRatio < 1.35) issues.push(`${t.lineHeightRatio} line-height (want ≥1.5)`);
+        if (t.charsPerLine > 95) issues.push(`~${t.charsPerLine} chars/line (want ≤75)`);
+        return issues.length === 0
+          ? pass(`Measured: ${t.fontPx}px, ${t.lineHeightRatio} line-height, ~${t.charsPerLine} chars/line`)
+          : fail(`Measured readability issues: ${issues.join(", ")}`);
+      }
+      return unknown("Typography rendering — manual / Lighthouse territory");
+    },
   },
   {
     blockSlug: "product-description",
@@ -647,7 +760,12 @@ export const RULES: RuleDef[] = [
     ruleIndex: 2,
     text: "Long sections grouped in accordions (especially on mobile)",
     weight: 1,
-    detect: () => unknown("Accordion components vary — manual review"),
+    detect: (p) => {
+      const n = p.probes?.accordionCount ?? 0;
+      if (n >= 2) return pass(`${n} accordion/expandable sections found`);
+      if (p.probes) return unknown("No accordions on the rendered page — fine if sections are short");
+      return unknown("Accordion components vary — manual review");
+    },
   },
   {
     blockSlug: "product-description",
