@@ -207,10 +207,15 @@ h1, h2, h3, h4 { margin: 0; }
   overflow: hidden;
 }
 .sticky-prod-info { flex: 1; min-width: 0; }
-.sticky-prod-info .t { font-weight: 600; font-size: 14px; line-height: 1.2; }
-.sticky-prod-info .s { font-size: 12px; color: var(--muted); }
+.sticky-prod-info .t {
+  font-weight: 600; font-size: 14px; line-height: 1.2;
+  /* the bar is one compact row — long titles truncate, never wrap */
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.sticky-prod-info .s { font-size: 12px; color: var(--muted); white-space: nowrap; }
 .sticky-prod-stars { color: var(--review); font-size: 11px; }
-.sticky-prod-price { font-weight: 700; font-size: 16px; margin-right: 8px; }
+.sticky-prod-price { font-weight: 700; font-size: 16px; margin-right: 8px; white-space: nowrap; }
+.sticky-prod .atc-btn { flex: 0 0 auto; white-space: nowrap; }
 
 /* === HERO / Product page === */
 .product {
@@ -1191,6 +1196,17 @@ h1, h2, h3, h4 { margin: 0; }
   .founder, .final-cta, .section { padding: 56px 24px; }
 }
 @media (max-width: 560px) {
+  /* Compact sticky bar: smaller thumb + tighter gaps so truncated title,
+     price, and a one-line button share the row */
+  .sticky-prod-inner { gap: 10px; }
+  .sticky-prod-thumb { width: 40px; height: 40px; }
+  .sticky-prod-price { font-size: 14px; margin-right: 0; }
+  .sticky-prod .atc-btn { padding: 10px 14px; font-size: 13px; }
+  /* Buy box: slimmer stepper + button so "Add to cart · $X" stays one line */
+  .qty-stepper button { width: 36px; height: 44px; }
+  .qty-stepper input { width: 28px; height: 44px; }
+  .qty-atc .atc-btn { font-size: 15px; padding: 12px 14px; gap: 6px; white-space: nowrap; }
+  .atc-ico { display: none; }
   .benefits-grid { grid-template-columns: 1fr; }
   .ugc-grid { grid-template-columns: repeat(3, 1fr); }
   .nav-inner { grid-template-columns: 1fr auto; }

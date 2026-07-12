@@ -505,7 +505,8 @@ function ProductInfo({
           <button onClick={() => setQty(qty + 1)}>+</button>
         </div>
         <button className={`atc-btn ${addedFlash ? "added" : ""}`} onClick={addToCart}>
-          ⊞ {addedFlash ? "✓ Added to cart" : "Add to cart"} · ${totalPrice}
+          <span className="atc-ico" aria-hidden>⊞</span>
+          {addedFlash ? "✓ Added to cart" : "Add to cart"} · ${totalPrice}
           {sub && (
             <span
               style={{
