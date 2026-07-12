@@ -186,9 +186,13 @@ export const RULES: RuleDef[] = [
     text: "Gallery contains multiple product photos",
     weight: 3,
     detect: (p) => {
-      const count = p.productSchema?.imageCount ?? p.productImageCount;
+      const count = Math.max(p.productSchema?.imageCount ?? 0, p.productImageCount);
       if (count >= 4) return pass(`${count} product images`);
       if (count >= 2) return pass(`${count} product images — could use more variety`);
+      // A JS-rendered gallery never shows up in static HTML — don't claim
+      // "only 1 image" about a page we provably can't see fully.
+      if (p.looksClientRendered || p.hasGalleryThumbs)
+        return unknown("Gallery renders client-side — image count not verifiable from static HTML");
       return fail(`Only ${count} product image${count === 1 ? "" : "s"} detected`);
     },
   },
@@ -206,7 +210,11 @@ export const RULES: RuleDef[] = [
     text: "Product video in the gallery",
     weight: 2,
     detect: (p) =>
-      p.videoCount > 0 ? pass(`${p.videoCount} video${p.videoCount === 1 ? "" : "s"} embedded`) : fail("No product video found"),
+      p.videoCount > 0
+        ? pass(`${p.videoCount} video${p.videoCount === 1 ? "" : "s"} embedded`)
+        : p.looksClientRendered || p.hasGalleryThumbs
+        ? unknown("No video in static HTML — the gallery loads media client-side, check it live")
+        : fail("No product video found"),
   },
   {
     blockSlug: "image-gallery",
@@ -512,6 +520,8 @@ export const RULES: RuleDef[] = [
     detect: (p) =>
       p.videoCount > 0 && p.hasReviewsSection
         ? unknown(`${p.videoCount} videos + reviews present — LLM checks if any are testimonials`)
+        : p.reviewApp
+        ? unknown(`${p.reviewApp} renders reviews client-side — check for video/photo reviews live`)
         : fail("Either no videos or no reviews section — testimonials unlikely"),
   },
   {

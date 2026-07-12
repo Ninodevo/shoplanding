@@ -43,6 +43,12 @@ export async function llmScoreUnknowns(
     if (r.status !== "unknown") return r;
     const v = byKey.get(`${r.blockSlug}::${r.ruleIndex}`);
     if (!v) return r;
+    // Guard: never let the LLM hard-fail a rule the static HTML provably
+    // can't verify. The prompt says this too, but a wrong "fail" on a public
+    // audit is a credibility hit — enforce it in code.
+    if (v.status === "fail" && failUnverifiableStatically(page, r.text)) {
+      return { ...r, note: r.note ?? v.note, aiAssisted: true };
+    }
     return {
       ...r,
       status: v.status,
@@ -50,6 +56,31 @@ export async function llmScoreUnknowns(
       aiAssisted: true,
     };
   });
+}
+
+/**
+ * True when a "fail" verdict for this rule can't be trusted from static
+ * HTML: a detected review app owns rating/review display, and JS-rendered
+ * storefronts own gallery/media/variant UI.
+ */
+function failUnverifiableStatically(page: ExtractedPage, ruleText: string): boolean {
+  const t = ruleText.toLowerCase();
+  if (page.reviewApp && /(rating|review|star|testimonial)/.test(t)) return true;
+  // A thumbnail strip in the markup means the gallery is a JS widget whose
+  // slides load client-side — media counts from static HTML prove nothing.
+  if (
+    (page.looksClientRendered || page.hasGalleryThumbs) &&
+    /(gallery|photo|image|video|zoom|swipe)/.test(t)
+  ) {
+    return true;
+  }
+  if (
+    page.looksClientRendered &&
+    /(variant|selector|sticky|wallet|apple pay|bnpl)/.test(t)
+  ) {
+    return true;
+  }
+  return false;
 }
 
 type LlmVerdict = {
@@ -72,25 +103,55 @@ async function callLlm(
     )
     .join("\n");
 
+  // Button text minus obvious UI chrome (nav toggles, drawer closes, slide
+  // dots) — otherwise the model reasons about "Close menu" buttons.
+  const CHROME_BUTTON = /^(close|open|menu|search|navigate to slide|previous|next|toggle)\b/i;
+  const buttonExamples = [...new Set(page.buttonText)]
+    .filter(
+      (t) =>
+        t.length >= 3 &&
+        t.length <= 40 && // long strings are template dumps, not labels
+        !CHROME_BUTTON.test(t) &&
+        !/liquid error/i.test(t),
+    )
+    .slice(0, 10);
+
   const structured = {
     title: page.title,
     metaDescription: page.metaDescription,
     productName: page.productSchema?.name ?? null,
     brand: page.productSchema?.brand ?? null,
     priceText: page.priceText,
+    availability: page.productSchema?.availability ?? null,
+    variantCount: page.productSchema?.variantCount ?? null,
     starRating: page.starRating,
     reviewCount: page.reviewCount,
+    reviewApp: page.reviewApp,
     hasReviewsSection: page.hasReviewsSection,
     hasFaqSection: page.hasFaqSection,
     hasComparisonSection: page.hasComparisonSection,
     hasSpecsTable: page.hasSpecsTable,
+    hasGalleryThumbs: page.hasGalleryThumbs,
+    hasStickyAtcMarkers: page.hasStickyAtcMarkers,
+    hasExpressCheckoutMarkers: page.hasExpressCheckoutMarkers,
+    hasBnplMarkers: page.hasBnplMarkers,
     productImageCount: page.productImageCount,
     videoCount: page.videoCount,
+    outgoingLinkCount: page.outgoingLinkCount,
+    looksClientRendered: page.looksClientRendered,
     h1: page.h1Text.slice(0, 3),
-    buttonExamples: page.buttonText.slice(0, 8),
+    buttonExamples,
   };
 
-  const userPrompt = `You are auditing a Shopify-style single-product landing page against a CRO playbook. For each rule below, decide pass / fail / unknown using ONLY the evidence provided. Be conservative — if you can't tell from the snippet, return "unknown" with a short reason.
+  const userPrompt = `You are auditing a Shopify-style single-product landing page against a CRO playbook. For each rule below, decide pass / fail / unknown using ONLY the evidence provided.
+
+CRITICAL — the evidence is STATIC server HTML, not a rendered page:
+- Review widgets, wallet buttons, BNPL banners, galleries, and variant pickers usually render client-side via JS. Absence from this snippet is NOT proof of absence on the live page.
+- "fail" requires positive evidence of a violation (a signal that contradicts the rule), never mere absence from the snippet. Absence → "unknown".
+- "pass" requires evidence you can point to in the signals or text. Never pass on "likely" or "probably".
+- If reviewApp is non-null, a review widget IS installed but its stars/counts render client-side — rules about rating/review display must be "unknown", not "fail".
+- If looksClientRendered is true, most media/UI is JS-rendered — be especially reluctant to fail visual rules.
+- Duplicate identical H1s are usually a responsive layout (desktop + mobile copies), not a defect.
 
 PAGE SIGNALS (JSON):
 ${JSON.stringify(structured, null, 2)}
@@ -110,7 +171,7 @@ Respond with a single JSON object — no prose, no markdown fences:
   ]
 }
 
-Include exactly one entry per rule, preserving the original blockSlug + ruleIndex. The note must be specific to what you saw (or didn't see), not generic.`;
+Include exactly one entry per rule, preserving the original blockSlug + ruleIndex. The note must be specific to what you saw (or didn't see), not generic. Notes are shown to the store owner — write in plain language and never mention internal signal names (looksClientRendered, productImageCount, reviewApp, etc.); say "the gallery loads via JavaScript" instead of "looksClientRendered=true".`;
 
   // ~50 tokens per verdict × up to 60 verdicts = 3000-token safety budget.
   // Haiku stays well under this on actual responses (we ask for terse notes)

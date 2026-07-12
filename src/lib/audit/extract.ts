@@ -83,6 +83,14 @@ export type ExtractedPage = {
   bodyTextLength: number;
 
   /**
+   * True when the storefront renders most of its media client-side (JS
+   * framework storefronts: most <img> tags carry template bindings instead
+   * of src attributes). Downstream rules must not hard-fail "X not found"
+   * checks on such pages — absence in static HTML proves nothing.
+   */
+  looksClientRendered: boolean;
+
+  /**
    * Cleaned, lower-cased body text truncated to ~8 KB. Fed to the LLM pass
    * for the qualitative ("manual review") rules. Not used by heuristics —
    * heuristics work off the structured fields above.
@@ -100,6 +108,8 @@ export type ProductSchema = {
   ratingValue: number | null;
   reviewCount: number | null;
   imageCount: number;
+  /** From ProductGroup.hasVariant (Shopify's newer JSON-LD shape) or offer count. */
+  variantCount: number | null;
 };
 
 export function extractPage(args: {
@@ -136,8 +146,14 @@ export function extractPage(args: {
     const alt = $(el).attr("alt");
     return alt !== undefined && alt.trim().length > 0;
   }).length;
-  const productImageCount = images.filter((el) => {
-    const src = $(el).attr("src") || "";
+  const domProductImageCount = images.filter((el) => {
+    // Check src plus the common lazy-load attributes
+    const src =
+      $(el).attr("src") ||
+      $(el).attr("data-src") ||
+      $(el).attr("srcset") ||
+      $(el).attr("data-srcset") ||
+      "";
     const alt = ($(el).attr("alt") || "").toLowerCase();
     // Heuristic: "product" in alt, or CDN paths like /products/, /cdn/shop/products/
     return (
@@ -146,6 +162,14 @@ export function extractPage(args: {
       /shop\/products/.test(src)
     );
   }).length;
+  // JS-framework storefronts (Vue/React hydration) emit <img> tags with
+  // template bindings instead of src — the real gallery never exists in
+  // static HTML. Detect that so rules don't hard-fail what they can't see.
+  const imagesWithAnySrc = images.filter(
+    (el) => $(el).attr("src") || $(el).attr("data-src") || $(el).attr("srcset"),
+  ).length;
+  const looksClientRendered =
+    images.length >= 10 && imagesWithAnySrc / images.length < 0.5;
   const videoCount = $("video, iframe[src*='youtube'], iframe[src*='vimeo'], iframe[src*='wistia']").length;
   const formCount = $("form").length;
 
@@ -255,9 +279,24 @@ export function extractPage(args: {
     if (m) reviewCount = parseInt(m[1]!.replace(/,/g, ""), 10);
   }
 
-  // ── Price text (any explicit currency-marked number in body)
-  const priceMatch = bodyText.match(/[\$€£¥]\s?\d{1,3}(?:[.,]\d{2})?/);
-  const priceText = priceMatch ? priceMatch[0] : null;
+  // ── Price text — schema price is the source of truth. The body-text
+  // fallback must skip currency figures that are actually shipping rates
+  // ("$3.99 flat rate shipping") — grabbing the first match burned us.
+  let priceText: string | null = null;
+  if (productSchema?.price !== null && productSchema?.price !== undefined) {
+    const sym =
+      { USD: "$", EUR: "€", GBP: "£", CAD: "CA$", AUD: "AU$" }[
+        productSchema.priceCurrency ?? ""
+      ] ?? (productSchema.priceCurrency ? `${productSchema.priceCurrency} ` : "$");
+    priceText = `${sym}${productSchema.price}`;
+  } else {
+    for (const m of bodyText.matchAll(/[\$€£¥]\s?\d{1,3}(?:[.,]\d{2})?/g)) {
+      const ctx = bodyText.slice(Math.max(0, m.index - 60), m.index + m[0].length + 60);
+      if (/shipping|delivery|ship free|freight/.test(ctx)) continue;
+      priceText = m[0];
+      break;
+    }
+  }
   // "compare at" / strikethrough price (any of: schema, <s>, <del>, "was $X")
   const hasCompareAtPrice =
     (productSchema && productSchema.price !== null && /compare/.test(bodyText)) ||
@@ -277,7 +316,8 @@ export function extractPage(args: {
     buttonText: buttons,
     imageCount: images.length,
     imagesWithAlt,
-    productImageCount,
+    // Whichever source saw more — DOM heuristic or schema image list.
+    productImageCount: Math.max(domProductImageCount, productSchema?.imageCount ?? 0),
     videoCount,
     formCount,
     outgoingLinkCount: outgoing,
@@ -300,6 +340,7 @@ export function extractPage(args: {
     priceText,
     hasCompareAtPrice,
     bodyTextLength: bodyText.length,
+    looksClientRendered,
     bodyTextSnippet: bodyText.slice(0, 8000),
   };
 }
@@ -333,7 +374,11 @@ function findProductNode(data: unknown): Record<string, unknown> | null {
   if (typeof data !== "object") return null;
   const obj = data as Record<string, unknown>;
   const t = obj["@type"];
-  if (t === "Product" || (Array.isArray(t) && t.includes("Product"))) {
+  const types = Array.isArray(t) ? t : [t];
+  // ProductGroup is Shopify's newer PDP shape: group-level name/brand with
+  // the sellable Products nested under hasVariant. Treat it as the product
+  // node — shapeProduct knows how to mine the variants.
+  if (types.includes("Product") || types.includes("ProductGroup")) {
     return obj;
   }
   // Recurse into @graph (common in Yoast / RankMath output)
@@ -348,16 +393,50 @@ function findProductNode(data: unknown): Record<string, unknown> | null {
 }
 
 function shapeProduct(o: Record<string, unknown>): ProductSchema {
-  const offers = o.offers as Record<string, unknown> | Record<string, unknown>[] | undefined;
-  const firstOffer = Array.isArray(offers) ? offers[0] : offers;
+  // ProductGroup: sellable Products live under hasVariant. Mine variants
+  // for offers/images/ratings the group node itself doesn't carry.
+  const variants = (Array.isArray(o.hasVariant) ? o.hasVariant : []).filter(
+    (v): v is Record<string, unknown> => typeof v === "object" && v !== null,
+  );
+
+  // Collect candidate offers: the node's own, then each variant's. Prefer
+  // an InStock offer (Shopify lists sold-out variants first sometimes).
+  const offerCandidates: Record<string, unknown>[] = [];
+  for (const node of [o, ...variants]) {
+    const offers = node.offers as
+      | Record<string, unknown>
+      | Record<string, unknown>[]
+      | undefined;
+    if (Array.isArray(offers)) offerCandidates.push(...offers.filter((x) => typeof x === "object" && x !== null));
+    else if (offers && typeof offers === "object") offerCandidates.push(offers);
+  }
+  const firstOffer =
+    offerCandidates.find((of) => /InStock/i.test(String(of.availability ?? ""))) ??
+    offerCandidates[0];
   const offerPrice = firstOffer?.price;
   const offerCurrency = firstOffer?.priceCurrency;
   const offerAvail = firstOffer?.availability;
-  const agg = o.aggregateRating as Record<string, unknown> | undefined;
-  const imagesField = o.image;
-  let imageCount = 0;
-  if (typeof imagesField === "string") imageCount = 1;
-  else if (Array.isArray(imagesField)) imageCount = imagesField.length;
+
+  // Rating: node's own aggregateRating, else first variant that has one.
+  const agg = ([o, ...variants]
+    .map((n) => n.aggregateRating)
+    .find((a) => a && typeof a === "object")) as Record<string, unknown> | undefined;
+
+  // Images: union of the node's image field and every variant's (deduped).
+  const imageUrls = new Set<string>();
+  for (const node of [o, ...variants]) {
+    const imagesField = node.image;
+    if (typeof imagesField === "string") imageUrls.add(imagesField);
+    else if (Array.isArray(imagesField)) {
+      for (const img of imagesField) {
+        if (typeof img === "string") imageUrls.add(img);
+        else if (img && typeof img === "object") {
+          const u = (img as Record<string, unknown>).url;
+          if (typeof u === "string") imageUrls.add(u);
+        }
+      }
+    }
+  }
 
   const brand = o.brand;
   const brandName =
@@ -376,7 +455,8 @@ function shapeProduct(o: Record<string, unknown>): ProductSchema {
     availability: typeof offerAvail === "string" ? offerAvail : null,
     ratingValue: agg && agg.ratingValue !== undefined ? Number(agg.ratingValue) : null,
     reviewCount: agg && agg.reviewCount !== undefined ? parseInt(String(agg.reviewCount), 10) : null,
-    imageCount,
+    imageCount: imageUrls.size,
+    variantCount: variants.length > 0 ? variants.length : offerCandidates.length > 1 ? offerCandidates.length : null,
   };
 }
 
