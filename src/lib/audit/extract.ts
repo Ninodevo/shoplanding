@@ -190,14 +190,21 @@ export function extractPage(args: {
     },
   );
 
-  // JS-framework storefronts (Vue/React hydration) emit <img> tags with
-  // template bindings instead of src — the real gallery never exists in
-  // static HTML. Detect that so rules don't hard-fail what they can't see.
+  // JS-framework storefronts (Vue/React hydration) render the real content
+  // client-side; rules must not hard-fail what static HTML can't show.
+  // Three tells, any one suffices:
+  //   1. Most <img> tags carry template bindings instead of src.
+  //   2. No H1 at all — every server-rendered PDP has one.
+  //   3. No attributable product image — a PDP's gallery is only invisible
+  //      statically when a JS framework mounts it (Brooklinen: 0 static,
+  //      110 rendered).
   const imagesWithAnySrc = images.filter(
     (el) => $(el).attr("src") || $(el).attr("data-src") || $(el).attr("srcset"),
   ).length;
   const looksClientRendered =
-    images.length >= 10 && imagesWithAnySrc / images.length < 0.5;
+    (images.length >= 10 && imagesWithAnySrc / images.length < 0.5) ||
+    h1s.length === 0 ||
+    Math.max(domProductImageCount, galleryImgSrcs.size) === 0;
   const videoCount = $("video, iframe[src*='youtube'], iframe[src*='vimeo'], iframe[src*='wistia']").length;
   const formCount = $("form").length;
 

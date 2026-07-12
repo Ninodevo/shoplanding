@@ -2,13 +2,15 @@
  * Run a full audit (heuristics + LLM pass) against any URL and print every
  * verdict. No DB write, no email — pure accuracy testing.
  *
- * Usage: npx tsx scripts/run-audit.ts <product-url> [--no-llm]
+ * Usage: npx tsx scripts/run-audit.ts <product-url> [--no-llm] [--rendered]
+ *   --rendered uses the deep-audit browser fetch instead of static HTML.
  */
 import { config } from "dotenv";
 config({ path: ".env.local" });
 config({ path: ".env" });
 
 import { fetchPageForAudit } from "../src/lib/audit/fetch";
+import { fetchRenderedPage } from "../src/lib/audit/rendered";
 import { extractPage } from "../src/lib/audit/extract";
 import { runRules } from "../src/lib/audit/rules";
 import { llmScoreUnknowns } from "../src/lib/audit/llm";
@@ -22,9 +24,12 @@ async function main() {
     process.exit(1);
   }
 
+  const rendered = process.argv.includes("--rendered");
   const t0 = Date.now();
-  const fetched = await fetchPageForAudit(url);
-  const page = extractPage({ html: fetched.html, url, finalUrl: fetched.finalUrl });
+  const fetched = rendered
+    ? await fetchRenderedPage(url)
+    : await fetchPageForAudit(url);
+  const page = extractPage({ html: fetched.html, url, finalUrl: fetched.finalUrl, rendered });
 
   console.log("── extracted signals ─────────────────────────────");
   const { bodyTextSnippet: _snip, textIncludes, buttonText, h1Text, ...rest } = page;

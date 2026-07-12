@@ -81,6 +81,16 @@ export async function fetchRenderedPage(url: string): Promise<RenderedFetch> {
 
     const html = await page.content();
     const finalUrl = page.url();
+    // Dead product URLs often client-side redirect to the homepage — a
+    // faithful audit of the wrong page is worse than an error (found via
+    // Brooklinen: a pseudo-product handle JS-redirected to "/").
+    const requestedPath = new URL(url).pathname;
+    const landedPath = new URL(finalUrl).pathname;
+    if (requestedPath !== "/" && landedPath === "/") {
+      throw new Error(
+        `page redirected to the homepage (${finalUrl}) — the product URL looks dead or region-blocked`,
+      );
+    }
     // Screenshot is a nice-to-have — extremely long pages can exceed the
     // renderer's capture limit, and that must not sink the whole audit.
     let screenshotBase64 = "";

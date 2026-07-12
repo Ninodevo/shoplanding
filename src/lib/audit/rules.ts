@@ -116,7 +116,13 @@ export const RULES: RuleDef[] = [
     text: "The main product title is visually prominent compared to other content",
     weight: 2,
     detect: (p) =>
-      p.h1Count === 1 ? pass("Exactly one H1 — typical prominent title pattern") : p.h1Count === 0 ? fail("No H1 detected") : unknown(`${p.h1Count} H1s — prominence depends on rendering`),
+      p.h1Count === 1
+        ? pass("Exactly one H1 — typical prominent title pattern")
+        : p.h1Count === 0
+        ? p.rendered
+          ? fail("No H1 on the rendered page")
+          : unknown("No H1 in static HTML — headless storefronts render it client-side; check live")
+        : unknown(`${p.h1Count} H1s — prominence depends on rendering`),
   },
   {
     blockSlug: "product-overview-above-the-cta-area",
