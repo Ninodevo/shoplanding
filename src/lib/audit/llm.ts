@@ -135,6 +135,7 @@ async function callLlm(
     hasStickyAtcMarkers: page.hasStickyAtcMarkers,
     hasExpressCheckoutMarkers: page.hasExpressCheckoutMarkers,
     hasBnplMarkers: page.hasBnplMarkers,
+    cartDrawer: page.cartDrawer,
     productImageCount: page.productImageCount,
     videoCount: page.videoCount,
     outgoingLinkCount: page.outgoingLinkCount,

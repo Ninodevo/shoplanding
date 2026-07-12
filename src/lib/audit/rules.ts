@@ -54,7 +54,12 @@ export const RULES: RuleDef[] = [
     ruleIndex: 0,
     text: "The buy button takes the user directly to the checkout (or upsell) and skips the cart page",
     weight: 2,
-    detect: () => unknown("Can't trace the buy-button target from a single PDP fetch"),
+    detect: (p) =>
+      p.cartDrawer
+        ? fail(
+            `${p.cartDrawer} detected — add-to-cart opens a cart drawer, an extra step before checkout`,
+          )
+        : unknown("Can't trace the buy-button target from a single PDP fetch"),
   },
   {
     blockSlug: "general",

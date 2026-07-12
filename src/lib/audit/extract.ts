@@ -51,6 +51,13 @@ export type ExtractedPage = {
   reviewApp: string | null;
   hasExpressCheckoutMarkers: boolean;
   hasBnplMarkers: boolean;
+  /**
+   * Non-null when the page ships a slide-out/drawer cart (theme-native or a
+   * cart app like Rebuy/UpCart). Means add-to-cart opens the drawer rather
+   * than going straight to checkout — decisive for the direct-to-checkout
+   * rule. Value names what we found.
+   */
+  cartDrawer: string | null;
 
   // Text presence (lowercased, full-body keyword search)
   textIncludes: {
@@ -238,6 +245,23 @@ export function extractPage(args: {
     /shopify-installments|klarna[-_ ]?placement|afterpay[-_ ]?placement|data-sezzle|sezzle-widget/.test(
       rawLower,
     );
+
+  // Drawer/sidebar cart: cart-app markers first (they name the app), then
+  // theme-native drawer markup. Presence means ATC opens the drawer instead
+  // of going straight to checkout.
+  const CART_DRAWER_APPS: Array<[string, RegExp]> = [
+    ["Rebuy Smart Cart", /rebuy-cart/],
+    ["UpCart", /upcart/],
+    ["Slide Cart", /slidecart|slide[-_ ]cart/],
+    ["Monster Cart", /monster[-_ ]?cart/],
+  ];
+  const cartDrawer =
+    CART_DRAWER_APPS.find(([, re]) => re.test(rawLower))?.[0] ??
+    (/<cart-drawer|id="cartdrawer"|cart-drawer|cart__drawer|drawer--cart|mini-?cart|cart-sidebar|cart-flyout|ajax-cart|cart-popup|cart-notification/.test(
+      rawLower,
+    )
+      ? "theme cart drawer"
+      : null);
   const hasGalleryThumbs =
     $("[class*='thumb' i], [class*='gallery' i] [class*='nav' i]").length > 0;
   const hasPressLogos =
@@ -334,6 +358,7 @@ export function extractPage(args: {
     reviewApp,
     hasExpressCheckoutMarkers,
     hasBnplMarkers,
+    cartDrawer,
     textIncludes,
     starRating,
     reviewCount,
