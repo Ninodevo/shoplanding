@@ -142,7 +142,11 @@ function concatUint8(chunks: Uint8Array[]): Uint8Array {
  * hostname pattern; the right long-term fix is DNS resolution + private-CIDR
  * check, but for v1 the cheap version covers the common-case attempts.
  */
-function isBlockedHost(host: string): boolean {
+/**
+ * SSRF denylist shared by the static fetcher and the rendered (Playwright)
+ * fetcher — both navigate to user-supplied URLs.
+ */
+export function isBlockedHost(host: string): boolean {
   const h = host.toLowerCase();
   if (h === "localhost") return true;
   if (h.endsWith(".localhost")) return true;

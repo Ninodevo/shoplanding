@@ -23,6 +23,10 @@ import { generateLicenseKey, generatePreviewSlug } from "@/lib/license";
  * whitespace and break the signature comparison, same as the Stripe
  * version this replaced.
  */
+// The deep-audit render runs inside `after()` which shares this function's
+// execution window — the default serverless limit would kill it mid-render.
+export const maxDuration = 300;
+
 export async function POST(request: NextRequest) {
   const sig = request.headers.get("x-signature");
   const raw = await request.text();
@@ -199,6 +203,12 @@ async function handleDeepAuditOrder(payload: LemonWebhookPayload, orderId: strin
   });
 
   // Run the rendered-browser audit after the webhook response is sent —
-  // LS expects a fast 200, the audit takes ~30-60s.
-  after(() => runDeepAudit(auditId));
+  // LS expects a fast 200, the audit takes ~30-60s. Failures are already
+  // persisted to Audit.deepError inside runDeepAudit; swallow the rethrow
+  // so it doesn't surface as an unhandled rejection.
+  after(() =>
+    runDeepAudit(auditId).catch((err) =>
+      console.error(`[webhook] deep audit ${auditId} failed:`, err),
+    ),
+  );
 }

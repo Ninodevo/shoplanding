@@ -6,6 +6,7 @@ import type { AuditResult } from "@/lib/audit/score";
 import type { DeepAuditResult } from "@/lib/audit/deep";
 import { recommendThemeFor } from "@/lib/audit/niche";
 import { isDeepAuditPurchasable } from "@/lib/lemonsqueezy";
+import { isRenderedFetchConfigured } from "@/lib/audit/rendered";
 import { startDeepAuditCheckout, unlockAuditWithEmail } from "./actions";
 
 export const dynamic = "force-dynamic";
@@ -63,8 +64,15 @@ export default async function AuditResultPage({
     !deepResult && !audit.deepError && (audit.deepPaidAt || sp.deep === "pending"),
   );
   const manualCount = r.rules.filter((x) => x.status === "unknown").length;
+  // Both gates matter: an LS product to charge through AND a browser to run
+  // the render — selling a deep audit that instantly fails is a refund.
   const showDeepUpsell =
-    !isDeep && !deepRunning && !audit.deepPaidAt && manualCount > 0 && isDeepAuditPurchasable();
+    !isDeep &&
+    !deepRunning &&
+    !audit.deepPaidAt &&
+    manualCount > 0 &&
+    isDeepAuditPurchasable() &&
+    isRenderedFetchConfigured();
 
   const hostname = safeHost(audit.url);
   const fetched = new Date(r.fetchedAt);

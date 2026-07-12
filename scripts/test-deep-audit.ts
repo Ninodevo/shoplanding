@@ -19,11 +19,12 @@ async function main() {
     (await prisma.audit.findFirst({ orderBy: { createdAt: "desc" }, select: { id: true } }))?.id;
   if (!id) throw new Error("no audit to deep-run");
 
-  // Testing convenience: wipe a previous deep run so runDeepAudit re-runs.
+  // Testing convenience: wipe the completion watermark so runDeepAudit
+  // re-runs (it overwrites deepResult itself on success).
   if (process.argv.includes("--force")) {
     await prisma.audit.update({
       where: { id },
-      data: { deepCompletedAt: null, deepResult: undefined, deepError: null },
+      data: { deepCompletedAt: null, deepError: null },
     });
   }
 
