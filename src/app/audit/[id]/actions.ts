@@ -84,6 +84,41 @@ export async function unlockAuditWithEmail(formData: FormData): Promise<void> {
   redirect(`/audit/${id}#top-fixes`);
 }
 
+/**
+ * Kick off Lemon Squeezy checkout for the deep audit. The webhook flips
+ * `deepPaidAt` and starts the rendered-browser run; the success redirect
+ * lands back on the report, which shows the "running" state until
+ * `deepResult` exists.
+ */
+export async function startDeepAuditCheckout(formData: FormData): Promise<void> {
+  const id = String(formData.get("auditId") ?? "").trim();
+  if (!id) redirect("/audit");
+
+  const prisma = getPrisma();
+  const audit = await prisma.audit.findUnique({
+    where: { id },
+    select: { id: true, email: true, deepPaidAt: true },
+  });
+  if (!audit) redirect("/audit");
+  if (audit.deepPaidAt) redirect(`/audit/${id}`); // already bought
+
+  const { createDeepAuditCheckoutUrl, getSiteUrl } = await import("@/lib/lemonsqueezy");
+  let checkoutUrl: string;
+  try {
+    checkoutUrl = await createDeepAuditCheckoutUrl({
+      auditId: id,
+      successUrl: `${getSiteUrl()}/audit/${id}?deep=pending`,
+      prefilledEmail: audit.email ?? undefined,
+    });
+  } catch (err) {
+    console.error("[deep-audit] checkout creation failed", err);
+    redirect(
+      `/audit/${id}?error=${encodeURIComponent("Checkout is unavailable right now — try again in a minute.")}`,
+    );
+  }
+  redirect(checkoutUrl);
+}
+
 function safeHost(url: string): string {
   try {
     return new URL(url).hostname;

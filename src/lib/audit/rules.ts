@@ -195,8 +195,9 @@ export const RULES: RuleDef[] = [
       if (count >= 4) return pass(`${count} product images`);
       if (count >= 2) return pass(`${count} product images — could use more variety`);
       // A JS-rendered gallery never shows up in static HTML — don't claim
-      // "only 1 image" about a page we provably can't see fully.
-      if (p.looksClientRendered || p.hasGalleryThumbs)
+      // "only 1 image" about a page we provably can't see fully. In the
+      // rendered deep audit the gallery IS in the DOM, so count it.
+      if (!p.rendered && (p.looksClientRendered || p.hasGalleryThumbs))
         return unknown("Gallery renders client-side — image count not verifiable from static HTML");
       return fail(`Only ${count} product image${count === 1 ? "" : "s"} detected`);
     },
@@ -217,7 +218,7 @@ export const RULES: RuleDef[] = [
     detect: (p) =>
       p.videoCount > 0
         ? pass(`${p.videoCount} video${p.videoCount === 1 ? "" : "s"} embedded`)
-        : p.looksClientRendered || p.hasGalleryThumbs
+        : !p.rendered && (p.looksClientRendered || p.hasGalleryThumbs)
         ? unknown("No video in static HTML — the gallery loads media client-side, check it live")
         : fail("No product video found"),
   },

@@ -56,6 +56,16 @@ model Audit {
   unlockEmailSentAt   DateTime? @map("unlock_email_sent_at")
   nurtureDay3SentAt   DateTime? @map("nurture_day3_sent_at")
   nurtureDay7SentAt   DateTime? @map("nurture_day7_sent_at")
+  /// ── Deep audit (paid, rendered-browser pass) ──
+  /// LS order id that paid for the deep audit — also the idempotency key.
+  deepOrderId     String?   @unique @map("deep_order_id")
+  deepPaidAt      DateTime? @map("deep_paid_at")
+  deepStartedAt   DateTime? @map("deep_started_at")
+  deepCompletedAt DateTime? @map("deep_completed_at")
+  /// Same AuditResult shape as rawResult but produced from the rendered DOM,
+  /// plus a `screenshot` (base64 JPEG) key. Replaces rawResult in the report.
+  deepResult      Json?     @map("deep_result")
+  deepError       String?   @map("deep_error")
   createdAt DateTime @default(now()) @map("created_at")
 
   @@index([createdAt(sort: Desc)])

@@ -10,14 +10,16 @@ import { getPrisma } from "../src/lib/db";
 
 async function main() {
   const prisma = getPrisma();
-  const id = process.argv[2];
+  const deep = process.argv.includes("--deep");
+  const id = process.argv.filter((a) => !a.startsWith("--"))[2];
   const audit = id
     ? await prisma.audit.findUnique({ where: { id } })
     : await prisma.audit.findFirst({ orderBy: { createdAt: "desc" } });
   if (!audit) throw new Error("no audit found");
-  const r = audit.rawResult as Record<string, unknown> & {
+  const r = (deep ? audit.deepResult : audit.rawResult) as Record<string, unknown> & {
     rules?: Array<Record<string, unknown>>;
   };
+  if (!r) throw new Error(deep ? "no deepResult on this audit" : "no rawResult");
   console.log(`id ${audit.id} · score ${audit.score} · ${audit.url}\n`);
   for (const rule of r.rules ?? []) {
     const line = [

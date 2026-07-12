@@ -43,10 +43,10 @@ export async function llmScoreUnknowns(
     if (r.status !== "unknown") return r;
     const v = byKey.get(`${r.blockSlug}::${r.ruleIndex}`);
     if (!v) return r;
-    // Guard: never let the LLM hard-fail a rule the static HTML provably
-    // can't verify. The prompt says this too, but a wrong "fail" on a public
+    // Guard: never let the LLM hard-fail a rule the evidence provably can't
+    // verify. The prompt says this too, but a wrong "fail" on a public
     // audit is a credibility hit — enforce it in code.
-    if (v.status === "fail" && failUnverifiableStatically(page, r.text)) {
+    if (v.status === "fail" && failUnverifiable(page, r.text)) {
       return { ...r, note: r.note ?? v.note, aiAssisted: true };
     }
     return {
@@ -59,13 +59,17 @@ export async function llmScoreUnknowns(
 }
 
 /**
- * True when a "fail" verdict for this rule can't be trusted from static
- * HTML: a detected review app owns rating/review display, and JS-rendered
- * storefronts own gallery/media/variant UI.
+ * True when a "fail" verdict for this rule can't be trusted from the
+ * evidence at hand. A detected review app owns rating/review display in
+ * BOTH modes — widgets load async or in iframes, so even a rendered
+ * capture can catch them empty (Bazaarvoice on Olipop did exactly that).
+ * The gallery/variant clauses apply only to static HTML; the rendered DOM
+ * shows those for real.
  */
-function failUnverifiableStatically(page: ExtractedPage, ruleText: string): boolean {
+function failUnverifiable(page: ExtractedPage, ruleText: string): boolean {
   const t = ruleText.toLowerCase();
   if (page.reviewApp && /(rating|review|star|testimonial)/.test(t)) return true;
+  if (page.rendered) return false;
   // A thumbnail strip in the markup means the gallery is a JS widget whose
   // slides load client-side — media counts from static HTML prove nothing.
   if (
@@ -144,15 +148,25 @@ async function callLlm(
     buttonExamples,
   };
 
-  const userPrompt = `You are auditing a Shopify-style single-product landing page against a CRO playbook. For each rule below, decide pass / fail / unknown using ONLY the evidence provided.
-
-CRITICAL — the evidence is STATIC server HTML, not a rendered page:
+  const evidenceRules = page.rendered
+    ? `CRITICAL — the evidence is the RENDERED DOM, captured in a real browser after JavaScript ran and the full page was scrolled:
+- Review widgets, galleries, variant pickers, and wallet buttons HAVE rendered. If something is absent from these signals and text, it is genuinely absent from the page — you may mark "fail" for absence.
+- Still return "unknown" for judgments that need eyes or interaction: photo attractiveness, zoom/swipe behavior, what happens after a click, layout aesthetics.
+- "pass" requires evidence you can point to in the signals or text. Never pass on "likely" or "probably".
+- Duplicate identical H1s are usually a responsive layout (desktop + mobile copies), not a defect.
+- If a rule doesn't apply to this product category (e.g. apparel sizing on a beverage), return "unknown" with a "Not applicable — …" note. Never "fail" a rule for being inapplicable.`
+    : `CRITICAL — the evidence is STATIC server HTML, not a rendered page:
 - Review widgets, wallet buttons, BNPL banners, galleries, and variant pickers usually render client-side via JS. Absence from this snippet is NOT proof of absence on the live page.
 - "fail" requires positive evidence of a violation (a signal that contradicts the rule), never mere absence from the snippet. Absence → "unknown".
 - "pass" requires evidence you can point to in the signals or text. Never pass on "likely" or "probably".
 - If reviewApp is non-null, a review widget IS installed but its stars/counts render client-side — rules about rating/review display must be "unknown", not "fail".
 - If looksClientRendered is true, most media/UI is JS-rendered — be especially reluctant to fail visual rules.
 - Duplicate identical H1s are usually a responsive layout (desktop + mobile copies), not a defect.
+- If a rule doesn't apply to this product category (e.g. apparel sizing on a beverage), return "unknown" with a "Not applicable — …" note. Never "fail" a rule for being inapplicable.`;
+
+  const userPrompt = `You are auditing a Shopify-style single-product landing page against a CRO playbook. For each rule below, decide pass / fail / unknown using ONLY the evidence provided.
+
+${evidenceRules}
 
 PAGE SIGNALS (JSON):
 ${JSON.stringify(structured, null, 2)}

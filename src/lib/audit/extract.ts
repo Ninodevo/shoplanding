@@ -9,6 +9,13 @@ import * as cheerio from "cheerio";
 export type ExtractedPage = {
   url: string;
   finalUrl: string;
+  /**
+   * True when the HTML came from a rendered browser (deep audit) rather
+   * than a static fetch. Flips the epistemics downstream: absence from a
+   * rendered DOM IS evidence of absence, so rules and the LLM may fail
+   * what they'd otherwise leave at "unknown".
+   */
+  rendered: boolean;
 
   // Head
   title: string | null;
@@ -123,6 +130,8 @@ export function extractPage(args: {
   html: string;
   url: string;
   finalUrl: string;
+  /** Set true when `html` is a rendered-browser DOM (deep audit). */
+  rendered?: boolean;
 }): ExtractedPage {
   const $ = cheerio.load(args.html);
   const baseOrigin = safeOrigin(args.finalUrl);
@@ -169,6 +178,18 @@ export function extractPage(args: {
       /shop\/products/.test(src)
     );
   }).length;
+  // Gallery-container counting: modern Shopify serves product media from
+  // /cdn/shop/files/ (not /products/), so path matching misses it — but the
+  // images sit inside gallery-classed containers. Distinct srcs only, so a
+  // desktop+mobile duplicate doesn't double-count.
+  const galleryImgSrcs = new Set<string>();
+  $("[class*='gallery' i] img, [class*='product-media' i] img, [data-media-id] img").each(
+    (_, el) => {
+      const src = $(el).attr("src") || $(el).attr("data-src") || "";
+      if (src) galleryImgSrcs.add(src.split("?")[0]!);
+    },
+  );
+
   // JS-framework storefronts (Vue/React hydration) emit <img> tags with
   // template bindings instead of src — the real gallery never exists in
   // static HTML. Detect that so rules don't hard-fail what they can't see.
@@ -218,6 +239,7 @@ export function extractPage(args: {
   // ── Review-app markers. Widget content renders client-side, but the app's
   // script tags / class prefixes are in the static HTML. First match wins.
   const REVIEW_APPS: Array<[string, RegExp]> = [
+    ["Bazaarvoice", /bazaarvoice|data-bv-show/],
     ["Judge.me", /jdgm|judge\.me/],
     ["Loox", /loox/],
     ["Yotpo", /yotpo/],
@@ -295,11 +317,17 @@ export function extractPage(args: {
   let starRating = productSchema?.ratingValue ?? null;
   let reviewCount = productSchema?.reviewCount ?? null;
   if (starRating === null) {
-    const m = bodyText.match(/(\d\.\d)\s*(?:\/|out of)\s*5/);
+    // Rendered review widgets often carry the rating only in aria-labels
+    // ("4.8 out of 5 stars"), so fall back to the raw HTML after body text.
+    const m =
+      bodyText.match(/(\d\.\d)\s*(?:\/|out of)\s*5/) ??
+      rawLower.match(/(\d\.\d)\s*(?:\/|out of)\s*5/);
     if (m) starRating = parseFloat(m[1]!);
   }
   if (reviewCount === null) {
-    const m = bodyText.match(/(\d{1,3}(?:,\d{3})*)\s*(?:verified )?reviews?\b/);
+    const m =
+      bodyText.match(/(\d{1,3}(?:,\d{3})*)\s*(?:verified )?reviews?\b/) ??
+      rawLower.match(/(\d{1,3}(?:,\d{3})*)\s*(?:verified )?reviews?\b/);
     if (m) reviewCount = parseInt(m[1]!.replace(/,/g, ""), 10);
   }
 
@@ -330,6 +358,7 @@ export function extractPage(args: {
   return {
     url: args.url,
     finalUrl: args.finalUrl,
+    rendered: args.rendered ?? false,
     title,
     metaDescription,
     canonical,
@@ -340,8 +369,13 @@ export function extractPage(args: {
     buttonText: buttons,
     imageCount: images.length,
     imagesWithAlt,
-    // Whichever source saw more — DOM heuristic or schema image list.
-    productImageCount: Math.max(domProductImageCount, productSchema?.imageCount ?? 0),
+    // Whichever source saw more — path/alt heuristic, gallery containers,
+    // or the schema image list.
+    productImageCount: Math.max(
+      domProductImageCount,
+      galleryImgSrcs.size,
+      productSchema?.imageCount ?? 0,
+    ),
     videoCount,
     formCount,
     outgoingLinkCount: outgoing,
@@ -366,7 +400,8 @@ export function extractPage(args: {
     hasCompareAtPrice,
     bodyTextLength: bodyText.length,
     looksClientRendered,
-    bodyTextSnippet: bodyText.slice(0, 8000),
+    // The deep audit pays for itself — give the LLM a deeper read there.
+    bodyTextSnippet: bodyText.slice(0, args.rendered ? 20000 : 8000),
   };
 }
 

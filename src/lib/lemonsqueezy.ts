@@ -153,6 +153,71 @@ export async function createLemonCheckoutUrl(args: {
 }
 
 /**
+ * The deep audit is one LS product with one variant, priced ~€29 and
+ * credited toward a theme purchase. Buy buttons are gated on this env var
+ * being set, same pattern as Theme.lsVariants for the theme products.
+ */
+export function getDeepAuditVariantId(): number | null {
+  const v = process.env.LEMONSQUEEZY_DEEP_AUDIT_VARIANT_ID;
+  if (!v) return null;
+  const n = Number(v);
+  return Number.isFinite(n) && n > 0 ? n : null;
+}
+
+export function isDeepAuditPurchasable(): boolean {
+  return isLemonSqueezyConfigured() && getDeepAuditVariantId() !== null;
+}
+
+/**
+ * Checkout for the deep audit. `custom.kind` is how the webhook tells this
+ * order apart from theme orders — theme checkouts don't set it.
+ */
+export async function createDeepAuditCheckoutUrl(args: {
+  auditId: string;
+  successUrl: string;
+  prefilledEmail?: string;
+}): Promise<string> {
+  ensureInit();
+  const storeId = getLemonSqueezyStoreId();
+  const variantId = getDeepAuditVariantId();
+  if (!variantId) {
+    throw new Error(
+      "LEMONSQUEEZY_DEEP_AUDIT_VARIANT_ID is not set — create the Deep Audit product in the LS dashboard first.",
+    );
+  }
+
+  const res = await createCheckout(storeId, variantId, {
+    checkoutData: {
+      email: args.prefilledEmail,
+      custom: {
+        kind: "deep-audit",
+        auditId: args.auditId,
+      },
+    },
+    productOptions: {
+      redirectUrl: args.successUrl,
+      enabledVariants: [variantId],
+    },
+    checkoutOptions: {
+      embed: false,
+      media: false,
+      logo: true,
+    },
+  });
+
+  if (res.error) {
+    throw new Error(
+      `Lemon Squeezy createCheckout (deep audit) failed: ${JSON.stringify(res.error)}`,
+    );
+  }
+  const url = res.data?.data?.attributes?.url;
+  if (!url) {
+    throw new Error("Lemon Squeezy returned no checkout URL.");
+  }
+  return url;
+}
+
+/**
  * HMAC-SHA256 verification of a Lemon Squeezy webhook payload. LS sends
  * the signature in `X-Signature` and the signing key is the webhook secret
  * (NOT the API key). Same scheme as Stripe's webhook signing, just a

@@ -3,8 +3,10 @@ import { notFound } from "next/navigation";
 import { Footer, Nav } from "@/components/marketing";
 import { getPrisma } from "@/lib/db";
 import type { AuditResult } from "@/lib/audit/score";
+import type { DeepAuditResult } from "@/lib/audit/deep";
 import { recommendThemeFor } from "@/lib/audit/niche";
-import { unlockAuditWithEmail } from "./actions";
+import { isDeepAuditPurchasable } from "@/lib/lemonsqueezy";
+import { startDeepAuditCheckout, unlockAuditWithEmail } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -42,7 +44,7 @@ export default async function AuditResultPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; deep?: string }>;
 }) {
   const { id } = await params;
   const sp = await searchParams;
@@ -52,7 +54,18 @@ export default async function AuditResultPage({
   const audit = await prisma.audit.findUnique({ where: { id } });
   if (!audit) notFound();
 
-  const r = audit.rawResult as unknown as AuditResult;
+  // The deep (rendered-browser) result replaces the static one everywhere
+  // once it exists — same shape, better evidence, plus a screenshot.
+  const deepResult = audit.deepResult as unknown as DeepAuditResult | null;
+  const r = deepResult ?? (audit.rawResult as unknown as AuditResult);
+  const isDeep = Boolean(deepResult);
+  const deepRunning = Boolean(
+    !deepResult && !audit.deepError && (audit.deepPaidAt || sp.deep === "pending"),
+  );
+  const manualCount = r.rules.filter((x) => x.status === "unknown").length;
+  const showDeepUpsell =
+    !isDeep && !deepRunning && !audit.deepPaidAt && manualCount > 0 && isDeepAuditPurchasable();
+
   const hostname = safeHost(audit.url);
   const fetched = new Date(r.fetchedAt);
   const unlocked = Boolean(audit.email);
@@ -76,7 +89,9 @@ export default async function AuditResultPage({
         {/* HERO — score (always public) */}
         <section className="mk-section pb-10">
           <div className="mk-container">
-            <p className="mk-eyebrow">Audit result</p>
+            <p className="mk-eyebrow">
+              {isDeep ? "Deep audit · rendered in a real browser" : "Audit result"}
+            </p>
             <div className="mt-6 grid items-start gap-10 lg:grid-cols-[auto_1fr]">
               <ScoreDial value={r.overallScore} />
               <div>
@@ -131,6 +146,36 @@ export default async function AuditResultPage({
             </div>
           </div>
         </section>
+
+        {/* DEEP AUDIT STATES — running / failed */}
+        {deepRunning && (
+          <section className="mk-section py-0">
+            <div className="mk-container">
+              <div className="flex flex-wrap items-center gap-3 rounded-xl border border-[var(--accent-soft)] bg-[var(--accent-soft)]/30 px-5 py-4">
+                <span className="relative inline-flex h-2.5 w-2.5">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--accent)] opacity-60" />
+                  <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-[var(--accent)]" />
+                </span>
+                <p className="text-sm text-[var(--ink-2)]">
+                  <strong className="text-[var(--ink)]">Deep audit running</strong> — we&apos;re
+                  rendering the page in a real browser (~1 minute). Refresh this page
+                  shortly, or wait for the email.
+                </p>
+              </div>
+            </div>
+          </section>
+        )}
+        {audit.deepError && !deepResult && (
+          <section className="mk-section py-0">
+            <div className="mk-container">
+              <div className="rounded-xl border border-[#f5d8d2] bg-[#fff0ed] px-5 py-4 text-sm text-[#b9261b]">
+                The deep audit hit a snag rendering this page — we&apos;ve been notified
+                and will re-run it. If nothing arrives within a few hours, reply to your
+                receipt email and we&apos;ll fix it or refund you.
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* BLOCK SUMMARY (always public — counts only, no per-rule list) */}
         <section className="mk-section bg-[var(--surface)] py-14">
@@ -287,6 +332,68 @@ export default async function AuditResultPage({
                       </li>
                     ))}
                   </ol>
+                </div>
+              </section>
+            )}
+
+            {/* DEEP AUDIT UPSELL — the manual rules are the pitch */}
+            {showDeepUpsell && (
+              <section className="mk-section py-14">
+                <div className="mk-container max-w-3xl">
+                  <div className="rounded-2xl border border-[var(--line)] bg-white p-8 shadow-sm">
+                    <p className="mk-eyebrow text-[var(--accent-deep)]">Deep audit · €29, credited toward any theme</p>
+                    <h2 className="mk-h2 mt-3">
+                      {`${manualCount} rules still say "manual" — a real browser can verdict them.`}
+                    </h2>
+                    <p className="mt-4 text-[var(--ink-2)]">
+                      This free audit reads your page&apos;s raw HTML, so anything
+                      JavaScript renders — review stars, the gallery, variant
+                      pickers, sticky bars — can&apos;t be verified. The deep audit
+                      loads your page in a real browser, re-checks all 69 rules
+                      against what customers actually see, and includes a full-page
+                      screenshot of what we audited. Delivered here + by email in
+                      a couple of minutes.
+                    </p>
+                    <ul className="mt-5 grid gap-2 text-sm text-[var(--ink-2)] sm:grid-cols-2">
+                      <li className="flex gap-2"><span className="text-[var(--accent-deep)]">✓</span> All 69 rules re-checked against the rendered page</li>
+                      <li className="flex gap-2"><span className="text-[var(--accent-deep)]">✓</span> Real gallery, variant + review-widget evidence</li>
+                      <li className="flex gap-2"><span className="text-[var(--accent-deep)]">✓</span> Full-page screenshot of the audited state</li>
+                      <li className="flex gap-2"><span className="text-[var(--accent-deep)]">✓</span> €29 refunded if you buy a theme within 30 days</li>
+                    </ul>
+                    <form action={startDeepAuditCheckout} className="mt-8">
+                      <input type="hidden" name="auditId" value={id} />
+                      <button type="submit" className="mk-btn mk-btn-primary">
+                        Run the deep audit · €29 →
+                      </button>
+                    </form>
+                    <p className="mt-4 text-[12px] text-[var(--muted)]">
+                      Checkout by Lemon Squeezy (handles VAT). One-time payment, no subscription.
+                    </p>
+                  </div>
+                </div>
+              </section>
+            )}
+
+            {/* DEEP AUDIT SCREENSHOT — proof of what was audited */}
+            {isDeep && deepResult?.screenshot && (
+              <section className="mk-section py-14">
+                <div className="mk-container max-w-3xl">
+                  <header className="mb-6">
+                    <p className="mk-eyebrow">What we audited</p>
+                    <h2 className="mk-h2 mt-3">The rendered page, top to bottom.</h2>
+                    <p className="mt-3 text-[var(--ink-2)]">
+                      Captured after JavaScript finished — this is the exact state
+                      every verdict below was scored against.
+                    </p>
+                  </header>
+                  <div className="max-h-[560px] overflow-y-auto rounded-xl border border-[var(--line)] bg-white p-2 shadow-sm">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={`data:image/jpeg;base64,${deepResult.screenshot}`}
+                      alt={`Full-page screenshot of ${hostname} as audited`}
+                      className="w-full rounded-lg"
+                    />
+                  </div>
                 </div>
               </section>
             )}

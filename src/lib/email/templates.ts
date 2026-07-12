@@ -190,6 +190,65 @@ ${footerText(ctx.email)}`;
 
 // ── helpers ─────────────────────────────────────────────────────────────
 
+/**
+ * Sent when the paid deep audit finishes. One CTA: view the completed
+ * report. The theme cross-sell rides in the footer section, same as the
+ * unlock email — the buyer just paid, so the report is the hero.
+ */
+export function deepAuditReadyEmail(ctx: AuditEmailContext) {
+  const reportUrl = `${SITE_URL}/audit/${ctx.auditId}`;
+  const themeUrl = ctx.recommendation
+    ? `${SITE_URL}${ctx.recommendation.href}`
+    : `${SITE_URL}/#themes`;
+  const themeLabel = ctx.recommendation?.label ?? "the matching theme";
+
+  const counted = ctx.result.rules.filter((r) => r.status !== "unknown").length;
+  const total = ctx.result.rules.length;
+  const subject = `Deep audit ready · ${ctx.score}/100 for ${ctx.hostname}`;
+
+  const html = wrap({
+    subject,
+    body: `
+      <p style="margin:0 0 16px 0;color:#1d2125;font-size:16px">Your deep audit for <strong>${escape(ctx.hostname)}</strong> is done.</p>
+      <p style="margin:0 0 24px 0;color:#1d2125;font-size:15px;line-height:1.55">
+        We rendered the page in a real browser this time — review widgets, gallery,
+        variant pickers, everything JavaScript adds. <strong>${counted} of ${total} rules</strong>
+        now have a definitive verdict, and the score is <strong>${ctx.score}/100</strong>.
+        The report includes a full-page screenshot of what we audited.
+      </p>
+      <p style="margin:0 0 32px 0">
+        <a href="${reportUrl}" style="display:inline-block;padding:12px 22px;border-radius:9999px;background:#00a85f;color:white;font-weight:600;text-decoration:none;font-size:15px">Open the deep report →</a>
+      </p>
+      <hr style="border:none;border-top:1px solid #e5e7eb;margin:24px 0"/>
+      <p style="margin:0 0 12px 0;color:#1d2125;font-size:15px"><strong>Your deep-audit payment is credited toward any theme.</strong></p>
+      <p style="margin:0 0 20px 0;color:#4b5563;font-size:14px;line-height:1.55">
+        Buy any ShopLanding theme within 30 days and reply to this email — we refund
+        the deep audit. ${ctx.recommendation ? escape(ctx.recommendation.reason) : "Every theme satisfies all 69 rules out of the box."}
+      </p>
+      <p style="margin:0 0 8px 0">
+        <a href="${themeUrl}" style="color:#007a45;font-weight:600;text-decoration:none;font-size:15px">Browse ${escape(themeLabel)} →</a>
+      </p>
+    `,
+  });
+
+  const text =
+`Your deep audit for ${ctx.hostname} is done.
+
+We rendered the page in a real browser this time — ${counted} of ${total} rules now have a definitive verdict. Score: ${ctx.score}/100.
+
+Open the deep report: ${reportUrl}
+
+----
+
+Your deep-audit payment is credited toward any theme: buy one within 30 days and reply to this email — we refund the audit.
+
+Browse ${themeLabel}: ${themeUrl}
+
+${footerText(ctx.email)}`;
+
+  return { subject, html, text };
+}
+
 function wrap({ subject, body }: { subject: string; body: string }): string {
   return `<!doctype html>
 <html lang="en">

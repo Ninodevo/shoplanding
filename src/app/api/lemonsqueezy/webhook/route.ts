@@ -1,5 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
+import { after } from "next/server";
 import { getPrisma } from "@/lib/db";
+import { runDeepAudit } from "@/lib/audit/deep";
 import {
   getLemonSqueezyWebhookSecret,
   verifyLemonSqueezySignature,
@@ -105,6 +107,14 @@ async function handleOrderCreated(payload: LemonWebhookPayload) {
     throw new Error("order_created payload missing data.id");
   }
 
+  // Deep-audit orders carry `kind: "deep-audit"` in custom_data and don't
+  // mint an Order row — they flip the paid flag on the Audit and kick the
+  // rendered-browser run after the response is sent.
+  if (payload.meta?.custom_data?.kind === "deep-audit") {
+    await handleDeepAuditOrder(payload, orderId);
+    return;
+  }
+
   // Idempotency: if we've already created an Order for this LS order, exit.
   // LS retries on 5xx so this guard matters.
   const existing = await prisma.order.findUnique({
@@ -152,4 +162,43 @@ async function handleOrderCreated(payload: LemonWebhookPayload) {
       previewSlug: generatePreviewSlug(),
     },
   });
+}
+
+async function handleDeepAuditOrder(payload: LemonWebhookPayload, orderId: string) {
+  const prisma = getPrisma();
+  const auditId = payload.meta?.custom_data?.auditId;
+  if (!auditId) {
+    throw new Error(`LS deep-audit order ${orderId} missing auditId custom_data.`);
+  }
+
+  // Idempotency: deepOrderId is unique — a retry of the same LS order finds
+  // it already recorded and exits.
+  const already = await prisma.audit.findUnique({
+    where: { deepOrderId: orderId },
+    select: { id: true },
+  });
+  if (already) return;
+
+  const audit = await prisma.audit.findUnique({
+    where: { id: auditId },
+    select: { id: true, email: true },
+  });
+  if (!audit) {
+    throw new Error(`LS deep-audit order ${orderId} references unknown audit ${auditId}.`);
+  }
+
+  const buyerEmail = payload.data.attributes?.user_email;
+  await prisma.audit.update({
+    where: { id: auditId },
+    data: {
+      deepOrderId: orderId,
+      deepPaidAt: new Date(),
+      // The purchase email also unlocks the report if it wasn't already.
+      ...(audit.email ? {} : { email: buyerEmail ?? null, unlockedAt: new Date() }),
+    },
+  });
+
+  // Run the rendered-browser audit after the webhook response is sent —
+  // LS expects a fast 200, the audit takes ~30-60s.
+  after(() => runDeepAudit(auditId));
 }
