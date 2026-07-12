@@ -222,6 +222,9 @@ h1, h2, h3, h4 { margin: 0; }
   gap: 56px;
   align-items: start;
 }
+/* Grid items default to min-width:auto — wide content (thumb strips, long
+   titles) would otherwise blow the column out past the viewport on mobile */
+.product-grid > * { min-width: 0; }
 
 /* Breadcrumbs */
 .breadcrumbs {
@@ -313,7 +316,9 @@ h1, h2, h3, h4 { margin: 0; }
 
 .gallery-thumbs {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  /* minmax(0,…): plain 1fr floors at each thumb's min-content, which forces
+     the gallery to ~490px and breaks the layout below ~520px viewports */
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 8px;
   margin-top: 12px;
 }

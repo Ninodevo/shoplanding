@@ -103,7 +103,13 @@ export default function ThemeLivePreview({
                   src={src}
                   title="Live theme preview — mobile"
                   width={MOBILE_INNER_WIDTH}
-                  height={MOBILE_INNER_HEIGHT - 16}
+                  // Pre-scale height must be inner-height ÷ scale so the
+                  // SCALED iframe fills the bezel exactly — sizing it to the
+                  // bezel leaves a dead band at the bottom after scaling.
+                  height={Math.round(
+                    (MOBILE_INNER_HEIGHT - 16) /
+                      ((MOBILE_FRAME_WIDTH - 16) / MOBILE_INNER_WIDTH),
+                  )}
                   className="block bg-white"
                   style={{
                     // Scale a 390px viewport into the phone bezel
