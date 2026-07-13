@@ -186,11 +186,33 @@ function measureInPage() {
     return Number.isFinite(n) ? Math.round(n * 10) / 10 : null;
   };
 
-  // Title vs body font size
-  const h1 = Array.from(document.querySelectorAll("h1")).find(vis) ?? null;
-  const h1FontPx = h1 ? px(getComputedStyle(h1).fontSize) : null;
+  // Title vs body font size. Pages sprinkle small marketing <h1>s (Jones
+  // Road renders 15px "Non-Comedogenic" badges as h1) — the product title
+  // is the visually LARGEST h1 in the top region, measured including its
+  // descendant spans (titles often wrap the big text in a styled child).
+  const effectiveFontPx = (el: Element): number => {
+    let max = parseFloat(getComputedStyle(el).fontSize) || 0;
+    for (const child of Array.from(el.querySelectorAll("*")).slice(0, 20)) {
+      if ((child.textContent ?? "").trim().length < 3) continue;
+      const f = parseFloat(getComputedStyle(child).fontSize) || 0;
+      if (f > max) max = f;
+    }
+    return max;
+  };
+  const h1 =
+    Array.from(document.querySelectorAll("h1"))
+      .filter(vis)
+      .filter((el) => el.getBoundingClientRect().top + window.scrollY < 3000)
+      .sort((a, b) => effectiveFontPx(b) - effectiveFontPx(a))[0] ?? null;
+  const h1FontPx = h1 ? px(String(effectiveFontPx(h1))) : null;
+  // Body paragraph: a SUBSTANTIVE one (real column width, real copy) —
+  // the raw "longest <p>" lands on footer legalese or narrow captions.
   const para = Array.from(document.querySelectorAll("p"))
     .filter(vis)
+    .filter((el) => {
+      const r = el.getBoundingClientRect();
+      return (el.textContent ?? "").trim().length >= 80 && r.width >= 280;
+    })
     .sort((a, b) => (b.textContent?.length ?? 0) - (a.textContent?.length ?? 0))[0];
   const bodyFontPx = para
     ? px(getComputedStyle(para).fontSize)
@@ -243,27 +265,39 @@ function measureInPage() {
     });
   const mainImg = heroImgs[0] ?? null;
 
-  // Layout: gallery vs buy box geometry (desktop viewport). The gallery
-  // anchor is the largest image that VERTICALLY OVERLAPS the buy box —
-  // anchoring on the page's biggest image grabs below-fold marketing
-  // banners and reports "not side by side" for perfectly standard PDPs.
+  // Layout: gallery vs buy box geometry (desktop viewport). The geometry
+  // anchor must be the buy-box COLUMN, not `closest(section)` — many PDPs
+  // have no <form>, and the fallback section spans the full page width,
+  // which makes every left/right comparison meaningless (Liquid IV). Climb
+  // from the ATC while ancestors stay column-sized.
   let layout: { sideBySide: boolean; galleryLeft: boolean } | null = null;
-  if (buyBox) {
-    const bb = buyBox.getBoundingClientRect();
-    const overlapping = heroImgs.slice(0, 8).find((img) => {
-      const gi = img.getBoundingClientRect();
-      const overlap = Math.min(gi.bottom, bb.bottom) - Math.max(gi.top, bb.top);
-      return (
-        overlap > Math.min(gi.height, bb.height) * 0.3 &&
-        Math.abs(gi.left - bb.left) > 100 &&
-        gi.width > 200
-      );
-    });
-    if (overlapping) {
-      const gi = overlapping.getBoundingClientRect();
-      layout = { sideBySide: true, galleryLeft: gi.left < bb.left };
-    } else if (mainImg) {
-      layout = { sideBySide: false, galleryLeft: false };
+  if (atc) {
+    let buyCol: Element = atc;
+    let anc: Element | null = atc.parentElement;
+    while (anc && anc !== document.body) {
+      const r = anc.getBoundingClientRect();
+      if (r.width > window.innerWidth * 0.55 || r.height > 2600) break;
+      buyCol = anc;
+      anc = anc.parentElement;
+    }
+    const bc = buyCol.getBoundingClientRect();
+    if (bc.width > 100 && bc.width <= window.innerWidth * 0.55) {
+      // A gallery image sits BESIDE the column: vertical overlap without
+      // substantial horizontal overlap (overlaid images are modals/badges).
+      const beside = heroImgs.slice(0, 8).flatMap((img) => {
+        const gi = img.getBoundingClientRect();
+        if (gi.width < 200) return [];
+        const vOverlap = Math.min(gi.bottom, bc.bottom) - Math.max(gi.top, bc.top);
+        if (vOverlap < Math.min(gi.height, bc.height) * 0.3) return [];
+        const hOverlap = Math.min(gi.right, bc.right) - Math.max(gi.left, bc.left);
+        if (hOverlap > gi.width * 0.4) return [];
+        return [{ galleryLeft: gi.left < bc.left }];
+      })[0];
+      if (beside) {
+        layout = { sideBySide: true, galleryLeft: beside.galleryLeft };
+      } else if (mainImg) {
+        layout = { sideBySide: false, galleryLeft: false };
+      }
     }
   }
 
@@ -539,9 +573,11 @@ async function probeVariantsInPage() {
 
   if (radioGroup) {
     const other = radioGroup.find((r) => !r.checked) ?? radioGroup[1];
-    const label = other
-      ? document.querySelector(`label[for="${other.id}"]`) ?? other.closest("label")
-      : null;
+    // CSS.escape: real ids contain quotes/brackets (True Classic crashed
+    // the raw template-literal selector)
+    const label = other?.id
+      ? document.querySelector(`label[for="${CSS.escape(other.id)}"]`) ?? other.closest("label")
+      : other?.closest("label") ?? null;
     ((label as HTMLElement | null) ?? other)?.click();
   } else if (select) {
     select.selectedIndex = select.selectedIndex === 0 ? 1 : 0;

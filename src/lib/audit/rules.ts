@@ -171,11 +171,17 @@ export const RULES: RuleDef[] = [
     text: "Product rating shown near the title (linked to reviews)",
     weight: 3,
     detect: (p) => {
-      // Deep audit: measured the widget's distance to the H1.
+      // Deep audit: measured the widget's distance to the H1. A far-away
+      // match with a review app installed usually means the near-title
+      // widget hadn't painted in the headless capture — that's "check
+      // live", not a fail.
       const d = p.probes?.ratingDistancePx;
       if (d != null) {
-        return d <= 250
-          ? pass(`Rating widget sits ~${d}px from the title`)
+        if (d <= 250) return pass(`Rating widget sits ~${d}px from the title`);
+        return p.reviewApp
+          ? unknown(
+              `Nearest visible rating sits ~${d}px from the title; ${p.reviewApp} may render the near-title stars late — check live`,
+            )
           : fail(`Rating widget found but ~${d}px away from the title — not adjacent`);
       }
       return p.starRating !== null
