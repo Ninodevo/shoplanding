@@ -15,6 +15,41 @@ import type { PackagerInput } from "./types";
  * Every section maps back to playbook rules — noted per section.
  */
 
+/**
+ * Placeholder copy for every claim-bearing field in a shipped theme.
+ *
+ * The demo content that powers /showcase must NOT be the installed theme's
+ * default state. Seeding real-looking press logos, named reviews carrying
+ * verified badges, and social posts from invented people means a merchant who
+ * installs and publishes without editing is making false third-party claims —
+ * the exact practice the FTC's fake-review rule and the EU Omnibus Directive
+ * prohibit, and a liability we'd be shipping to a paying customer.
+ *
+ * So anything asserting a fact about a third party ships as a visible
+ * placeholder: the layout still demonstrates itself (block counts, wordmark
+ * styles and text lengths are preserved) but nothing reads as a true
+ * statement. Structural copy — headings, FAQ questions, spec labels,
+ * comparison feature names — stays, because it's scaffolding that tells the
+ * merchant what to write rather than an assertion of its own.
+ *
+ * Shared by the Shopify theme and the WooCommerce plugin so the two
+ * emitters can't drift.
+ */
+export const SHIPPED_PLACEHOLDER = {
+  pressLogo: "Publication name",
+  reviewTitle: "Review title",
+  reviewBody:
+    "Paste a real customer review here. Keep the specifics — what changed, how fast, what surprised them.",
+  reviewName: "Customer name",
+  reviewDetail: "Occupation, age",
+  ugcAuthor: "Customer name",
+  ugcHandle: "@handle",
+  ugcText:
+    "Paste a real social post about your product. Screenshot the original so you can prove it.",
+  compareUs: "What you offer",
+  compareThem: "What the alternative offers",
+} as const;
+
 // ============================================================================
 // sections/press.liquid — rule 49: press / as-seen-in logo strip
 // ============================================================================
@@ -44,7 +79,7 @@ export function sectionPress(): string {
       "type": "logo",
       "name": "Publication",
       "settings": [
-        { "type": "text", "id": "text", "label": "Name", "default": "Vogue" },
+        { "type": "text", "id": "text", "label": "Name", "default": "Publication name" },
         {
           "type": "select",
           "id": "style",
@@ -63,9 +98,9 @@ export function sectionPress(): string {
     {
       "name": "Press / As seen in",
       "blocks": [
-        { "type": "logo", "settings": { "text": "Vogue", "style": "serif" } },
-        { "type": "logo", "settings": { "text": "WIRED", "style": "mono" } },
-        { "type": "logo", "settings": { "text": "goop", "style": "script" } }
+        { "type": "logo", "settings": { "text": "Publication name", "style": "serif" } },
+        { "type": "logo", "settings": { "text": "Publication name", "style": "mono" } },
+        { "type": "logo", "settings": { "text": "Publication name", "style": "script" } }
       ]
     }
   ]
@@ -360,8 +395,8 @@ export function sectionReviews(): string {
   "settings": [
     { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Reviews" },
     { "type": "text", "id": "heading", "label": "Heading", "default": "What customers say." },
-    { "type": "text", "id": "rating", "label": "Aggregate rating", "default": "4.8" },
-    { "type": "text", "id": "review_count", "label": "Total review count", "default": "487" }
+    { "type": "text", "id": "rating", "label": "Aggregate rating (leave blank until you have real reviews)", "default": "" },
+    { "type": "text", "id": "review_count", "label": "Total review count (leave blank until you have real reviews)", "default": "" }
   ],
   "blocks": [
     {
@@ -369,11 +404,11 @@ export function sectionReviews(): string {
       "name": "Review",
       "settings": [
         { "type": "range", "id": "rating", "label": "Stars", "min": 1, "max": 5, "step": 1, "default": 5 },
-        { "type": "text", "id": "title", "label": "Review title", "default": "Lives in my tote now" },
-        { "type": "textarea", "id": "body", "label": "Body", "default": "Bought one for my desk and one for travel. The texture is the whole point — rich but never greasy." },
-        { "type": "text", "id": "name", "label": "Customer name", "default": "Maya K." },
-        { "type": "text", "id": "detail", "label": "Detail (occupation, age)", "default": "Product designer, 31" },
-        { "type": "checkbox", "id": "verified", "label": "Verified badge", "default": true },
+        { "type": "text", "id": "title", "label": "Review title", "default": "Review title" },
+        { "type": "textarea", "id": "body", "label": "Body", "default": "Paste a real customer review here. Keep the specifics — what changed, how fast, what surprised them." },
+        { "type": "text", "id": "name", "label": "Customer name", "default": "Customer name" },
+        { "type": "text", "id": "detail", "label": "Detail (occupation, age)", "default": "Occupation, age" },
+        { "type": "checkbox", "id": "verified", "label": "Verified badge (only tick for a genuinely verified purchase)", "default": false },
         { "type": "image_picker", "id": "photo", "label": "Customer photo (optional)" }
       ]
     }
@@ -424,9 +459,9 @@ export function sectionUgc(): string {
       "name": "Post",
       "settings": [
         { "type": "text", "id": "platform", "label": "Platform", "default": "Instagram" },
-        { "type": "text", "id": "author", "label": "Author", "default": "Lena" },
-        { "type": "text", "id": "handle", "label": "Handle", "default": "@lena.tries.things" },
-        { "type": "textarea", "id": "text", "label": "Post text", "default": "Did not expect a lotion bar to be my favorite purchase this year." }
+        { "type": "text", "id": "author", "label": "Author", "default": "Customer name" },
+        { "type": "text", "id": "handle", "label": "Handle", "default": "@handle" },
+        { "type": "textarea", "id": "text", "label": "Post text", "default": "Paste a real social post about your product. Screenshot the original so you can prove it." }
       ]
     }
   ],
@@ -687,8 +722,10 @@ export function buildSectionTemplateEntries(
     press: {
       type: "press",
       settings: { eyebrow: "As seen in" },
+      // Keep the demo's logo COUNT and wordmark styles so the strip's visual
+      // rhythm survives; replace every publication name with a placeholder.
       ...blocksOf("press", c.press.slice(0, 8), "logo", (p) => ({
-        text: p.text,
+        text: SHIPPED_PLACEHOLDER.pressLogo,
         style: p.cls,
       })),
     },
@@ -726,10 +763,12 @@ export function buildSectionTemplateEntries(
         us_label: c.brand.name,
         them_label: "Typical alternative",
       },
+      // Feature labels are scaffolding (they tell the merchant what to
+      // compare); the cell values are competitive claims, so they blank out.
       ...blocksOf("row", c.comparison.slice(0, 10), "row", (r) => ({
         feature: r[0],
-        us: r[1],
-        them: r[2],
+        us: SHIPPED_PLACEHOLDER.compareUs,
+        them: SHIPPED_PLACEHOLDER.compareThem,
       })),
     },
 
@@ -752,16 +791,17 @@ export function buildSectionTemplateEntries(
       settings: {
         eyebrow: "Reviews",
         heading: "What customers say.",
-        rating: String(c.product.rating),
-        review_count: String(c.product.reviewCount),
+        // Aggregate rating + count are factual claims — blank until real.
+        rating: "",
+        review_count: "",
       },
       ...blocksOf("review", c.reviews.slice(0, 12), "review", (r) => ({
         rating: Math.round(r.rating),
-        title: r.title,
-        body: r.body,
-        name: r.name,
-        detail: `${r.occ}, ${r.age}`,
-        verified: r.verified,
+        title: SHIPPED_PLACEHOLDER.reviewTitle,
+        body: SHIPPED_PLACEHOLDER.reviewBody,
+        name: SHIPPED_PLACEHOLDER.reviewName,
+        detail: SHIPPED_PLACEHOLDER.reviewDetail,
+        verified: false,
       })),
     },
 
@@ -770,9 +810,9 @@ export function buildSectionTemplateEntries(
       settings: { eyebrow: "From the feed", heading: "Posted, not paid." },
       ...blocksOf("post", c.socialReviews.slice(0, 8), "post", (p) => ({
         platform: p.platform,
-        author: p.author,
-        handle: p.handle,
-        text: p.text,
+        author: SHIPPED_PLACEHOLDER.ugcAuthor,
+        handle: SHIPPED_PLACEHOLDER.ugcHandle,
+        text: SHIPPED_PLACEHOLDER.ugcText,
       })),
     },
 

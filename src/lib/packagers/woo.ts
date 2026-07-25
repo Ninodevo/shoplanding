@@ -1,4 +1,5 @@
 import JSZip from "jszip";
+import { SHIPPED_PLACEHOLDER as PH } from "./shopify-sections";
 import {
   ARTIFACT_FILENAME,
   type PackagerInput,
@@ -185,7 +186,7 @@ function buildContentJson(input: PackagerInput): string {
   return JSON.stringify(
     {
       _readme:
-        "All landing-page copy lives here. Edit freely — the template re-reads this file on every page load. Set product_id to your WooCommerce product's ID (Products → hover a product → ID).",
+        "All landing-page copy lives here. Edit freely — the template re-reads this file on every page load. Set product_id to your WooCommerce product's ID (Products → hover a product → ID). IMPORTANT: press, reviews, social and comparison ship as PLACEHOLDERS — replace them with real, substantiated content or empty them before publishing. Publishing invented reviews or press endorsements is illegal in most markets.",
       product_id: 0,
       brand: {
         name: c.brand.name,
@@ -197,19 +198,20 @@ function buildContentJson(input: PackagerInput): string {
       announce: c.announce.slice(0, 4),
       hero: {
         subtitle: c.product.subtitle,
-        rating: String(c.product.rating),
-        review_count: String(c.product.reviewCount),
+        rating: "",
+        review_count: "",
         key_benefits: c.product.keyBenefits,
         cta_label: input.tweaks?.ctaCopy ?? "Add to cart",
         free_ship_note: "Free shipping over $35",
       },
-      press: c.press.slice(0, 8).map((p) => ({ text: p.text, style: p.cls })),
+      // Claim-bearing content ships as placeholders — see SHIPPED_PLACEHOLDER.
+      press: c.press.slice(0, 8).map((p) => ({ text: PH.pressLogo, style: p.cls })),
       benefits: c.benefits.slice(0, 6).map((b) => ({ icon: b.ico, title: b.t, body: b.d })),
       steps: c.steps.slice(0, 4).map((s) => ({ title: s.t, body: s.d })),
       comparison: {
         us_label: c.brand.name,
         them_label: "Typical alternative",
-        rows: c.comparison.slice(0, 10).map((r) => ({ feature: r[0], us: r[1], them: r[2] })),
+        rows: c.comparison.slice(0, 10).map((r) => ({ feature: r[0], us: PH.compareUs, them: PH.compareThem })),
       },
       ingredients: c.ingredients.slice(0, 8).map((i) => ({
         name: i.name,
@@ -218,22 +220,22 @@ function buildContentJson(input: PackagerInput): string {
         swatch: i.color,
       })),
       reviews: {
-        rating: String(c.product.rating),
-        count: String(c.product.reviewCount),
+        rating: "",
+        count: "",
         items: c.reviews.slice(0, 12).map((r) => ({
           rating: Math.round(r.rating),
-          title: r.title,
-          body: r.body,
-          name: r.name,
-          detail: `${r.occ}, ${r.age}`,
-          verified: r.verified,
+          title: PH.reviewTitle,
+          body: PH.reviewBody,
+          name: PH.reviewName,
+          detail: PH.reviewDetail,
+          verified: false,
         })),
       },
       social: c.socialReviews.slice(0, 8).map((p) => ({
         platform: p.platform,
-        author: p.author,
-        handle: p.handle,
-        text: p.text,
+        author: PH.ugcAuthor,
+        handle: PH.ugcHandle,
+        text: PH.ugcText,
       })),
       cross_sells: c.crossSells.slice(0, 4).map((x) => ({
         icon: x.ico,
@@ -915,6 +917,30 @@ function buildReadme(input: PackagerInput): string {
     "A WordPress **plugin** (not a theme) — it drops into whatever theme you",
     "already run and registers a page template that renders the full",
     "ShopLanding single-product landing page for one WooCommerce product.",
+    "",
+    "## ⚠ Before you publish — replace the placeholder social proof",
+    "",
+    "`includes/content.json` ships with **placeholder** text in every field that",
+    "makes a claim about a third party. Fill each with something true, or remove",
+    "the section. Do not publish the placeholders, and never invent any of it:",
+    "",
+    "- **press** — real publications that actually covered you. None? Empty the array.",
+    "- **reviews** — real customer reviews only. Keep `verified` false unless the",
+    "  purchase is genuinely verified, and leave `rating` / `count` blank until",
+    "  you have real ones.",
+    "- **social** — real posts from real accounts; keep screenshots as proof.",
+    "- **comparison.rows** — claims you can substantiate.",
+    "",
+    "Publishing invented reviews, testimonials, or press endorsements is illegal",
+    "in most markets — specifically prohibited by the US FTC's fake-review rule",
+    "and the EU Omnibus Directive. This is your store's liability.",
+    "",
+    "**The same goes for the product copy.** `benefits`, `ingredients`, `specs`",
+    "and `faq` ship as *example* copy describing a fictional demo product, not",
+    "yours — rewrite every one. Pay particular attention to anything stating a",
+    "test, certification, dosage, or result (\"third-party tested\", \"clinically",
+    "dosed\", \"results in 7–10 days\"): those are regulated claims in most",
+    "categories. If you cannot substantiate it, cut it.",
     "",
     "## Install (3 steps)",
     "",
