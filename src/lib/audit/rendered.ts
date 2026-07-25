@@ -1,6 +1,6 @@
 import { createRequire } from "node:module";
 import type { Browser, Page } from "playwright-core";
-import { isBlockedHost } from "./fetch";
+import { isBlockedHost, isHomepageRedirect } from "./fetch";
 import { EMPTY_PROBES, type RenderedProbes } from "./probes";
 
 /**
@@ -87,9 +87,7 @@ export async function fetchRenderedPage(url: string): Promise<RenderedFetch> {
     // Dead product URLs often client-side redirect to the homepage — a
     // faithful audit of the wrong page is worse than an error (found via
     // Brooklinen: a pseudo-product handle JS-redirected to "/").
-    const requestedPath = new URL(url).pathname;
-    const landedPath = new URL(finalUrl).pathname;
-    if (requestedPath !== "/" && landedPath === "/") {
+    if (isHomepageRedirect(url, finalUrl)) {
       throw new Error(
         `page redirected to the homepage (${finalUrl}) — the product URL looks dead or region-blocked`,
       );

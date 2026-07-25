@@ -30,11 +30,30 @@ export class FetchError extends Error {
       | "too-large"
       | "non-html"
       | "http-error"
+      | "redirected-home"
       | "network-error",
     message: string,
   ) {
     super(message);
     this.name = "FetchError";
+  }
+}
+
+/**
+ * True when a non-homepage request ended up on the site root. Dead,
+ * discontinued, or region-blocked product URLs commonly 301 to "/" — and
+ * auditing a homepage while the report claims to describe a product page
+ * is worse than returning an error. Shared by the static fetcher and the
+ * rendered (Playwright) one, which sees the JS-driven variant of this.
+ */
+export function isHomepageRedirect(requested: string, final: string): boolean {
+  try {
+    // Normalize trailing slashes so "/" and "" compare equal.
+    const reqPath = new URL(requested).pathname.replace(/\/+$/, "");
+    const finPath = new URL(final).pathname.replace(/\/+$/, "");
+    return reqPath !== "" && finPath === "";
+  } catch {
+    return false;
   }
 }
 
@@ -80,6 +99,13 @@ export async function fetchPageForAudit(input: string): Promise<FetchedPage> {
     throw new FetchError(
       "http-error",
       `Page returned HTTP ${res.status} — make sure the URL is publicly accessible.`,
+    );
+  }
+
+  if (isHomepageRedirect(url.toString(), res.url)) {
+    throw new FetchError(
+      "redirected-home",
+      `That URL redirects to the homepage (${res.url}) — the product looks discontinued, sold out, or unavailable in our region. Paste a live product URL.`,
     );
   }
 
